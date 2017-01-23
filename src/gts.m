@@ -1,4 +1,5 @@
 function system = gts
+% Use bdroot
 % Get top level of current system
     address = gcs;
     numChars = strfind(address, '/');

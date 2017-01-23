@@ -1,0 +1,9 @@
+#SHOW_NAMES Indicates whether or not to show block names in the final layout. 
+#Default is no-change.
+#
+#Acceptable parameter values are:
+#	no-change (blocks will show or not show their name just as they did in the 
+#		initial layout), 
+#	all (all blocks will show their name),
+#	none (no blocks will show their name)
+show_names: no-change
