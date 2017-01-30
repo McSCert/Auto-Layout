@@ -205,7 +205,7 @@ function schema = getAutoLayoutTool(callbackinfo)
 end
 
 function AutoLayoutToolCallback(callbackInfo)
-    if strcmp(get_param(gts, 'Dirty'), 'on')
+    if strcmp(get_param(bdroot, 'Dirty'), 'on')
         AutoLayoutGUI;
     else
         AutoLayout(gcs);

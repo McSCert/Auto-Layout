@@ -3,7 +3,7 @@ function size = getTextSize(string, block)
     fontName = get_param(block, 'FontName');
     fontSize = get_param(block, 'FontSize');
     if fontSize == -1
-        fontSize = get_param(gts, 'DefaultBlockFontSize');
+        fontSize = get_param(bdroot, 'DefaultBlockFontSize');
     end
     testFig = figure;
     uicontrol(testFig)

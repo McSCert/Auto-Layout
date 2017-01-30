@@ -78,7 +78,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-address=gts;
+address=bdroot;
 addressToLayout=gcs;
 save_system(address);
 close(handles.autoLayoutGUI)
