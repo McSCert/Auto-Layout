@@ -39,9 +39,9 @@ function initLayout(address)
     cd(batchDir);
     [filename, map] = dotfile_creator(address);
     if ~isunix
-        system('autoLayout.bat');
+        [~, ~] = system('autoLayout.bat'); %Suppressed output with "[~, ~] ="
     else
-        system('sh autoLayout.sh');
+        [~, ~] = system('sh autoLayout.sh'); %Suppressed output with "[~, ~] ="
     end
     % Change directory
 

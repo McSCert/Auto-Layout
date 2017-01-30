@@ -1,7 +1,7 @@
 classdef TplainParser < handle
-%  TplainParser - A class which contains functions that parses a
-%  graphviz output txt file, and moves the simulink blocks to teh
-%  appropriate locations
+%  TPLAINPARSER - A class which contains functions that parses a
+%  graphviz output txt file, and moves the simulink blocks to the
+%  appropriate locations.
 %  
 %
 %   Typical use:
