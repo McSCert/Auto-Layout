@@ -7,3 +7,16 @@
 #	all (all blocks will show their name),
 #	none (no blocks will show their name)
 show_names: no-change
+
+#*****NOT YET IMPLEMENTED*****
+#PORTLESS_RULE Indicates the rule by which blocks with no ports will be placed in the final layout.
+#Default bottom.
+#
+#Acceptable parameter values are:
+#	bottom (blocks will be placed along the bottom side of the system),
+#	top (blocks will be placed along the top side of the system),
+#	left (blocks will be placed along the left side of the system),
+#	right (blocks will be placed along the right side of the system),
+#	same_half_vertical (blocks will be placed along the bottom/top side of the system according to which half they started in),
+#	same_half_horizontal (blocks will be placed along the left/right side of the system according to which half they started in)
+portless_rule: bottom
