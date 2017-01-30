@@ -14,8 +14,8 @@ classdef TplainParser < handle
 %   system and the filename of the graphviz output txt file
 %
 %	plain_wrappers- parses the graphviz output file using
-%	parse_the_Tplain and moves the simulink blocks in the system using 
-%	go_to_the_right_spot
+%	parse_the_Tplain and finds where to move the simulink blocks in the 
+%   system using find_the_right_spot
 % 
 %	[mapObj, graphinfo]=parse_the_Tplain(object,filename)
 %		parses the graphviz output txt file, outputs the height and
@@ -24,9 +24,11 @@ classdef TplainParser < handle
 %		corresponsing to the keys and tehir info in the values.
 %		filename is the name of the graphviz txt file		
 %	
-%	go_to_the_right_spot(object, block, mapObj, graphinfo)
-%		moves the block to teh right position using the info gotten
-%		from graphinfo and mapObj
+%	blocksInfo=find_the_right_spot(object, mapObj, graphinfo)
+%		finds the right position for blocks using the info from graphinfo 
+%       and mapObj.
+%       blocksInfo is a struct containing the fullname and right position
+%       for blocks in RootSystemName.
 	
     properties
         RootSystemName
@@ -41,10 +43,10 @@ classdef TplainParser < handle
             object.map = replacementMap;
         end
         
-        function plain_wrappers(object)
+        function blocksInfo = plain_wrappers(object)
             filename = [object.filename '-plain.txt'];
             [mapObj, graphinfo] = parse_the_Tplain(object, filename);
-            go_to_the_right_spot(object, object.RootSystemName, mapObj, graphinfo);
+            blocksInfo = find_the_right_spot(object, mapObj, graphinfo);
 %             subsystems = find_system(object.RootSystemName,'Blocktype','SubSystem');
 %             sublength = length(subsystems);
 %             for z = 1:sublength
@@ -74,46 +76,54 @@ classdef TplainParser < handle
                 end
                 C = textscan(tline, '%s %s %f %f %f %f %s %s %s %s %s');
                 if strcmp(C{1}{1}, 'node')
+                    
+                    % C{3} - desired block center X coord
+                    % C{4} - desired block center Y coord
+                    % C{5} - desired block width
+                    % C{6} - desired block height
                     values = {C{3} C{4} C{5} C{6}};
-                    mapkey = C{2}{1};
-                    itemsToReplace = keys(object.map);
-                    for item = 1:length(itemsToReplace)
-                        mapkey = strrep(mapkey, itemsToReplace{item}, object.map(itemsToReplace{item}));
-                    end
+                    mapkey = C{2}{1}; % Block name
+%                     itemsToReplace = keys(object.map);
+%                     for item = 1:length(itemsToReplace)
+%                         mapkey = strrep(mapkey, itemsToReplace{item}, object.map(itemsToReplace{item}));
+%                     end
                     mapObj(mapkey) = values;
                 end
                 % Do stuff with tline here
                 % ...
+                % (graphviz gives information about the edges in the graph
+                % as well, but nothing is currently done with it)
             end
             fclose(inputfile); 
         end
         
-        function go_to_the_right_spot(object, block, mapObj, graphinfo)
-            subsystemblocks = find_system(block, 'SearchDepth', 1);
-            blockcell = {block};
-            subsystemblocks = setdiff(subsystemblocks, blockcell);
-            
-            blocklength = length(subsystemblocks);
+        function blocksInfo = find_the_right_spot(object, mapObj, graphinfo)            
+            % Get blocks in address
+            systemBlocks = find_system(object.RootSystemName, 'SearchDepth',1);
+            systemBlocks = systemBlocks(2:end); %Remove address itself
+            blocksInfo = struct('fullname', systemBlocks);          
+
+            blocklength = length(systemBlocks);
             width = round(graphinfo(2));
             height = round(graphinfo(3));
             
             for z = 1:blocklength
-                subsystemblocksName = get_param(subsystemblocks{z}, 'Name');
-                blockinfo = mapObj(subsystemblocksName);
+                subsystemblocksName = get_param(systemBlocks{z}, 'Name');
+                blockPosInfo = mapObj(subsystemblocksName); %Block's position information from graphviz
                 
-                blockwidth  = blockinfo{3};
-                blockheight = blockinfo{4};
-                blockx      = blockinfo{1};
-                blocky      = round(height - blockinfo{2});
+                blockwidth  = blockPosInfo{3};
+                blockheight = blockPosInfo{4};
+                blockx      = blockPosInfo{1};
+                blocky      = round(height - blockPosInfo{2}); % Accounting for different coordinate system between graphviz and MATLAB
                 
-                left    = round(blockx - blockwidth  / 2);
-                right   = round(blockx + blockwidth  / 2);
-                top     = round(blocky - blockheight / 2);
-                bottom  = round(blocky + blockheight / 2);
+                left    = round(blockx - blockwidth/2);
+                right   = round(blockx + blockwidth/2);
+                top     = round(blocky - blockheight/2);
+                bottom  = round(blocky + blockheight/2);
                 
-                set_param(subsystemblocks{z}, 'Position', [left top right bottom]);
+                pos = [left top right bottom];
+                blocksInfo(z).position = pos;
             end
-            redraw_lines(block, 'autorouting', 'on');
         end
     end
 end
