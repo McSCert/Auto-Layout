@@ -3,7 +3,7 @@ function AutoLayout(address)
 %   system components (blocks, lines, annotations).
 %
 %   Inputs:
-%       address     Simulink model name or path.
+%       address     Simulink system name or path.
 %
 %   Outputs:
 %       N/A
@@ -16,7 +16,8 @@ function AutoLayout(address)
 
     % Constants:
     SHOW_NAMES = getAutoLayoutConfig('show_names', 'no-change'); %Indicates which block names to show
-
+    PORTLESS_RULE = getAutoLayoutConfig('portless_rule', 'bottom'); %Indicates how to place portless blocks
+    
     % Check number of arguments
     try
         assert(nargin == 1)
@@ -51,28 +52,52 @@ function AutoLayout(address)
     
     % Get blocks in address
     systemBlocks = find_system(address, 'SearchDepth',1);
-    systemBlocks = systemBlocks(2:end);
+    systemBlocks = systemBlocks(2:end); %Remove address itself
     
     % Find which blocks have no ports
     portlessBlocks = getPortlessBlocks(systemBlocks);
     
-    % Find which half (top/bottom) of the system portless blocks started in
-    topOrBottomMap = containers.Map();
-    numBot = 0;
-    numTop = 0;
-    for i = 1:length(portlessBlocks)
-        if inBottomHalf(systemBlocks, portlessBlocks{i})
-            topOrBottomMap(getfullname(portlessBlocks{i})) = 'bottom';
-            numBot = numBot + 1;
-        else
-            topOrBottomMap(getfullname(portlessBlocks{i})) = 'top'; %in the event of a draw, top is the default
-            numTop = numTop + 1;
+    %%%TODO - currently only set up for 'same_half_vertical'%%%
+    %Find where to place portless blocks in the final layout
+    if strcmp(PORTLESS_RULE, 'same_half_vertical')
+        % Find which half (top/bottom) of the system portless blocks are in
+        topOrBottomMap = containers.Map();
+        numBot = 0;
+        numTop = 0;
+        for i = 1:length(portlessBlocks)
+            if inBottomHalf(systemBlocks, portlessBlocks{i})
+                topOrBottomMap(getfullname(portlessBlocks{i})) = 'top';
+                numTop = numTop + 1;
+            else
+                topOrBottomMap(getfullname(portlessBlocks{i})) = 'bottom'; %in the event of a draw, bottom is the default
+                numBot = numBot + 1;
+            end
         end
+        portlessInfo = struct('portlessBlocks', portlessBlocks,...
+            'topOrBottomMap',topOrBottomMap,...
+            'numTop',numTop,...
+            'numBot',numBot); 
+    elseif strcmp(PORTLESS_RULE, 'same_half_horizontal')
+        % Find which half (left/right) of the system portless blocks are in
+        rightOrLeftMap = containers.Map();
+        numLeft = 0;
+        numRight = 0;
+        for i = 1:length(portlessBlocks)
+            if inLeftHalf(systemBlocks, portlessBlocks{i})
+                rightOrLeftMap(getfullname(portlessBlocks{i})) = 'right';
+                numRight = numRight + 1;
+            else
+                rightOrLeftMap(getfullname(portlessBlocks{i})) = 'left'; %in the event of a draw, left is the default
+                numLeft = numLeft + 1;
+            end
+        end
+        portlessInfo = struct('portlessBlocks', portlessBlocks,...
+            'rightOrLeftMap',rightOrLeftMap,...
+            'numRight',numRight,...
+            'numLeft',numLeft); 
+    else %Rule is top, left, bottom, or right
+        %set portlessInfo
     end
-    portlessInfo = struct('portlessBlocks', portlessBlocks,...
-        'topOrBottomMap',topOrBottomMap,...
-        'numTop',numTop,...
-        'numBot',numBot);
     
     if strcmp(SHOW_NAMES, 'no-change')
         % Find which block names are showing at the start
@@ -87,9 +112,16 @@ function AutoLayout(address)
         end
     end
 
-    % Perform a first layout using graphviz
-    initLayout(address);
+    % Get rough layout using graphviz
+    blocksInfo = getLayout(address);
+    
+%     [blocksMatrix, colLengths] = getOrderMatrix(blocksInfo);
+    
+    moveBlocks(address, blocksInfo);
 
+    % Perform a second layout to improve upon the first
+%     secondLayout(address, systemBlocks, portlessInfo);
+    
     % Show block names as appropriate
     if strcmp(SHOW_NAMES, 'no-change')
         % Return block names to be showing or not showing as they were
@@ -117,9 +149,6 @@ function AutoLayout(address)
         disp(['Error using ' mfilename ':' char(10) ...
             ' invalid config parameter: show_names. Please fix in the config.txt.' char(10)])
     end
-    
-    % Perform a second layout to improve upon the first
-    secondLayout(address, systemBlocks, portlessInfo);
 end
 
 function inBottomHalf = inBottomHalf(blocks,block)
@@ -140,5 +169,26 @@ function inBottomHalf = inBottomHalf(blocks,block)
         inBottomHalf = true;
     else
         inBottomHalf = false;
+    end
+end
+
+function inLeftHalf = inLeftHalf(blocks,block)
+%INLEFTHALF Determines whether or not the middle of block is Left of the majority of blocks
+
+    midXPos = getBlockSidePositions({block}, 5);
+    numBlocksOnRight = 0;
+    numBlocksOnLeft = 0;
+    for i = 1:length(blocks)
+        midXPos2 = getBlockSidePositions(blocks(i), 5);
+        if midXPos > midXPos2
+            numBlocksOnRight = numBlocksOnRight + 1;
+        elseif midXPos < midXPos2
+            numBlocksOnLeft = numBlocksOnLeft + 1;
+        end % Do nothing if equal 
+    end
+    if numBlocksOnLeft < numBlocksOnRight % if more blocks are above than below
+        inLeftHalf = true;
+    else
+        inLeftHalf = false;
     end
 end
