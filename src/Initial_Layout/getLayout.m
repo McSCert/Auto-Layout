@@ -1,23 +1,19 @@
-function initLayout(address)
-% Note this file used to be AutoLayout.m, so reference to autolayout in this
-% file and the files it uses refer to this function as opposed to the more
-% recent AutoLayout.m
-    % testinglayout.m
-	%	combine all autolayout components into one script file that takes
-	%	user input 
-	%	
-	%	first get the mdl file and the specific subsystem or system to
-	%	autolayout
-	%	next create the dotfile from the system or subsystem using
-	%	dotfile_creator
-	%	use batchthingie.bat to automatically create the graphviz output
-	%	files
-	%	use Tplainparser class to use graphviz output to reposition
-	%	simulink system/subsystem
-	%
-	
-    % Get current directory
-    % Change directory to predetermined batch location
+function blocksInfo = getLayout(address)
+% testinglayout.m
+%	combine all autolayout components into one script file that takes
+%	user input 
+%	
+%	first get the mdl file and the specific subsystem or system to
+%	autolayout
+%	next create the dotfile from the system or subsystem using
+%	dotfile_creator
+%	use batchthingie.bat to automatically create the graphviz output
+%	files
+%	use Tplainparser class to use graphviz output to reposition
+%	simulink system/subsystem
+%
+% Get current directory
+% Change directory to predetermined batch location
     if ~isunix
         oldDir = pwd;
         batchDir = mfilename('fullpath');
@@ -46,7 +42,7 @@ function initLayout(address)
     % Change directory
 
     g = TplainParser(address, filename, map);
-    g.plain_wrappers;
+    blocksInfo = g.plain_wrappers;
 
     dotfilename = [filename '.dot'];
     delete(dotfilename);
