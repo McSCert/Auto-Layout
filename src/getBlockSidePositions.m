@@ -4,8 +4,8 @@ function sidePositions = getBlockSidePositions(blocks, side)
 %
 %   Inputs:
 %       blocks          Cell array of the full names of one or more blocks.
-%                       If a cell array is given for a block name, the 
-%                       first element is used.
+%                       If a cell array is given for one of the block 
+%                       names, the first element is used.
 %       side            Number, respesenting the following
 %                           1 - Left
 %                           2 - Top
