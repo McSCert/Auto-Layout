@@ -1,5 +1,16 @@
 function horzMoveBlocks(blocksMatrix, colLengths, col, x)
-% Horizontally moves blocks in blocksMatrix to the right of column, col, right by x
+%HORZMOVEBLOCKS Horizontally moves blocks in blocksMatrix to the right of 
+%   column col right by x
+%
+%   Inputs:
+%       blocksMatrix    From result of getOrderMatrix
+%       colLengths      From result of getOrderMatrix
+%       col             Column number. Blocks in this column of
+%                       blocksMatrix and to its left will not be moved.
+%       x               Number of pixels to move blocks.
+%
+%   Outputs:
+%       N/A
 
     for j = col + 1:size(blocksMatrix,2)
         for i = 1:colLengths(j)
