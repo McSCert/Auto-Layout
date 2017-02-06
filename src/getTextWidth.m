@@ -1,5 +1,5 @@
 function width = getTextWidth(string,fontName,fontSize)
-%Get width of string
+%GETTEXTWIDTH Get width of string
 %
 %   Inputs:
 %       string      A character array.
