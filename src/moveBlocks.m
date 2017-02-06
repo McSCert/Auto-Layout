@@ -54,6 +54,15 @@ function moveBlocks(address, blocksInfo)
     blocklength = length(blocksInfo);
     for z = 1:blocklength
         set_param(blocksInfo(z).fullname, 'Position', blocksInfo(z).position);
+
+        %TODO
+        %get block pos at this point, if size is less than indicated by
+        %blocksInfo(z).position then may need to increase pos(3) or pos(4)
+        %by ~5 as appropriate
+        %(main reason to adjust size would be to ensure sufficient space
+        %for text)
+        %(may make sense to include this outside this function to keep this
+        %general)
     end
     redraw_lines(address, 'autorouting', 'on');
 end
