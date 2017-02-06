@@ -83,10 +83,13 @@ classdef TplainParser < handle
                     % C{6} - desired block height
                     values = {C{3} C{4} C{5} C{6}};
                     mapkey = C{2}{1}; % Block name
-%                     itemsToReplace = keys(object.map);
-%                     for item = 1:length(itemsToReplace)
-%                         mapkey = strrep(mapkey, itemsToReplace{item}, object.map(itemsToReplace{item}));
-%                     end
+                    
+                    %Used for blocks names using certain characters
+                    itemsToReplace = keys(object.map);
+                    for item = 1:length(itemsToReplace)
+                        mapkey = strrep(mapkey, itemsToReplace{item}, object.map(itemsToReplace{item}));
+                    end
+                    
                     mapObj(mapkey) = values;
                 end
                 % Do stuff with tline here
