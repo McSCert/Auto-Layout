@@ -39,11 +39,12 @@ portless_rule: same_half_vertical
 #	none
 
 #*****NOT YET IMPLEMENTED*****
-#BLOCK_SIZING Indicates the rule by which blocks with no ports will be placed in the final layout.
+#BLOCK_SIZING Indicates the rule by which blocks resized for the final layout.
 #Default fit_text.
 #
 #Acceptable parameter values are:
 #	ignore
+#	no-change (blocks will be left at their starting size)
 #	min_fit_text (smallest size to fit text within the block)
 #	fit_text (slightly larger than min_fit_text to better ensure the block is wide enough for the text)
 #	min_for_ports (smallest height to fit the block's ports)
