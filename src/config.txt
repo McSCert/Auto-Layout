@@ -20,3 +20,32 @@ show_names: no-change
 #	same_half_vertical (blocks will be placed along the bottom/top side of the system according to which half they started in),
 #	same_half_horizontal (blocks will be placed along the left/right side of the system according to which half they started in)
 portless_rule: same_half_vertical
+
+#*****NOT YET IMPLEMENTED*****
+#INPORT_RULE Indicates the rule by which inport blocks will be placed in the final layout.
+#Default left_align.
+#
+#Acceptable parameter values are:
+#	left_align
+#	none
+
+
+#*****NOT YET IMPLEMENTED*****
+#OUTPORT_RULE
+#Default right_align.
+#
+#Acceptable parameter values are:
+#	right_align
+#	none
+
+#*****NOT YET IMPLEMENTED*****
+#BLOCK_SIZING Indicates the rule by which blocks with no ports will be placed in the final layout.
+#Default fit_text.
+#
+#Acceptable parameter values are:
+#	ignore
+#	min_fit_text (smallest size to fit text within the block)
+#	fit_text (slightly larger than min_fit_text to better ensure the block is wide enough for the text)
+#	min_for_ports (smallest height to fit the block's ports)
+#	for_connected_blocks (resize vertically to better line up with blocks that connect to it)
+#	extra_space (large enough to allow extra space for each factor)
