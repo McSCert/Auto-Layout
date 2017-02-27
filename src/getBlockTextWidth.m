@@ -70,6 +70,9 @@ function neededWidth = getBlockTextWidth(block)
         case 'Constant'
             string = get_param(block, 'Name');
             neededWidth = blockStringWidth(block, string);
+            
+        otherwise
+            neededWidth = 0;
     end
 end
 

@@ -1,27 +1,26 @@
-function moveBlocks(address, blocksInfo)
-%MOVEBLOCKS Moves blocks to their assigned positions according to
-%   blocksInfo and redraws lines.
+function moveBlocks(address, blocks, positions)
+%MOVEBLOCKS Moves blocks in address to the positions indicated in 
+%   positions.
 %
 %   Inputs:
 %       address     Simulink system name or path.
-%       blocksInfo  Cell array of structs with 'fullname' and 'position'
-%                   fields.
-%                   fullname: Char of the full name of a block. E.g. gcb.
-%                   position: Vector of the desired position of a block.
-%                   Uses the same format as get_param(gcb, 'Position').
+%       blocks      Cell array of full block names (e.g. gcb). 
+%       positions   Cell array of positions corresponding with blocks (i.e.
+%                   blocks{i} should be moved to positions{i}; blocks and
+%                   positions are of the same length).
+%                   Each value should be in a vector as returned by
+%                   get_param(gcb, 'Position').
 %
 %   Outputs:
 %       N/A
 %
 %   Example:
-%       blocksInfo = struct('fullname',{'AutoLayoutDemo/In1', ...
-%           'AutoLayoutDemo/In2'},'position', ...
-%           {[-35,50,-15,70],[-35,185,-15,205]})
-%       moveBlocks('AutoLayoutDemo',blocksInfo)
+%       moveBlocks('AutoLayoutDemo',{'AutoLayoutDemo/In1', ...
+%           'AutoLayoutDemo/In2'}, {[-35,50,-15,70],[-35,185,-15,205]})
     
     % Check number of arguments
     try
-        assert(nargin == 2)
+        assert(nargin == 3)
     catch
         disp(['Error using ' mfilename ':' char(10) ...
             ' Wrong number of arguments.' char(10)])
@@ -51,9 +50,9 @@ function moveBlocks(address, blocksInfo)
         end
     end
 
-    blocklength = length(blocksInfo);
-    for z = 1:blocklength
-        set_param(blocksInfo(z).fullname, 'Position', blocksInfo(z).position);
+    blockLength = length(blocks);
+    for k = 1:blockLength
+        set_param(blocks{k}, 'Position', positions{k});
 
         %TODO
         %get block pos at this point, if size is less than indicated by

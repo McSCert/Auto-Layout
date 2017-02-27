@@ -113,12 +113,51 @@ function AutoLayout(address)
     end
 
     % Get rough layout using graphviz
-    blocksInfo = getLayout(address);
+    blocksInfo = getLayout(address); %blocksInfo keeps track of where to move blocks so that they can all be moved at the end as opposed to throughout all of AutoLayout
     
-%     [blocksMatrix, colLengths] = getOrderMatrix(blocksInfo);
+    % Remove portless blocks from blocksInfo (they will be handled
+    % separately at the end)
+    for i = length(blocksInfo):-1:1 % Go backwards to remove elements without disrupting the indices that need to be checked after
+        for j = 1:length(portlessBlocks)
+            if strcmp(blocksInfo(i).fullname, portlessBlocks{j})
+                blocksInfo(i) = [];
+                break
+            end
+        end
+    end
     
-    moveBlocks(address, blocksInfo);
+    % Find relative positioning of blocks in the layout from getLayout
+	layout = getRelativeLayout(blocksInfo);
 
+    % Enlarge blocks to fit the strings within them
+    layout = adjustForText(layout);
+
+%     % Left and right justify the inports and outports
+%     inports = find_system(address,'SearchDepth',1,'BlockType','Inport');
+%     outports = find_system(address,'SearchDepth',1,'BlockType','Outport');
+%     [blocksMatrix, colLengths] = justifyBlocks(address, blocksMatrix, colLengths, inports, 1);  % Left justify inports
+%     [blocksMatrix, colLengths] = justifyBlocks(address, blocksMatrix, colLengths, outports, 3);  % Right justify outports
+% 
+%     % Place blocks that have no ports in a line along top or bottom horizontally
+%     % depending on where they were initially in the system
+%     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'top', false);
+%     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'bottom', false);
+    
+
+    % Prepare to move blocks to indicated positions in layout
+    fullnames = {}; positions = {};
+    for j = 1:size(layout.grid,2)
+        for i = 1:layout.colLengths(j)
+            fullnames{end+1} = layout.grid{i,j}.fullname;
+            positions{end+1} = layout.grid{i,j}.position;
+        end
+    end
+    
+    % Move blocks to the desired positions
+    moveBlocks(address, fullnames, positions);
+
+%     [blocksMatrix, colLengths] = getOrderMatrix(systemBlocks);
+    
     % Perform a second layout to improve upon the first
 %     secondLayout(address, systemBlocks, portlessInfo);
     

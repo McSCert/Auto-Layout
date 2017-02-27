@@ -1,4 +1,4 @@
-function pos = dimIncreaseForText(block, pos, varargin)
+function [pos, xIncrease] = dimIncreaseForText(block, pos, varargin)
 %DIMINCREASEFORTEXT Finds the amount to increase the right and left
 %   positions of block to fit its text within it.
 %
@@ -15,8 +15,9 @@ function pos = dimIncreaseForText(block, pos, varargin)
 %                   Arguments beyond the first are ignored.
 %
 %   Output:
-%       pos     New position of the block. Given in same form as
-%               get_param(gcb, 'Position').
+%       pos         New position of the block. Given in same form as
+%                   get_param(gcb, 'Position').
+%       xIncrease   Amount this block's width needed to be adjusted.
 
     xIncrease = getTextXIncrease(block, pos);
 
