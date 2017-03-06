@@ -127,9 +127,9 @@ function AutoLayout(address)
     end
     
     % Find relative positioning of blocks in the layout from getLayout
-	layout = getRelativeLayout(blocksInfo);
+	layout = getRelativeLayout(blocksInfo); %layout will also take over the role of blocksInfo
 
-    % Enlarge blocks to fit the strings within them
+    % Enlarge block widths to fit the strings within them
     layout = adjustForText(layout);
 
 %     % Left and right justify the inports and outports
@@ -143,6 +143,16 @@ function AutoLayout(address)
 %     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'top', false);
 %     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'bottom', false);
     
+    % Resize block heights to better align ports with connected blocks
+    %TODO
+    %Needs to happen after moving blocks once in order to know port
+    %locations
+    %if inputs and outputs
+    for j = 1:size(layout.grid,2) % for each column
+        for i = 1:layout.colLengths(j) % for each non empty row in column
+            layout = resizeForConnections(i, j, layout);
+        end
+    end
 
     % Prepare to move blocks to indicated positions in layout
     fullnames = {}; positions = {};
