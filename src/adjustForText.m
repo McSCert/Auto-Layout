@@ -7,10 +7,10 @@ function layout = adjustForText(layout)
 %       layout      As returned by getRelativeLayout.
 %
 %   Output:
-%       N/A
+%       layout      With modified position information.
 
     for j = 1:size(layout.grid,2) % for each column
-        largestX = 0; % This is the minimum coordinate in Simulink
+        largestX = 0; %Shift amount
         for i = 1:layout.colLengths(j) % for each non empty row in column
             [layout.grid{i,j}.position, xDisplace] = dimIncreaseForText(...
                 layout.grid{i,j}.fullname,layout.grid{i,j}.position,'right'); % Returns amount to move other blocks
