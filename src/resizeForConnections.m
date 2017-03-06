@@ -25,6 +25,18 @@ numOutports = blockPorts(2);
 %(This method is somewhat arbitrary and may be changed in the future)
 desiredLeftPortDist = 60; %Somwhat arbitrary value based on a model I looked at
 desiredRightPortDist = 60;
+
+% sum = 0;
+% if numInports > 1
+% for each block in column
+%     if isConnected(block(i),block)
+%     pos = get_param(block(i),'Position');
+%     height = (pos(4)-pos(2));
+%     ports = get_param(block(i), 'Ports');
+%     sum += height/ports(1) %height / number inports
+%     end
+% end
+% end
 %value should be from sum across i of (height of connected block(i) / number of in/outports as appropriate)
 
 % connectivity = get_param(layout.grid{row,col}.fullname, 'PortConnectivity');
