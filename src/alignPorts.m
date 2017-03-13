@@ -1,4 +1,4 @@
-function alignPorts(block, side)
+function alignPorts(layout, block, side)
 %ALIGNPORTS Resizes given block so that its input/output ports better line
 %   up with the source/destination of the input/output signal.
 %
@@ -13,6 +13,30 @@ function alignPorts(block, side)
 %
 %FUNCTION IS IN PROGRESS
 
+%GARBAGE FUNCTION??
+
+    ports = get_param(block,'Ports');
+    numIn = ports(1);
+    numOut = ports(2);
+    
+    allConnections = get_param(block,'PortConnectivity');
+    
+    
+    
+    % Find inputs in the previous column
+    leftConnections = ;
+    
+    % Find connections in next column over (to the left)
+    rightConnections = ;
+    
+    x = get_param(block,'PortConnectivity');
+    y = get_param(x(numIn).SrcBlock,'PortConnectivity');
+    z = get_param(x(1).SrcBlock,'PortConnectivity');
+    
+    set_param(block,'Position',...
+        [pos(1), z(x(1).SrcPort+1).Position(2) - topbuffer, ...
+        pos(3), y(x(numIn).SrcPort+1).Position(2) + botbuffer])
+    
     if strcmp(side,'left')
         %if side is left/input:
         ports=get_param(block,'Ports')

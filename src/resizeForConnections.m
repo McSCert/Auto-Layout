@@ -1,4 +1,4 @@
-function layout = resizeForConnections(row, col, layout)
+function layout = resizeForConnections(currentBlock, row, col, layout)
 %in the end it seems like I don't need to move blocks before calling this
 
 %need to consider branching signals too
