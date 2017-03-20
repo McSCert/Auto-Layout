@@ -144,15 +144,6 @@ function AutoLayout(address)
 %     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'bottom', false);
     
     % Resize block heights to better align ports with connected blocks
-    %TODO
-% %     Needs to happen after moving blocks once in order to know port
-% %     locations
-    %if inputs and outputs
-%     for j = 1:size(layout.grid,2) % for each column
-%         for i = 1:layout.colLengths(j) % for each non empty row in column
-%             layout = resizeForConnections(i, j, layout);
-%         end
-%     end
     layout = resizeForPorts(layout);
 
     % Prepare to move blocks to indicated positions in layout
@@ -169,9 +160,9 @@ function AutoLayout(address)
     
     % Move blocks with single inport/outport so their port is in line with
     % the source/destination port
-    % Only uses layout for the grid (which is unchanged) not the positions
-    % (which may have changed slightly)
-    easyAlign(layout);
+    % Uses layout for the grid (does not use the positions which may have
+    % been altered from moveBlocks() )
+    layout = easyAlign(layout);
 
 %     [blocksMatrix, colLengths] = getOrderMatrix(systemBlocks);
     
