@@ -92,19 +92,43 @@ if ~strcmp(resized(block1), 'resized')
         end
     end
     
-    %%%TODO
-    %%%check height of blocks in neighbouring column with signal going
-    %%%toward current block
-%     for i = 1:layout.colLengths(col-1) % for blocks below current block in column
-%         
-%     end
+    %%%TODO/to improve
+    %check height of blocks in neighbouring column with signal going
+    %toward current block
+    %%% (currently doesn't bother checking for a signal)
+    buff = 30; % buffer for space between blocks
+    top = layout.grid{row, col}.position(2);
+    bot = layout.grid{row, col}.position(4);
+    lowestTop = -32767; %most extreme top value of current block before interfering with other blocks
+    highestBot = 32767; %most extreme bot value of current block before interfering with other blocks
     
-    top = highestRel;
-    bot = lowestRel;
+    neighbors = [];
+    if col > 1
+        neighbors = [neighbors, col-1];
+    end
+    if col < size(layout.grid,2)
+        neighbors = [neighbors, col+1];
+    end
+    for c = neighbors %left/right column from col if there is a left/right column
+        for i = 1:layout.colLengths(c) % for blocks in column
+            if ~inRel(rel, i,c) && layout.grid{i, c}.position(4) + buff < top && ...
+                    layout.grid{i, c}.position(4) + buff > lowestTop
+                lowestTop = layout.grid{i, c}.position(4) + buff;
+            end
+            if ~inRel(rel, i,c) && layout.grid{i, c}.position(2) - buff > bot && ...
+                    layout.grid{i, c}.position(2) - buff < highestBot
+                highestBot = layout.grid{i, c}.position(2) - buff;
+            end
+        end
+    end
     
-    buff = 30;
-    minLeftHeight = 40*(ports1(1)-1) + 2*buff; %minimum desirable height to accomodate ports on the left side
-    minRightHeight = 40*(ports1(2)-1) + 2*buff; %minimum desirable height to accomodate ports on the left side
+    top = max(highestRel, lowestTop);
+    bot = min(lowestRel, highestBot);
+    
+    
+    blockBuff = 30; % Buffer above and below the top and bottom port of a block
+    minLeftHeight = 40*(ports1(1)-1) + 2*blockBuff; %minimum desirable height to accomodate ports on the left side
+    minRightHeight = 40*(ports1(2)-1) + 2*blockBuff; %minimum desirable height to accomodate ports on the left side
     
     minHeight = max(minLeftHeight, minRightHeight);
     
@@ -121,7 +145,6 @@ if ~strcmp(resized(block1), 'resized')
     resized(block1) = 'resized';
 
     % Move blocks in the same column up and down as needed
-    buff = 30; % buffer for space between blocks
     for i = row-1:-1:1 % for blocks above current block in column
         currPos = layout.grid{i,col}.position;
         if currPos(4) > layout.grid{i+1,col}.position(2) - buff
@@ -136,6 +159,16 @@ if ~strcmp(resized(block1), 'resized')
             shamt = layout.grid{i-1,col}.position(4) + buff - currPos(2); %shift amount
             layout.grid{i,col}.position = [currPos(1), currPos(2)+shamt, currPos(3), currPos(4)+shamt];
         end
+    end
+end
+end
+
+function bool = inRel(rel, i, j)
+bool = false;
+for k = 1:length(rel)
+    if rel{k}{1} == i && rel{k}{2} == j
+        bool = true;
+        return
     end
 end
 end
