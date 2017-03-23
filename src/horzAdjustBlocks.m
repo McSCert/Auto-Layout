@@ -9,7 +9,7 @@ function layout = horzAdjustBlocks(layout, col, x)
 %       x               Number of pixels to move blocks.
 %
 %   Outputs:
-%       N/A
+%       layout      With modified position information.
 
     for j = col + 1:size(layout.grid,2)
         for i = 1:layout.colLengths(j)
