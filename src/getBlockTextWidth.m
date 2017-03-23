@@ -1,6 +1,6 @@
 function neededWidth = getBlockTextWidth(block)
 %GETBLOCKTEXTWIDTH Determines appropriate block width in order to fit the
-%   text within it
+%   text within it.
 %
 %   Inputs:
 %       block           Full name of a block (character array).
@@ -9,6 +9,10 @@ function neededWidth = getBlockTextWidth(block)
 %       neededWidth     Needed block width in order to fit its text.
 
     blockType = get_param(block, 'BlockType');
+    
+    msgID = 'GotoTag:UnexpectedVis';
+    msg = ['Unexpected Tag Visibility On ' block ' - Please Report Bug'];
+    tagVisException = MException(msgID, msg);
     
     switch blockType
         case 'SubSystem'
@@ -45,14 +49,41 @@ function neededWidth = getBlockTextWidth(block)
 
         case 'Goto'
             string = get_param(block, 'gototag');
+            if strcmp(get_param(block,'TagVisibility'), 'local')
+                string = ['[' string ']'];
+            elseif strcmp(get_param(block,'TagVisibility'), 'scoped')
+                string = ['{' string '}'];
+            elseif strcmp(get_param(block,'TagVisibility'), 'global')
+                %Do nothing
+            else
+                throw(tagVisException)
+            end
             neededWidth = blockStringWidth(block, string);
             
         case 'From'
             string = get_param(block, 'gototag');
+            if strcmp(get_param(block,'TagVisibility'), 'local')
+                string = ['[' string ']'];
+            elseif strcmp(get_param(block,'TagVisibility'), 'scoped')
+                string = ['{' string '}'];
+            elseif strcmp(get_param(block,'TagVisibility'), 'global')
+                %Do nothing
+            else
+                throw(tagVisException)
+            end
             neededWidth = blockStringWidth(block, string);
 
         case 'GotoTagVisibility'
             string = get_param(block, 'gototag');
+            if strcmp(get_param(block,'TagVisibility'), 'local')
+                string = ['[' string ']'];
+            elseif strcmp(get_param(block,'TagVisibility'), 'scoped')
+                string = ['{' string '}'];
+            elseif strcmp(get_param(block,'TagVisibility'), 'global')
+                %Do nothing
+            else
+                throw(tagVisException)
+            end
             neededWidth = blockStringWidth(block, string);
             
         case 'DataStoreRead'
