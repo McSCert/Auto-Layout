@@ -96,6 +96,7 @@ function AutoLayout(address)
             'numRight',numRight,...
             'numLeft',numLeft); 
     else %Rule is top, left, bottom, or right
+        %TODO (in progress)
         %set portlessInfo
     end
     
@@ -129,8 +130,16 @@ function AutoLayout(address)
     % Find relative positioning of blocks in the layout from getLayout
 	layout = getRelativeLayout(blocksInfo); %layout will also take over the role of blocksInfo
 
-    % Enlarge block widths to fit the strings within them
-    layout = adjustForText(layout);
+    %TODO Split into three functions:
+    %-ResizeBlocks in which blocks are resized while others are moved to
+    %accomodate the changes
+    %-RepositionBlocks in which the blocks undergo their more dramatic
+    %repositioning (for better alignment primarily)
+    %-FixLines in which the lines are routed as best as possible
+    
+    layout = resizeBlocks(layout);
+    
+    
 
 %     % Left and right justify the inports and outports
 %     inports = find_system(address,'SearchDepth',1,'BlockType','Inport');
@@ -143,26 +152,16 @@ function AutoLayout(address)
 %     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'top', false);
 %     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'bottom', false);
     
-    % Resize block heights to better align ports with connected blocks
-    layout = resizeForPorts(layout);
-
-    % Prepare to move blocks to indicated positions in layout
-    fullnames = {}; positions = {};
-    for j = 1:size(layout.grid,2)
-        for i = 1:layout.colLengths(j)
-            fullnames{end+1} = layout.grid{i,j}.fullname;
-            positions{end+1} = layout.grid{i,j}.position;
-        end
-    end
     
-    % Move blocks to the desired positions
-    moveBlocks(address, fullnames, positions);
+
+    %Update block positions according to layout
+    updateBlocks(address, layout)
     
     % Move blocks with single inport/outport so their port is in line with
     % the source/destination port
     % Uses layout for the grid (does not use the positions which may have
     % been altered from moveBlocks() )
-    layout = easyAlign(layout);
+% % %     layout = easyAlign(layout);
 
 %     [blocksMatrix, colLengths] = getOrderMatrix(systemBlocks);
     
@@ -238,4 +237,20 @@ function inLeftHalf = inLeftHalf(blocks,block)
     else
         inLeftHalf = false;
     end
+end
+
+function updateBlocks(address, layout)
+%UPDATEBLOCKS Moves blocks to their new positions designated by layout
+
+%Get blocknames and desired positions for moveBlocks()
+fullnames = {}; positions = {};
+for j = 1:size(layout.grid,2)
+    for i = 1:layout.colLengths(j)
+        fullnames{end+1} = layout.grid{i,j}.fullname;
+        positions{end+1} = layout.grid{i,j}.position;
+    end
+end
+
+% Move blocks to the desired positions
+moveBlocks(address, fullnames, positions);
 end
