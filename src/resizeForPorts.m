@@ -1,6 +1,9 @@
 function layout = resizeForPorts (layout)
 % RESIZFORPORTS
 %
+%Difference from adjustForPorts():
+% Method is dependent upon surroundings
+%
 % TODO: COMMENTING
 
 resized = containers.Map;
