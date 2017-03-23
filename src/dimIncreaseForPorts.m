@@ -47,6 +47,9 @@ if nargin > 4
         %Increase block size downward
         pos(4) = pos(4) + yIncrease;
     end
+else %Default case
+    %Increase block size downward
+    pos(4) = pos(4) + yIncrease;
 end
 end
 

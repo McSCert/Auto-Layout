@@ -20,7 +20,7 @@ maxPorts = max(ports(1),ports(2));
 if nargin > 2
     buff = varargin{2};
 else
-    if maxPorts <= 1
+    if maxPorts > 1
         buff = 30; % Buffer above/below the top/bottom port of a block
     else
         % Allow small heights for blocks with a max of one in/outport

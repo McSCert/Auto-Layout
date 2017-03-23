@@ -43,6 +43,9 @@ if nargin > 2
         %Increase block size toward the right
         pos(3) = pos(3) + xIncrease;
     end
+else %Default case
+    %Increase block size toward the right
+    pos(3) = pos(3) + xIncrease;
 end
 end
 
