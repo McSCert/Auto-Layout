@@ -17,18 +17,45 @@ function neededWidth = getBlockTextWidth(block)
     switch blockType
         case 'SubSystem'
             inports = find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'Inport');
-            inports = [inports; find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'EnablePort')];
-            inports = [inports; find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'TriggerPort')];
-            inports = [inports; find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'ActionPort')];
-            largestWidth = 0;
+            
+            %Don't worry about triggers for now unless an example arises in
+            %which they are an issue as they seem to just use sybols of
+            %less width then the ports
+%             inports = [inports; find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'EnablePort')];
+%             inports = [inports; find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'TriggerPort')];
+%             inports = [inports; find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'ActionPort')];
+            
+            outports = find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'Outport');
+            
+            largestInWidth = 0;
             for i = 1:length(inports)
                 string = get_param(inports{i}, 'Name');
                 width = blockStringWidth(block, string);
-                if width > largestWidth
-                    largestWidth = width;
+                if width > largestInWidth
+                    largestInWidth = width;
                 end
             end
-            neededWidth = largestWidth * 2;   %To fit different blocks of text within the block
+            
+            largestOutWidth = 0;
+            for i = 1:length(outports)
+                string = get_param(outports{i}, 'Name');
+                width = blockStringWidth(block, string);
+                if width > largestOutWidth
+                    largestOutWidth = width;
+                end
+            end
+            
+            nameWidth = 0;
+            if strcmp(get_param(block,'ShowName'),'on')
+                string = block;
+                width = blockStringWidth(block, string);
+                if width > nameWidth
+                    nameWidth = width;
+                end
+            end
+            
+            largestWidth = sum([largestInWidth, largestOutWidth, nameWidth]);
+            neededWidth = largestWidth;   %To fit different blocks of text within the block
 
         case 'If'
             ifExpression = get_param(block, 'ifExpression');
@@ -75,15 +102,7 @@ function neededWidth = getBlockTextWidth(block)
 
         case 'GotoTagVisibility'
             string = get_param(block, 'gototag');
-            if strcmp(get_param(block,'TagVisibility'), 'local')
-                string = ['[' string ']'];
-            elseif strcmp(get_param(block,'TagVisibility'), 'scoped')
-                string = ['{' string '}'];
-            elseif strcmp(get_param(block,'TagVisibility'), 'global')
-                %Do nothing
-            else
-                throw(tagVisException)
-            end
+            string = ['[' string ']']; % Add for good measure (ideally would know how to check what brackets if any)
             neededWidth = blockStringWidth(block, string);
             
         case 'DataStoreRead'
