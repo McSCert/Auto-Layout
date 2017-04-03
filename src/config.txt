@@ -8,7 +8,6 @@
 #	none (no blocks will show their name)
 show_names: no-change
 
-#*****NOT YET IMPLEMENTED*****
 #PORTLESS_RULE Indicates the rule by which blocks with no ports will be placed in the final layout.
 #Default bottom.
 #
