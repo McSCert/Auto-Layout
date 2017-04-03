@@ -129,11 +129,24 @@ if ~strcmp(resized(block1), 'resized')
     bot = min(lowestRel, highestBot);
     
     
-    blockBuff = 30; % Buffer above and below the top and bottom port of a block
-    minLeftHeight = 40*(ports1(1)-1) + 2*blockBuff; %minimum desirable height to accomodate ports on the left side
-    minRightHeight = 40*(ports1(2)-1) + 2*blockBuff; %minimum desirable height to accomodate ports on the left side
+    ports1 = get_param(block1, 'Ports');
+    maxPorts = max(ports1(1),ports1(2));
+    if maxPorts > 1
+        buff = 30; % Buffer above/below the top/bottom port of a block
+    else
+        % Allow small heights for blocks with a max of one in/outport
+        buff = 5; % Buffer above/below the top/bottom port of a block
+    end
+    pSpace = 30; % Desired spacing between ports
+    desiredHeight = pSpace*(maxPorts-1) + 2*buff;
+    minHeight = desiredHeight;
+
     
-    minHeight = max(minLeftHeight, minRightHeight);
+%     blockBuff = 30; % Buffer above and below the top and bottom port of a block
+%     minLeftHeight = 40*(ports1(1)-1) + 2*blockBuff; %minimum desirable height to accomodate ports on the left side
+%     minRightHeight = 40*(ports1(2)-1) + 2*blockBuff; %minimum desirable height to accomodate ports on the left side
+%     
+%     minHeight = max(minLeftHeight, minRightHeight);
     
     h = bot - top;
     if h < minHeight
