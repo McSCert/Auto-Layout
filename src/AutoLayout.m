@@ -56,50 +56,10 @@ function AutoLayout(address)
     
     % Find which blocks have no ports
     portlessBlocks = getPortlessBlocks(systemBlocks);
-    
-    %%%TODO - currently only set up for 'same_half_vertical'%%%
-    %Find where to place portless blocks in the final layout
-    if strcmp(PORTLESS_RULE, 'same_half_vertical')
-        % Find which half (top/bottom) of the system portless blocks are in
-        topOrBottomMap = containers.Map();
-        numBot = 0;
-        numTop = 0;
-        for i = 1:length(portlessBlocks)
-            if inBottomHalf(systemBlocks, portlessBlocks{i})
-                topOrBottomMap(getfullname(portlessBlocks{i})) = 'top';
-                numTop = numTop + 1;
-            else
-                topOrBottomMap(getfullname(portlessBlocks{i})) = 'bottom'; %in the event of a draw, bottom is the default
-                numBot = numBot + 1;
-            end
-        end
-        portlessInfo = struct('portlessBlocks', portlessBlocks,...
-            'topOrBottomMap',topOrBottomMap,...
-            'numTop',numTop,...
-            'numBot',numBot); 
-    elseif strcmp(PORTLESS_RULE, 'same_half_horizontal')
-        % Find which half (left/right) of the system portless blocks are in
-        rightOrLeftMap = containers.Map();
-        numLeft = 0;
-        numRight = 0;
-        for i = 1:length(portlessBlocks)
-            if inLeftHalf(systemBlocks, portlessBlocks{i})
-                rightOrLeftMap(getfullname(portlessBlocks{i})) = 'right';
-                numRight = numRight + 1;
-            else
-                rightOrLeftMap(getfullname(portlessBlocks{i})) = 'left'; %in the event of a draw, left is the default
-                numLeft = numLeft + 1;
-            end
-        end
-        portlessInfo = struct('portlessBlocks', portlessBlocks,...
-            'rightOrLeftMap',rightOrLeftMap,...
-            'numRight',numRight,...
-            'numLeft',numLeft); 
-    else %Rule is top, left, bottom, or right
-        %TODO (in progress)
-        %set portlessInfo
-    end
-    
+
+    % Find where to place portless blocks in the final layout
+    [portlessInfo, smallOrLargeHalf] = getPortlessInfo(PORTLESS_RULE, systemBlocks, portlessBlocks);
+     
     if strcmp(SHOW_NAMES, 'no-change')
         % Find which block names are showing at the start
         nameShowing = containers.Map();
@@ -116,59 +76,7 @@ function AutoLayout(address)
     % Get rough layout using graphviz
     blocksInfo = getLayout(address); %blocksInfo keeps track of where to move blocks so that they can all be moved at the end as opposed to throughout all of AutoLayout
     
-    % Remove portless blocks from blocksInfo (they will be handled
-    % separately at the end)
-    for i = length(blocksInfo):-1:1 % Go backwards to remove elements without disrupting the indices that need to be checked after
-        for j = 1:length(portlessBlocks)
-            if strcmp(blocksInfo(i).fullname, portlessBlocks{j})
-                blocksInfo(i) = [];
-                break
-            end
-        end
-    end
-    
-    % Find relative positioning of blocks in the layout from getLayout
-	layout = getRelativeLayout(blocksInfo); %layout will also take over the role of blocksInfo
-
-    %TODO Split into three functions:
-    %-ResizeBlocks in which blocks are resized while others are moved to
-    %accomodate the changes
-    %-RepositionBlocks in which the blocks undergo their more dramatic
-    %repositioning (for better alignment primarily)
-    %-FixLines in which the lines are routed as best as possible
-    
-    layout = resizeBlocks(layout);
-    
-    
-
-%     % Left and right justify the inports and outports
-%     inports = find_system(address,'SearchDepth',1,'BlockType','Inport');
-%     outports = find_system(address,'SearchDepth',1,'BlockType','Outport');
-%     [blocksMatrix, colLengths] = justifyBlocks(address, blocksMatrix, colLengths, inports, 1);  % Left justify inports
-%     [blocksMatrix, colLengths] = justifyBlocks(address, blocksMatrix, colLengths, outports, 3);  % Right justify outports
-% 
-%     % Place blocks that have no ports in a line along top or bottom horizontally
-%     % depending on where they were initially in the system
-%     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'top', false);
-%     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'bottom', false);
-    
-    
-
-    %Update block positions according to layout
-    updateBlocks(address, layout)
-    
-    % Move blocks with single inport/outport so their port is in line with
-    % the source/destination port
-    % Uses layout for the grid (does not use the positions which may have
-    % been altered from moveBlocks() )
-% % %     layout = easyAlign(layout);
-
-%     [blocksMatrix, colLengths] = getOrderMatrix(systemBlocks);
-    
-    % Perform a second layout to improve upon the first
-%     secondLayout(address, systemBlocks, portlessInfo);
-    
-    % Show block names as appropriate
+    % Show block names as appropriate (getLayout sets it off)
     if strcmp(SHOW_NAMES, 'no-change')
         % Return block names to be showing or not showing as they were
         % initially
@@ -195,52 +103,147 @@ function AutoLayout(address)
         disp(['Error using ' mfilename ':' char(10) ...
             ' invalid config parameter: show_names. Please fix in the config.txt.' char(10)])
     end
+    
+    % Remove portless blocks from blocksInfo (they will be handled
+    % separately at the end)
+    for i = length(blocksInfo):-1:1 % Go backwards to remove elements without disrupting the indices that need to be checked after
+        for j = 1:length(portlessInfo)
+            if strcmp(blocksInfo(i).fullname, portlessInfo{j}.fullname)
+                portlessInfo{j}.position = blocksInfo(i).position;
+                blocksInfo(i) = [];
+                break
+            end
+        end
+    end
+    
+    % Find relative positioning of blocks in the layout from getLayout
+	layout = getRelativeLayout(blocksInfo); %layout will also take over the role of blocksInfo
+
+%    updateLayout(address, layout);
+    
+    %TODO Split into three functions:
+    %-ResizeBlocks in which blocks are resized while others are moved to
+    %accomodate the changes
+    %-RepositionBlocks in which the blocks undergo their more dramatic
+    %repositioning (for better alignment primarily)
+    %-FixLines in which the lines are routed as best as possible
+    
+    [layout, portlessInfo] = resizeBlocks(layout, portlessInfo);
+    
+    
+
+%     % Left and right justify the inports and outports
+%     inports = find_system(address,'SearchDepth',1,'BlockType','Inport');
+%     outports = find_system(address,'SearchDepth',1,'BlockType','Outport');
+%     [blocksMatrix, colLengths] = justifyBlocks(address, blocksMatrix, colLengths, inports, 1);  % Left justify inports
+%     [blocksMatrix, colLengths] = justifyBlocks(address, blocksMatrix, colLengths, outports, 3);  % Right justify outports
+% 
+
+    % Place blocks that have no ports in a line along top or bottom horizontally
+    % depending on where they were initially in the system
+   portlessInfo = repositionPortlessBlocks(portlessInfo, layout, PORTLESS_RULE, smallOrLargeHalf);
+    
+    
+
+    %Update block positions according to layout and portlessInfo
+    updateLayout(address, layout);
+    updatePortless(address, portlessInfo);
+    
+    % Move blocks with single inport/outport so their port is in line with
+    % the source/destination port
+    % Uses layout for the grid (does not use the positions which may have
+    % been altered from moveBlocks() )
+    layout = easyAlign(layout);
+
+%     [blocksMatrix, colLengths] = getOrderMatrix(systemBlocks);
+    
+    % Perform a second layout to improve upon the first
+%     secondLayout(address, systemBlocks, portlessInfo);
+    
+
 end
 
-function inBottomHalf = inBottomHalf(blocks,block)
-%INBOTTOMHALF Determines whether or not the middle of block is below the majority of blocks
+function [x,y] = systemCenter(blocks)
+%SYSTEMCENTER Finds the center of the system (relative to block positions).
 
-    midYPos = getBlockSidePositions({block}, 6);
-    numBlocksAbove = 0;
-    numBlocksBelow = 0;
-    for i = 1:length(blocks)
-        midYPos2 = getBlockSidePositions(blocks(i), 6);
-        if midYPos > midYPos2
-            numBlocksAbove = numBlocksAbove + 1;
-        elseif midYPos < midYPos2
-            numBlocksBelow = numBlocksBelow + 1;
-        end % Do nothing if equal 
-    end
-    if numBlocksBelow < numBlocksAbove % if more blocks are above than below
-        inBottomHalf = true;
-    else
-        inBottomHalf = false;
-    end
-end
+largestX = -32767;
+smallestX = 32767;
+largestY = -32767;
+smallestY = 32767;
 
-function inLeftHalf = inLeftHalf(blocks,block)
-%INLEFTHALF Determines whether or not the middle of block is Left of the majority of blocks
-
-    midXPos = getBlockSidePositions({block}, 5);
-    numBlocksOnRight = 0;
-    numBlocksOnLeft = 0;
-    for i = 1:length(blocks)
-        midXPos2 = getBlockSidePositions(blocks(i), 5);
-        if midXPos > midXPos2
-            numBlocksOnRight = numBlocksOnRight + 1;
-        elseif midXPos < midXPos2
-            numBlocksOnLeft = numBlocksOnLeft + 1;
-        end % Do nothing if equal 
+for i = 1:length(blocks)
+    leftPos = getBlockSidePositions(blocks(i), 1);
+    topPos = getBlockSidePositions(blocks(i), 2);
+    rightPos = getBlockSidePositions(blocks(i), 3);
+    botPos = getBlockSidePositions(blocks(i), 4);
+    
+    if topPos < smallestY
+        smallestY = topPos;
+    elseif botPos > largestY
+        largestY = botPos;
     end
-    if numBlocksOnLeft < numBlocksOnRight % if more blocks are above than below
-        inLeftHalf = true;
-    else
-        inLeftHalf = false;
+    
+    if leftPos < smallestX
+        smallestX = leftPos;
+    elseif rightPos > largestX
+        largestX = rightPos;
     end
 end
 
-function updateBlocks(address, layout)
-%UPDATEBLOCKS Moves blocks to their new positions designated by layout
+y = (largestY + smallestY) / 2;
+x = (largestX + smallestX) / 2;
+end
+
+function bool = onSide(block, center, side)
+%ONSIDE Determines whether or not the center of block is on the given 
+%   side of the system.
+%
+%   INPUTS
+%       block   Full block name
+%       center  Center of the system for the given side (e.g. if side is
+%               'left', center will be halfway between the largest and
+%               smallest X positions of blocks in the system).
+%       side    Either 'left' or 'top'. Indicates the side to compare
+%               the given block's center with. E.g. If side is 'left', the
+%               function checks if the center of the block is on the left
+%               half of the system (if it's a tie then choose left)
+%
+%   OUTPUTS
+%       bool    Indicates whether or not the given block is on the
+%               indicated side of the system.
+
+switch side
+    case 'left'
+        midPos = getBlockSidePositions({block}, 5);
+    case 'top'
+        midPos = getBlockSidePositions({block}, 6);
+end
+bool = midPos <= center;
+end
+
+% function inLeftHalf = inLeftHalf(blocks,block)
+% %INLEFTHALF Determines whether or not the middle of block is Left of the majority of blocks
+% 
+%     midXPos = getBlockSidePositions({block}, 5);
+%     numBlocksOnRight = 0;
+%     numBlocksOnLeft = 0;
+%     for i = 1:length(blocks)
+%         midXPos2 = getBlockSidePositions(blocks(i), 5);
+%         if midXPos > midXPos2
+%             numBlocksOnRight = numBlocksOnRight + 1;
+%         elseif midXPos < midXPos2
+%             numBlocksOnLeft = numBlocksOnLeft + 1;
+%         end % Do nothing if equal 
+%     end
+%     if numBlocksOnLeft < numBlocksOnRight % if more blocks are above than below
+%         inLeftHalf = true;
+%     else
+%         inLeftHalf = false;
+%     end
+% end
+
+function updateLayout(address, layout)
+%UPDATELAYOUT Moves blocks to their new positions designated by layout
 
 %Get blocknames and desired positions for moveBlocks()
 fullnames = {}; positions = {};
@@ -253,4 +256,98 @@ end
 
 % Move blocks to the desired positions
 moveBlocks(address, fullnames, positions);
+end
+
+function updatePortless(address, portlessInfo)
+%UPDATEPORTLESS Moves blocks to their new positions designated by
+%   portlessInfo.
+
+%Get blocknames and desired positions for moveBlocks()
+fullnames = {}; positions = {};
+for i = 1:length(portlessInfo)
+    fullnames{end+1} = portlessInfo{i}.fullname;
+    positions{end+1} = portlessInfo{i}.position;
+end
+
+% Move blocks to the desired positions
+moveBlocks(address, fullnames, positions);
+end
+
+function [portlessInfo, smallOrLargeHalf] = getPortlessInfo(portlessRule, systemBlocks, portlessBlocks)
+switch portlessRule
+    case 'top'
+        portlessInfo = struct('fullname', {}, ...
+            'position', {});
+        smallOrLargeHalf = containers.Map();
+        
+        for i = 1:length(portlessBlocks)
+            smallOrLargeHalf(portlessBlocks{i}) = 'top';
+            portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
+                'position', []);
+        end
+    case 'left'
+        portlessInfo = struct('fullname', {}, ...
+            'position', {});
+        smallOrLargeHalf = containers.Map();
+        
+        for i = 1:length(portlessBlocks)
+            smallOrLargeHalf(portlessBlocks{i}) = 'left';
+            portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
+                'position', []);
+        end
+    case 'right'
+        portlessInfo = struct('fullname', {}, ...
+            'position', {});
+        smallOrLargeHalf = containers.Map();
+        
+        for i = 1:length(portlessBlocks)
+            smallOrLargeHalf(portlessBlocks{i}) = 'right';
+            portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
+                'position', []);
+        end
+    case 'same_half_vertical'
+        [~,center] = systemCenter(systemBlocks);
+        
+        portlessInfo = struct('fullname', {}, ...
+                    'position', {});
+        smallOrLargeHalf = containers.Map();
+
+        for i = 1:length(portlessBlocks)
+            bool = onSide(portlessBlocks{i}, center, 'top');
+            if bool
+                smallOrLargeHalf(portlessBlocks{i}) = 'top';
+            else
+                smallOrLargeHalf(portlessBlocks{i}) = 'bottom';
+            end
+            portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
+                'position', []);
+        end
+    case 'same_half_horizontal'
+        [center,~] = systemCenter(systemBlocks);
+        
+        portlessInfo = struct('fullname', {}, ...
+                    'position', {});
+        smallOrLargeHalf = containers.Map();
+
+        for i = 1:length(portlessBlocks)
+            bool = onSide(portlessBlocks{i}, center, 'top');
+            if bool
+                smallOrLargeHalf(portlessBlocks{i}) = 'left';
+            else
+                smallOrLargeHalf(portlessBlocks{i}) = 'right';
+            end
+            portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
+                'position', []);
+        end
+    otherwise % 'bottom'
+        portlessInfo = struct('fullname', {}, ...
+            'position', {});
+        smallOrLargeHalf = containers.Map();
+        
+        for i = 1:length(portlessBlocks)
+            smallOrLargeHalf(portlessBlocks{i}) = 'bottom';
+            portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
+                'position', []);
+        end
+end
 end
