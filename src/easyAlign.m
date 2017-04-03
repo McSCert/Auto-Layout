@@ -5,9 +5,19 @@ function layout = easyAlign(layout)
 %   Align with left side if only one inport, else if only one outport then align with right side else n/a
 %%%       If aligning with left side, align blocks connecting to its inports (recursively)
 
+%First pass
 aligned = containers.Map;
 for j = 1:size(layout.grid,2) % for each column
     for i = 1:layout.colLengths(j) % for each non empty row in column
+        block1 = layout.grid{i,j}.fullname; % block to align
+        [layout, aligned] = align(layout, aligned, block1, j);
+    end
+end
+
+%Second pass
+aligned = containers.Map;
+for j = 1:size(layout.grid,2) % for each column
+    for i = layout.colLengths(j):-1:1 % for each non empty row in column (reverse order)
         block1 = layout.grid{i,j}.fullname; % block to align
         [layout, aligned] = align(layout, aligned, block1, j);
     end
