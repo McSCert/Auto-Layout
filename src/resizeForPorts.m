@@ -135,7 +135,7 @@ if ~strcmp(resized(block1), 'resized')
         buff = 30; % Buffer above/below the top/bottom port of a block
     else
         % Allow small heights for blocks with a max of one in/outport
-        buff = 5; % Buffer above/below the top/bottom port of a block
+        buff = 8; % Buffer above/below the top/bottom port of a block
     end
     pSpace = 30; % Desired spacing between ports
     desiredHeight = pSpace*(maxPorts-1) + 2*buff;
