@@ -19,7 +19,7 @@ function neededWidth = getBlockTextWidth(block)
             inports = find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'Inport');
             
             %Don't worry about triggers for now unless an example arises in
-            %which they are an issue as they seem to just use sybols of
+            %which they are an issue as they seem to just use symbols of
             %less width then the ports
 %             inports = [inports; find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'EnablePort')];
 %             inports = [inports; find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'TriggerPort')];
