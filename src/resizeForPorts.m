@@ -51,10 +51,14 @@ if ~strcmp(resized(block1), 'resized')
         end
     end
     for i = 1:ports1(2)
+        if length(portCon1(end-ports1(2)+i).DstBlock) ~= 1 %>=2, branching line
+            %branches probably should not be relevant
+            continue
+        end
+            
         block2 = getfullname(portCon1(end-ports1(2)+i).DstBlock);
         ports2 = get_param(block2, 'Ports');
         portCon2 = get_param(block2, 'PortConnectivity');
-
         if ports2(1) == 1 ... % Only one connection entering the block
                 && max(ports2(1:2)) < max(ports1(1:2)) % Current block has more connections on one side
             col2 = col+1;
