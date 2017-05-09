@@ -139,22 +139,28 @@ function AutoLayout(address)
 %     [blocksMatrix, colLengths] = justifyBlocks(address, blocksMatrix, colLengths, outports, 3);  % Right justify outports
 % 
 
-    % Place blocks that have no ports in a line along top or bottom horizontally
-    % depending on where they were initially in the system
-   portlessInfo = repositionPortlessBlocks(portlessInfo, layout, PORTLESS_RULE, smallOrLargeHalf);
+
     
     
 
-    %Update block positions according to layout and portlessInfo
+    %Update block positions according to layout
     updateLayout(address, layout);
-    updatePortless(address, portlessInfo);
     
     % Move blocks with single inport/outport so their port is in line with
     % the source/destination port
     % Uses layout for the grid (does not use the positions which may have
     % been altered from moveBlocks() )
     layout = easyAlign(layout);
+    
+    layout = layout2(address, layout, systemBlocks);
 
+    % Place blocks that have no ports in a line along top or bottom horizontally
+    % depending on where they were initially in the system
+    portlessInfo = repositionPortlessBlocks(portlessInfo, layout, PORTLESS_RULE, smallOrLargeHalf);
+
+    %Update block positions according to portlessInfo
+    updatePortless(address, portlessInfo);
+    
 %     [blocksMatrix, colLengths] = getOrderMatrix(systemBlocks);
     
     % Perform a second layout to improve upon the first
@@ -241,37 +247,6 @@ end
 %         inLeftHalf = false;
 %     end
 % end
-
-function updateLayout(address, layout)
-%UPDATELAYOUT Moves blocks to their new positions designated by layout
-
-%Get blocknames and desired positions for moveBlocks()
-fullnames = {}; positions = {};
-for j = 1:size(layout.grid,2)
-    for i = 1:layout.colLengths(j)
-        fullnames{end+1} = layout.grid{i,j}.fullname;
-        positions{end+1} = layout.grid{i,j}.position;
-    end
-end
-
-% Move blocks to the desired positions
-moveBlocks(address, fullnames, positions);
-end
-
-function updatePortless(address, portlessInfo)
-%UPDATEPORTLESS Moves blocks to their new positions designated by
-%   portlessInfo.
-
-%Get blocknames and desired positions for moveBlocks()
-fullnames = {}; positions = {};
-for i = 1:length(portlessInfo)
-    fullnames{end+1} = portlessInfo{i}.fullname;
-    positions{end+1} = portlessInfo{i}.position;
-end
-
-% Move blocks to the desired positions
-moveBlocks(address, fullnames, positions);
-end
 
 function [portlessInfo, smallOrLargeHalf] = getPortlessInfo(portlessRule, systemBlocks, portlessBlocks)
 switch portlessRule
