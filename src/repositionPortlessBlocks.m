@@ -31,6 +31,46 @@ end
 
 end
 
+function newPortlessInfo = sortPortlessInfo(portlessInfo)
+% Sort portlessInfo by block types
+
+blockTypes = {};
+newPortlessInfo = {};
+
+for i = 1:length(portlessInfo) % for each portless block
+    isNewType = ~AinB(get_param(portlessInfo{i}.fullname,'BlockType'), blockTypes);
+    if isNewType % if block type is new to blockTypes
+        
+        % Record block type
+        blockTypes{end+1} = get_param(portlessInfo{i}.fullname,'BlockType');
+        newPortlessInfo{end+1} = portlessInfo{i}; % (have to add each portlessInfo to the new one once)
+        for j = i+1:length(portlessInfo) % for remaining portless blocks
+            if strcmp(get_param(portlessInfo{j}.fullname,'BlockType'),blockTypes{end}) % if type matches
+                % Add the portlessInfo
+                newPortlessInfo{end+1} = portlessInfo{j};
+            end
+        end % All of blockTypes{end} should have been added now, so move on to find the next type
+    end
+end
+
+end
+
+function bool = AinB(A,B)
+% AINB Returns true if character vector, A, is an element in cell array, B.
+% There's probably a predefined MATLAB function for this that should be
+%   used instead...
+
+bool = false;
+if ischar(A) && iscell(B)
+    for i = 1:length(B)
+        if ischar(B{i}) && strcmp(A,B{i})
+            bool = true;
+            return
+        end
+    end
+end
+end
+
 % function portlessInfo = reposPortlessOnHalf(portlessInfo,layout,smallOrLargeHalf,side)
 %
 % ignorePortlessBlocks = true;
@@ -60,6 +100,8 @@ end
 
 function portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,vertSide)
 
+portlessInfo = sortPortlessInfo(portlessInfo);
+
 nextLeft = leftBound;
 
 if strcmp(vertSide, 'top')
@@ -70,15 +112,21 @@ elseif strcmp(vertSide, 'bottom')
     nextRow = botBound + vertSpace;
 end
 
+if ~isempty(portlessInfo)
+    oldBlockType = get_param(portlessInfo{1}.fullname, 'BlockType');
+end
 for i = 1:length(portlessInfo)
     block = portlessInfo{i}.fullname;
+    newBlockType = get_param(block, 'BlockType');
+    btChanged = ~strcmp(oldBlockType, newBlockType); % Check if block type changed (so we can start new rows/columns at new block types)
+    
     if strcmp(smallOrLargeHalf(block),vertSide)
         
         pos = portlessInfo{i}.position;
         width = pos(3) - pos(1);
         height = pos(4) - pos(2);
         
-        if nextLeft == leftBound || nextLeft + width <= rightBound
+        if (nextLeft == leftBound || nextLeft + width <= rightBound) && ~(btChanged)
             % Same row
             left = nextLeft;
         else
@@ -101,6 +149,8 @@ for i = 1:length(portlessInfo)
         
         portlessInfo{i}.position = [left top right bot];
     end
+    
+    oldBlockType = newBlockType;
 end
 end
 
@@ -140,6 +190,8 @@ end
 
 function portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,horzSide)
 
+portlessInfo = sortPortlessInfo(portlessInfo);
+
 nextTop = topBound;
 
 if strcmp(horzSide, 'left')
@@ -150,15 +202,21 @@ elseif strcmp(horzSide, 'right')
     nextCol = rightBound + horzSpace;
 end
 
+if ~isempty(portlessInfo)
+    oldBlockType = get_param(portlessInfo{1}.fullname, 'BlockType');
+end
 for i = 1:length(portlessInfo)
     block = portlessInfo{i}.fullname;
+    newBlockType = get_param(block, 'BlockType');
+    btChanged = ~strcmp(oldBlockType, newBlockType); % Check if block type changed (so we can start new rows/columns at new block types)
+    
     if strcmp(smallOrLargeHalf(block),horzSide)
         
         pos = portlessInfo{i}.position;
         width = pos(3) - pos(1);
         height = pos(4) - pos(2);
         
-        if nextTop == topBound || nextTop + height <= botBound
+        if (nextTop == topBound || nextTop + height <= botBound) && ~(btChanged)
             % Same col
             top = nextTop;
         else
@@ -182,6 +240,8 @@ for i = 1:length(portlessInfo)
         
         portlessInfo{i}.position = [left top right bot];
     end
+    
+    oldBlockType = newBlockType;
 end
 end
 
