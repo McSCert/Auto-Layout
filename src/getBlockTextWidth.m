@@ -27,35 +27,40 @@ function neededWidth = getBlockTextWidth(block)
             
             outports = find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'Outport');
             
-            largestInWidth = 0;
+            leftWidth = 0;
             for i = 1:length(inports)
                 string = get_param(inports{i}, 'Name');
                 width = blockStringWidth(block, string);
-                if width > largestInWidth
-                    largestInWidth = width;
+                if width > leftWidth
+                    leftWidth = width;
                 end
             end
             
-            largestOutWidth = 0;
+            rightWidth = 0;
             for i = 1:length(outports)
                 string = get_param(outports{i}, 'Name');
                 width = blockStringWidth(block, string);
-                if width > largestOutWidth
-                    largestOutWidth = width;
+                if width > rightWidth
+                    rightWidth = width;
                 end
             end
             
-            nameWidth = 0;
-            if strcmp(get_param(block,'ShowName'),'on')
-                string = block;
-                width = blockStringWidth(block, string);
-                if width > nameWidth
-                    nameWidth = width;
-                end
+            if strcmp(get_param(block, 'Mask'),'on')
+                maskType = get_param(block, 'MaskType');
+            else
+                maskType = '';
             end
+            centerWidth = max(blockStringWidth(block, block),blockStringWidth(block, maskType));
+%             if strcmp(get_param(block,'ShowName'),'on')
+%                 string = block;
+%                 width = blockStringWidth(block, string);
+%                 if width > centerWidth
+%                     centerWidth = width;
+%                 end
+%             end
             
-            largestWidth = sum([largestInWidth, largestOutWidth, nameWidth]);
-            neededWidth = largestWidth;   %To fit different blocks of text within the block
+            width = sum([leftWidth, rightWidth, centerWidth]);
+            neededWidth = width;   %To fit different blocks of text within the block
 
         case 'If'
             ifExpression = get_param(block, 'ifExpression');
@@ -65,14 +70,14 @@ function neededWidth = getBlockTextWidth(block)
                 elseIfExpressions = {};
             end
             expressions = [{ifExpression} elseIfExpressions];
-            largestWidth = 0;
+            width = 0;
             for i = 1:length(expressions)
                 width = blockStringWidth(block, expressions{i});
-                if width > largestWidth
-                    largestWidth = width;
+                if width > width
+                    width = width;
                 end
             end
-            neededWidth = largestWidth * 2;   %To fit different blocks of text within the block
+            neededWidth = width * 2;   %To fit different blocks of text within the block
 
         case 'Goto'
             string = get_param(block, 'gototag');
@@ -124,15 +129,4 @@ function neededWidth = getBlockTextWidth(block)
         otherwise
             neededWidth = 0;
     end
-end
-
-function width = blockStringWidth(block, string)
-%BLOCKSTRINGWIDTH Finds the width string has/would have within block
-
-    fontName = get_param(block, 'FontName');
-    fontSize = get_param(block, 'FontSize');
-    if fontSize == -1
-        fontSize = get_param(bdroot(block), 'DefaultBlockFontSize');
-    end
-    width = getTextWidth(string,fontName,fontSize);
 end
