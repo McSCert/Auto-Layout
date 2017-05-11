@@ -47,10 +47,12 @@ function neededWidth = getBlockTextWidth(block)
             
             if strcmp(get_param(block, 'Mask'),'on')
                 maskType = get_param(block, 'MaskType');
+                centerWidth = max(blockStringWidth(block, block),blockStringWidth(block, maskType));
             else
-                maskType = '';
+%                 maskType = '';
+                centerWidth = 0;
             end
-            centerWidth = max(blockStringWidth(block, block),blockStringWidth(block, maskType));
+            
 %             if strcmp(get_param(block,'ShowName'),'on')
 %                 string = block;
 %                 width = blockStringWidth(block, string);
