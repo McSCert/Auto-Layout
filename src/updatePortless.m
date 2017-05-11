@@ -1,6 +1,13 @@
 function updatePortless(address, portlessInfo)
 %UPDATEPORTLESS Moves blocks to their new positions designated by
 %   portlessInfo.
+%
+%   Inputs:
+%       address         Simulink system name or path.
+%       portlessInfo    As returned by getPortlessInfo.
+%
+%   Outputs:
+%       N/A
 
 %Get blocknames and desired positions for moveBlocks()
 fullnames = {}; positions = {};
