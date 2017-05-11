@@ -49,11 +49,21 @@ inport_rule: left_align
 #Default none.
 #
 #Acceptable parameter values are:
-#	right_align (Outports will be aligned along the right bound of the system
-#		unless there are obstructions, similar idea to aligning text in 
-#		Word),
+#	right_align (Outports will be aligned along the right bound of the
+#		system unless there are obstructions, similar idea to aligning text
+#		in Word),
 #	none (no special rule is used)
 outport_rule: right_align
+
+#NOTE_RULE Indicates the rule by which annotations will be placed in the
+#	the final layout.
+#Default on-right.
+#
+#Acceptable parameter values are:
+#	on-right (annotations are moved to the right side of the system to be 
+#		found easily),
+#	none (annotations aren't moved by the tool at all)
+outport_rule: on-right
 
 #*****NOT CURRENTLY IMPLEMENTED*****
 #BLOCK_SIZING Indicates the rule by which blocks resized for the final layout.
