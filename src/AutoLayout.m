@@ -151,7 +151,7 @@ updateLayout(address, layout);
 % been altered from moveBlocks() )
 layout = easyAlign(layout);
 
-     layout = layout2(address, layout, systemBlocks);
+layout = layout2(address, layout, systemBlocks);
 
 % Align in/outport blocks if set to do so by in/outport rules
 if strcmp(INPORT_RULE, 'left_align')
