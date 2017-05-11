@@ -1,4 +1,21 @@
-function portlessInfo = repositionPortlessBlocks(portlessInfo, layout, portless_rule, smallOrLargeHalf)
+function portlessInfo = repositionPortlessBlocks(portlessInfo, layout, portless_rule, smallOrLargeHalf, sort_portless)
+% REPOSITIONPORTLESSBLOCKS repositions portless blocks to a designated side
+%   of the system. Also organizes portless blocks into groups on the
+%   designated sides.
+%
+%   Inputs:
+%       portlessInfo        As returned by getPortlessInfo.
+%       layout              As returned by getRelativeLayout.
+%       portless_rule       Rule by which portless blocks should be
+%                           positioned. See PORTLESS_RULE in config.txt.
+%       smallOrLargeHalf    Map relating blocks with the side of the system
+%                           they should be placed on.
+%       sort_portless       Determines how to sort the portless blocks
+%                           after the side is determined. See SORT_PORTLESS
+%                           in config.txt.
+%
+%   Outputs:
+%       portlessInfo        Updated portlessInfo with new positions.
 
 ignorePortlessBlocks = true;
 [leftBound,topBound,rightBound,botBound] = sideExtremes(layout, portlessInfo, ignorePortlessBlocks);
@@ -6,29 +23,39 @@ ignorePortlessBlocks = true;
 vertSpace = 10; % Space to leave between blocks vertically
 horzSpace = 10; % Space to leave between blocks horizontally
 
+if strcmp(sort_portless, 'blocktype')
+    portlessInfo = sortPortlessInfo(portlessInfo);
+end
+
 switch portless_rule
     case 'left'
         %         doCheck = false;
-        portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'left');
+        portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'left');
     case 'top'
         %         doCheck = false;
-        portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'top');
+        portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'top');
     case 'right'
         %         doCheck = false;
-        portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'right');
+        portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'right');
     case 'bottom'
         %         doCheck = false;
-        portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'bottom');
+        portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'bottom');
     case 'same_half_vertical'
         %         doCheck = true;
-        portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'top');
-        portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'bottom');
+        portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'top');
+        portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'bottom');
     case 'same_half_horizontal'
         %         doCheck = true;
-        portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'left');
-        portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'right');
+        portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'left');
+        portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'right');
+    otherwise
+        % Invalid portless_rule
+        disp(['Error using ' mfilename ':' char(10) ...
+            ' portless_rule must be in the following ' ...
+            '{''top'', ''left'', ''bot'', ''right'', ' ...
+            '''same_half_vertical'', ''same_half_horizontal''}'])
+        return
 end
-
 end
 
 function newPortlessInfo = sortPortlessInfo(portlessInfo)
@@ -55,22 +82,134 @@ end
 
 end
 
-function bool = AinB(A,B)
-% AINB Returns true if character vector, A, is an element in cell array, B.
-% There's probably a predefined MATLAB function for this that should be
-%   used instead...
+function portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,vertSide)
+%When editing this function also check horzReposPortless
 
-bool = false;
-if ischar(A) && iscell(B)
-    for i = 1:length(B)
-        if ischar(B{i}) && strcmp(A,B{i})
-            bool = true;
-            return
+nextLeft = leftBound;
+
+if strcmp(vertSide, 'top')
+    currRow = topBound - vertSpace;
+    nextRow = topBound - vertSpace;
+elseif strcmp(vertSide, 'bottom')
+    currRow = botBound + vertSpace;
+    nextRow = botBound + vertSpace;
+end
+
+if strcmp(sort_portless,'blocktype') && ~isempty(portlessInfo)
+    oldBlockType = get_param(portlessInfo{1}.fullname, 'BlockType');
+end
+for i = 1:length(portlessInfo)
+    block = portlessInfo{i}.fullname;
+    
+    flag = true; % Set flag to false to change row
+    if strcmp(sort_portless,'blocktype')
+        newBlockType = get_param(block, 'BlockType');
+        flag = strcmp(oldBlockType, newBlockType); % Check if block type changed 
+        % ^Change row when block type changes to sort by block type
+    end
+    
+    if strcmp(smallOrLargeHalf(block),vertSide)
+        
+        pos = portlessInfo{i}.position;
+        width = pos(3) - pos(1);
+        height = pos(4) - pos(2);
+        
+        if (nextLeft == leftBound || nextLeft + width <= rightBound) && flag
+            % Same row
+            left = nextLeft;
+        else
+            % New row
+            currRow = nextRow;
+            left = leftBound;
         end
+        right = left + width;
+        nextLeft = right + horzSpace;
+        
+        if strcmp(vertSide, 'top')
+            bot = currRow;
+            top = bot - height;
+            nextRow = min(nextRow, top - vertSpace);
+        elseif strcmp(vertSide, 'bottom')
+            top = currRow;
+            bot = top + height;
+            nextRow = max(nextRow, bot + vertSpace);
+        end
+        
+        portlessInfo{i}.position = [left top right bot];
+    end
+    
+    if strcmp(sort_portless,'blocktype')
+        oldBlockType = newBlockType;
     end
 end
 end
 
+function portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,horzSide)
+%When editing this function also check vertReposPortless
+
+nextTop = topBound;
+
+if strcmp(horzSide, 'left')
+    currCol = leftBound - horzSpace;
+    nextCol = leftBound - horzSpace;
+elseif strcmp(horzSide, 'right')
+    currCol = rightBound + horzSpace;
+    nextCol = rightBound + horzSpace;
+end
+
+if strcmp(sort_portless,'blocktype') && ~isempty(portlessInfo)
+    oldBlockType = get_param(portlessInfo{1}.fullname, 'BlockType');
+end
+for i = 1:length(portlessInfo)
+    block = portlessInfo{i}.fullname;
+    
+    flag = true; % Set flag to false to change column
+    if strcmp(sort_portless,'blocktype')
+        newBlockType = get_param(block, 'BlockType');
+        flag = strcmp(oldBlockType, newBlockType); % Check if block type changed 
+        % ^Change column when block type changes to sort by block type
+    end
+    
+    if strcmp(smallOrLargeHalf(block),horzSide)
+        
+        pos = portlessInfo{i}.position;
+        width = pos(3) - pos(1);
+        height = pos(4) - pos(2);
+        
+        if (nextTop == topBound || nextTop + height <= botBound) && flag
+            % Same col
+            top = nextTop;
+        else
+            % New col
+            currCol = nextCol;
+            top = topBound;
+        end
+        
+        bot = top + height;
+        nextTop = bot + vertSpace;
+        
+        if strcmp(horzSide, 'left')
+            right = currCol;
+            left = right - width;
+            nextCol = min(nextCol, left - horzSpace);
+        elseif strcmp(horzSide, 'right')
+            left = currCol;
+            right = left + width;
+            nextCol = max(nextCol, right + horzSpace);
+        end
+        
+        portlessInfo{i}.position = [left top right bot];
+    end
+    
+    if strcmp(sort_portless,'blocktype')
+        oldBlockType = newBlockType;
+    end
+end
+end
+
+%%
+% Outdated function for similar purpose
+%%
 % function portlessInfo = reposPortlessOnHalf(portlessInfo,layout,smallOrLargeHalf,side)
 %
 % ignorePortlessBlocks = true;
@@ -98,62 +237,9 @@ end
 %
 % end
 
-function portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,vertSide)
-
-portlessInfo = sortPortlessInfo(portlessInfo);
-
-nextLeft = leftBound;
-
-if strcmp(vertSide, 'top')
-    currRow = topBound - vertSpace;
-    nextRow = topBound - vertSpace;
-elseif strcmp(vertSide, 'bottom')
-    currRow = botBound + vertSpace;
-    nextRow = botBound + vertSpace;
-end
-
-if ~isempty(portlessInfo)
-    oldBlockType = get_param(portlessInfo{1}.fullname, 'BlockType');
-end
-for i = 1:length(portlessInfo)
-    block = portlessInfo{i}.fullname;
-    newBlockType = get_param(block, 'BlockType');
-    btChanged = ~strcmp(oldBlockType, newBlockType); % Check if block type changed (so we can start new rows/columns at new block types)
-    
-    if strcmp(smallOrLargeHalf(block),vertSide)
-        
-        pos = portlessInfo{i}.position;
-        width = pos(3) - pos(1);
-        height = pos(4) - pos(2);
-        
-        if (nextLeft == leftBound || nextLeft + width <= rightBound) && ~(btChanged)
-            % Same row
-            left = nextLeft;
-        else
-            % New row
-            currRow = nextRow;
-            left = leftBound;
-        end
-        right = left + width;
-        nextLeft = right + horzSpace;
-        
-        if strcmp(vertSide, 'top')
-            bot = currRow;
-            top = bot - height;
-            nextRow = min(nextRow, top - vertSpace);
-        elseif strcmp(vertSide, 'bottom')
-            top = currRow;
-            bot = top + height;
-            nextRow = max(nextRow, bot + vertSpace);
-        end
-        
-        portlessInfo{i}.position = [left top right bot];
-    end
-    
-    oldBlockType = newBlockType;
-end
-end
-
+%%
+% Outdated function for similar purpose
+%%
 % function portlessInfo = reposPortlessOnBot(portlessInfo,smallOrLargeHalf,leftBound,rightBound,botBound,vertSpace,horzSpace)
 %
 % nextLeft = leftBound;
@@ -188,62 +274,6 @@ end
 % end
 % end
 
-function portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,horzSide)
-
-portlessInfo = sortPortlessInfo(portlessInfo);
-
-nextTop = topBound;
-
-if strcmp(horzSide, 'left')
-    currCol = leftBound - horzSpace;
-    nextCol = leftBound - horzSpace;
-elseif strcmp(horzSide, 'right')
-    currCol = rightBound + horzSpace;
-    nextCol = rightBound + horzSpace;
-end
-
-if ~isempty(portlessInfo)
-    oldBlockType = get_param(portlessInfo{1}.fullname, 'BlockType');
-end
-for i = 1:length(portlessInfo)
-    block = portlessInfo{i}.fullname;
-    newBlockType = get_param(block, 'BlockType');
-    btChanged = ~strcmp(oldBlockType, newBlockType); % Check if block type changed (so we can start new rows/columns at new block types)
-    
-    if strcmp(smallOrLargeHalf(block),horzSide)
-        
-        pos = portlessInfo{i}.position;
-        width = pos(3) - pos(1);
-        height = pos(4) - pos(2);
-        
-        if (nextTop == topBound || nextTop + height <= botBound) && ~(btChanged)
-            % Same col
-            top = nextTop;
-        else
-            % New col
-            currCol = nextCol;
-            top = topBound;
-        end
-        
-        bot = top + height;
-        nextTop = bot + vertSpace;
-        
-        if strcmp(horzSide, 'left')
-            right = currCol;
-            left = right - width;
-            nextCol = min(nextCol, left - horzSpace);
-        elseif strcmp(horzSide, 'right')
-            left = currCol;
-            right = left + width;
-            nextCol = max(nextCol, right + horzSpace);
-        end
-        
-        portlessInfo{i}.position = [left top right bot];
-    end
-    
-    oldBlockType = newBlockType;
-end
-end
 
 %%%Just a harder to read way of repositioning (but all in one function)
 % function portlessInfo = repoPortless(portlessInfo,smallOrLargeHalf,topBound,rightBound,botBound,vertSpace,horzSpace,side)
@@ -350,6 +380,9 @@ end
 % 
 % end
 
+%%
+% Outdated function for similar purpose
+%%
 % function portlessInfo = reposPortlessOnRight(portlessInfo,smallOrLargeHalf,topBound,rightBound,botBound,vertSpace,horzSpace)
 %
 % nextTop = topBound;
@@ -384,52 +417,3 @@ end
 %     end
 % end
 % end
-
-function [leftBound,topBound,rightBound,botBound] = sideExtremes(layout, portlessInfo, ignorePortlessBlocks)
-%COMMENTS NEED UPDATE
-%EXTREMESIDE Finds the extreme position of a given side among blocks.
-
-rightBound = -32767;
-leftBound = 32767;
-botBound = -32767;
-topBound = 32767;
-
-%TODO - optimize this to only check needed blocks
-for j = 1:size(layout.grid,2)
-    for i = 1:layout.colLengths(j)
-        pos = layout.grid{i,j}.position;
-        if pos(3) > rightBound
-            rightBound = pos(3);
-        end
-        if pos(1) < leftBound
-            leftBound = pos(1);
-        end
-        
-        if pos(4) > botBound
-            botBound = pos(4);
-        end
-        if pos(2) < topBound
-            topBound = pos(2);
-        end
-    end
-end
-
-if ~ignorePortlessBlocks
-    for i = 1:length(portlessInfo)
-        pos = portlessInfo{i}.position;
-        if pos(3) > rightBound
-            rightBound = pos(3);
-        end
-        if pos(1) < leftBound
-            leftBound = pos(1);
-        end
-        
-        if pos(4) > botBound
-            botBound = pos(4);
-        end
-        if pos(2) < topBound
-            topBound = pos(2);
-        end
-    end
-end
-end
