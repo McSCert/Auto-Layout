@@ -8,7 +8,8 @@
 #	none (no blocks will show their name)
 show_names: no-change
 
-#PORTLESS_RULE Indicates the rule by which blocks with no ports will be placed in the final layout.
+#PORTLESS_RULE Indicates the rule by which blocks with no ports will be 
+#	placed in the final layout.
 #Default bottom.
 #
 #Acceptable parameter values are:
@@ -16,28 +17,45 @@ show_names: no-change
 #	top (blocks will be placed along the top side of the system),
 #	left (blocks will be placed along the left side of the system),
 #	right (blocks will be placed along the right side of the system),
-#	same_half_vertical (blocks will be placed along the bottom/top side of the system according to which half they started in),
-#	same_half_horizontal (blocks will be placed along the left/right side of the system according to which half they started in)
+#	same_half_vertical (blocks will be placed along the bottom/top side of
+#		the system according to which half they started in),
+#	same_half_horizontal (blocks will be placed along the left/right side
+#		of the system according to which half they started in)
 portless_rule: same_half_vertical
 
-#*****NOT YET IMPLEMENTED*****
-#INPORT_RULE Indicates the rule by which inport blocks will be placed in the final layout.
-#Default left_align.
+#SORT_PORTLESS Indicates the rule by which blocks with no ports will be 
+#	grouped within the placement designated by PORTLESS_RULE in the final
+#	layout.
+#Default blocktype.
 #
 #Acceptable parameter values are:
-#	left_align
-#	none
+#	blocktype	(blocks will be grouped by their block type)
+#	none		(no means of grouping is used)
+portless_rule: blocktype
 
-
-#*****NOT YET IMPLEMENTED*****
-#OUTPORT_RULE
-#Default right_align.
+#INPORT_RULE Indicates the rule by which inport blocks will be placed in
+#	the final layout.
+#Default none.
 #
 #Acceptable parameter values are:
-#	right_align
-#	none
+#	left_align (Inports will be aligned along the left bound of the system
+#		unless there are obstructions, similar idea to aligning text in 
+#		Word),
+#	none (no special rule is used)
+inport_rule: left_align
 
-#*****NOT YET IMPLEMENTED*****
+#OUTPORT_RULE Indicates the rule by which outport blocks will be placed in
+#	the final layout.
+#Default none.
+#
+#Acceptable parameter values are:
+#	right_align (Outports will be aligned along the right bound of the system
+#		unless there are obstructions, similar idea to aligning text in 
+#		Word),
+#	none (no special rule is used)
+outport_rule: right_align
+
+#*****NOT CURRENTLY IMPLEMENTED*****
 #BLOCK_SIZING Indicates the rule by which blocks resized for the final layout.
 #Default fit_text.
 #
