@@ -1,6 +1,19 @@
 function [leftBound,topBound,rightBound,botBound] = sideExtremes(layout, portlessInfo, ignorePortlessBlocks)
-%COMMENTS NEED UPDATE
-%EXTREMESIDE Finds the extreme position of a given side among blocks.
+% SIDEEXTREMES Finds the extreme positions (left, top, right, and bottom)
+%   among blocks in layout and portlessInfo (unless portless blocks
+%   shouldn't be considered).
+%
+%   Inputs:
+%       layout                  As returned by getRelativeLayout.
+%       portlessInfo            As returned by getPortlessInfo.
+%       ignorePortlessBlocks    Logical indicating whether to (true) or to
+%                               not (false) consider portlessInfo.
+%
+%   Outputs:
+%       leftBound               Left bound of blocks of interest.
+%       topBound                Top bound of blocks of interest.
+%       rightBound              Right bound of blocks of interest.
+%       botBound                Bottom bound of blocks of interest.
 
 rightBound = -32767;
 leftBound = 32767;

@@ -1,5 +1,11 @@
 function updateLayout(address, layout)
 %UPDATELAYOUT Moves blocks to their new positions designated by layout
+%   Inputs:
+%       address         Simulink system name or path.
+%       layout          As returned by getRelativeLayout.
+%
+%   Output:
+%       N/A
 
 %Get blocknames and desired positions for moveBlocks()
 fullnames = {}; positions = {};
