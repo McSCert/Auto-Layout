@@ -70,14 +70,6 @@ function layout = layout2(address, layout, systemBlocks)
 
     % Reorganize the placements of vertical line segments in the system
     spaceVSegs(vSegs, colDims);
-
-    % Left and right justify the inports and outports
-    inports = find_system(address,'SearchDepth',1,'BlockType','Inport');
-    outports = find_system(address,'SearchDepth',1,'BlockType','Outport');
-    layout = justifyBlocks(address, layout, inports, 1);  % Left justify inports
-    layout = justifyBlocks(address, layout, outports, 3);  % Right justify outports
-    %Update block positions according to layout
-    updateLayout(address, layout);
     
     % Place blocks that have no ports in a line along top or bottom horizontally
     % depending on where they were initially in the system
