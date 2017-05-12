@@ -62,7 +62,7 @@ systemBlocks = systemBlocks(2:end); %Remove address itself
 portlessBlocks = getPortlessBlocks(systemBlocks);
 
 % Check that portless_rule is set properly
-if ~AinB(PORTLESS_RULE, {'top', 'left', 'bot', 'right', 'same_half_vertical', 'same_half_horizontal'})
+if ~AinB(PORTLESS_RULE, {'top', 'left', 'bottom', 'right', 'same_half_vertical', 'same_half_horizontal'})
     % Invalid config setting
     disp(['Error using ' mfilename ':' char(10) ...
         ' invalid config parameter: portless_rule. Please fix in the config.txt.'])
@@ -147,11 +147,11 @@ updateLayout(address, layout);
 
 % Move blocks with single inport/outport so their port is in line with
 % the source/destination port
-% Uses layout for the grid (does not use the positions which may have
-% been altered from moveBlocks() )
-layout = easyAlign(layout);
+layout = vertAlign(layout);
+% % layout = easyAlign(layout); %old method, still relevant since it attempts to cover more cases
 
-layout = layout2(address, layout, systemBlocks);
+% % layout = layout2(address, layout, systemBlocks); %temp removed, adding
+% it won't error, it's just not too likely to help
 
 % Align in/outport blocks if set to do so by in/outport rules
 if strcmp(INPORT_RULE, 'left_align')

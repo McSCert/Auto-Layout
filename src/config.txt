@@ -21,7 +21,7 @@ show_names: no-change
 #		the system according to which half they started in),
 #	same_half_horizontal (blocks will be placed along the left/right side
 #		of the system according to which half they started in)
-portless_rule: same_half_vertical
+portless_rule: bottom
 
 #SORT_PORTLESS Indicates the rule by which blocks with no ports will be 
 #	grouped within the placement designated by PORTLESS_RULE in the final
