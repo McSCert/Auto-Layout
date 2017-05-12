@@ -194,7 +194,7 @@ portlessInfo = repositionPortlessBlocks(portlessInfo, layout, PORTLESS_RULE, sma
 updatePortless(address, portlessInfo);
 
 % Get all annotations in address
-annotations = find_system(address,'FindAll','on','Type','annotation');
+annotations = find_system(address,'FindAll','on','SearchDepth',1,'Type','annotation');
 % Move all annotations to the right of the system
 handleAnnotations(layout, portlessInfo, annotations, NOTE_RULE);
 end
