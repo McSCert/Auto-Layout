@@ -62,7 +62,7 @@ systemBlocks = systemBlocks(2:end); %Remove address itself
 portlessBlocks = getPortlessBlocks(systemBlocks);
 
 % Check that portless_rule is set properly
-if ~AinB(portless_rule, {'top', 'left', 'bot', 'right', 'same_half_vertical', 'same_half_horizontal'})
+if ~AinB(PORTLESS_RULE, {'top', 'left', 'bot', 'right', 'same_half_vertical', 'same_half_horizontal'})
     % Invalid config setting
     disp(['Error using ' mfilename ':' char(10) ...
         ' invalid config parameter: portless_rule. Please fix in the config.txt.'])
@@ -197,62 +197,4 @@ updatePortless(address, portlessInfo);
 annotations = find_system(address,'FindAll','on','Type','annotation');
 % Move all annotations to the right of the system
 handleAnnotations(layout, portlessInfo, annotations, NOTE_RULE);
-end
-
-function [x,y] = systemCenter(blocks)
-%SYSTEMCENTER Finds the center of the system (relative to block positions).
-
-largestX = -32767;
-smallestX = 32767;
-largestY = -32767;
-smallestY = 32767;
-
-for i = 1:length(blocks)
-    leftPos = getBlockSidePositions(blocks(i), 1);
-    topPos = getBlockSidePositions(blocks(i), 2);
-    rightPos = getBlockSidePositions(blocks(i), 3);
-    botPos = getBlockSidePositions(blocks(i), 4);
-    
-    if topPos < smallestY
-        smallestY = topPos;
-    elseif botPos > largestY
-        largestY = botPos;
-    end
-    
-    if leftPos < smallestX
-        smallestX = leftPos;
-    elseif rightPos > largestX
-        largestX = rightPos;
-    end
-end
-
-y = (largestY + smallestY) / 2;
-x = (largestX + smallestX) / 2;
-end
-
-function bool = onSide(block, center, side)
-%ONSIDE Determines whether or not the center of block is on the given
-%   side of the system.
-%
-%   INPUTS
-%       block   Full block name.
-%       center  Center of the system for the given side (e.g. if side is
-%               'left', center will be halfway between the largest and
-%               smallest X positions of blocks in the system).
-%       side    Either 'left' or 'top'. Indicates the side to compare
-%               the given block's center with. E.g. If side is 'left', the
-%               function checks if the center of the block is on the left
-%               half of the system (if it's a tie then choose left)
-%
-%   OUTPUTS
-%       bool    Indicates whether or not the given block is on the
-%               indicated side of the system.
-
-switch side
-    case 'left'
-        midPos = getBlockSidePositions({block}, 5);
-    case 'top'
-        midPos = getBlockSidePositions({block}, 6);
-end
-bool = midPos <= center;
 end
