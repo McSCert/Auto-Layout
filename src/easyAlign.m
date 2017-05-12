@@ -14,7 +14,7 @@ for j = 1:size(layout.grid,2) % for each column
     end
 end
 
-%Second pass
+%Second pass (reverses row order in inner for loop)
 aligned = containers.Map;
 for j = 1:size(layout.grid,2) % for each column
     for i = layout.colLengths(j):-1:1 % for each non empty row in column (reverse order)
@@ -32,7 +32,7 @@ function [layout, aligned] = align(layout, aligned, block1, col)
 %IN PROGRESS (DOUBLE CHECK HEADER COMMENTS)
 %need to Handle branching lines
 
-row = rowInCol(layout, block1, col); %note if row == 0, something went wrong
+row = rowInCol(layout, block1, col); %note, if row == 0, something went wrong
 
 if ~isKey(aligned,block1)
     aligned(block1) = 'notaligned';

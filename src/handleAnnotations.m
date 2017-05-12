@@ -14,7 +14,7 @@ function handleAnnotations(layout, portlessInfo, annotations, note_rule)
 %       N/A
 
 if strcmp(note_rule, 'on-right')
-    arbitraryBuffer = 20;
+    arbitraryBuffer = 50;
     
     ignorePortlessBlocks = false;
     [~,topBound,rightBound,botBound] = sideExtremes(layout, portlessInfo, ignorePortlessBlocks);

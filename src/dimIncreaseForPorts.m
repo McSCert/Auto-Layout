@@ -13,7 +13,7 @@ function [pos, yIncrease] = dimIncreaseForPorts(block, pos, varargin)
 %                   system equally.
 %                   Other strings and no input result in a default of
 %                   expanding toward the bot of the system.
-%       varargin{2} Indicates desired space between ports. Defaults to 30.
+%       varargin{2} Indicates desired space between ports. Defaults to 40.
 %       varargin{3} Indicates desired space above/below the top/bottom
 %                   ports of a block. Default uses a simple algorithm with
 %                   a value of either 5 or 30 depending on the block.
@@ -77,7 +77,7 @@ function yIncrease = getPortYIncrease(block, pos, varargin)
 %       block       Full name of a block (character array).
 %       pos         The current position coordinates of the block. Expected
 %                   in same form as get_param(gcb, 'Position').
-%       varargin{1} Indicates desired space between ports. Defaults to 30.
+%       varargin{1} Indicates desired space between ports. Defaults to 40.
 %       varargin{2} Indicates desired space above/below the top/bottom
 %                   ports of a block. Default uses a simple algorithm with
 %                   a value of either 5 or 30 depending on the block.

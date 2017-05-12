@@ -5,7 +5,7 @@ function desiredHeight = desiredHeightForPorts(block, varargin)
 %
 %   Inputs:
 %       block           Full name of a block (character array).
-%       varargin{1}     Indicates desired space between ports. Defaults to 30.
+%       varargin{1}     Indicates desired space between ports. Defaults to 40.
 %       varargin{2}     Indicates desired space above/below the top/bottom
 %                       ports of a block. Default uses a simple algorithm with
 %                       a value of either 5 or 30 depending on the block.
@@ -31,7 +31,7 @@ end
 if nargin >= 2
     pSpace = varagin{1}; % Desired spacing between ports
 else
-    pSpace = 30; % Desired spacing between ports
+    pSpace = 40; % Desired spacing between ports
 end
 
 desiredHeight = pSpace*(maxPorts-1) + 2*buff;
