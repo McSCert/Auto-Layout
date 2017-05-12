@@ -20,8 +20,8 @@ function portlessInfo = repositionPortlessBlocks(portlessInfo, layout, portless_
 ignorePortlessBlocks = true;
 [leftBound,topBound,rightBound,botBound] = sideExtremes(layout, portlessInfo, ignorePortlessBlocks);
 
-vertSpace = 10; % Space to leave between blocks vertically
-horzSpace = 10; % Space to leave between blocks horizontally
+vertSpace = 20; % Space to leave between blocks vertically
+horzSpace = 20; % Space to leave between blocks horizontally
 
 if strcmp(sort_portless, 'blocktype')
     portlessInfo = sortPortlessInfo(portlessInfo);
