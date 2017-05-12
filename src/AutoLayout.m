@@ -178,7 +178,7 @@ end % elseif 'none', then do nothing
 updateLayout(address, layout);
 
 % Check that sort_portless is set properly
-if ~AinB(sort_portless, {'blocktype', 'none'})
+if ~AinB(SORT_PORTLESS, {'blocktype', 'none'})
     % Invalid config setting
     disp(['Error using ' mfilename ':' char(10) ...
         ' invalid config parameter: sort_portless. Please fix in the config.txt.'])
