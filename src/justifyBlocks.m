@@ -6,30 +6,31 @@ function layout = justifyBlocks(address, layout, blocks, justifyType)
 % justifyType:   1 - left justify
 %                3 - right justify
 
-    for i = 1:length(blocks)
-        [row,col] = findInLayout(layout, blocks(i));
-        if ~alreadyFullyJustified(layout, col, justifyType)
-            if ~blocksInTheWay(layout, row, col, justifyType) && ~linesInTheWay(address, layout, row, col, justifyType)
-                % Nothing in the way of justifying blocks(i)
-
-                if justifyType == 1 % (justify left)
-                    newCol = 1;
-                elseif justifyType == 3 % (justify right)
-                    newCol = size(layout,2);
-                end
-                layout = changeBlockColumn(layout, row, col, newCol);
+for i = 1:length(blocks)
+    [row,col] = findInLayout(layout, blocks(i));
+    if ~alreadyFullyJustified(layout, col, justifyType)
+        if ~blocksInTheWay(layout, row, col, justifyType) && ~linesInTheWay(address, layout, row, col, justifyType)
+            % Nothing in the way of justifying blocks(i)
+            
+            if justifyType == 1 % (justify left)
+                newCol = 1;
+            elseif justifyType == 3 % (justify right)
+                newCol = size(layout,2);
             end
+            layout = changeBlockColumn(layout, row, col, newCol);
         end
     end
+end
 end
 
 function layout = changeBlockColumn(layout, oldRow, oldCol, newCol)
 % Removes block at layout.grid{oldRow, oldCol} from its column and adds it into newCol
 
-    % Move layout.grid{oldRow,oldCol} (visually)
+    % Move layout.grid{oldRow,oldCol} (visually and with the .position)
     pos = get_param(layout.grid{oldRow, oldCol}.fullname, 'Position');
     x = getBlockSidePositions({layout.grid{1, newCol}.fullname}, 5) - getBlockSidePositions({layout.grid{oldRow, oldCol}.fullname}, 5);
     set_param(layout.grid{oldRow, oldCol}.fullname, 'Position', [pos(1) + x, pos(2), pos(3) + x, pos(4)]);
+    layout.grid{oldRow, oldCol}.position = [pos(1) + x, pos(2), pos(3) + x, pos(4)];
 
     % Fix layout.grid (re-placing layout.grid{oldRow,oldCol} within the data structure)
     layout.grid{layout.colLengths(newCol) + 1, newCol} = layout.grid{oldRow, oldCol};
