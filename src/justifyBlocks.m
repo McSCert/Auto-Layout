@@ -15,7 +15,7 @@ for i = 1:length(blocks)
             if justifyType == 1 % (justify left)
                 newCol = 1;
             elseif justifyType == 3 % (justify right)
-                newCol = size(layout,2);
+                newCol = size(layout.grid,2);
             end
             layout = changeBlockColumn(layout, row, col, newCol);
         end
