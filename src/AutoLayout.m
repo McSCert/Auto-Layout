@@ -199,7 +199,7 @@ annotations = find_system(address,'FindAll','on','SearchDepth',1,'Type','annotat
 handleAnnotations(layout, portlessInfo, annotations, NOTE_RULE);
 
 % Orient blocks left-to-right and place name on bottom
-setOrientations(systemBlocks);
+%setOrientations(systemBlocks);
 setNamePlacements(systemBlocks);
 
 % Zoom on system (if it ends up zoomed out that should mean there is
