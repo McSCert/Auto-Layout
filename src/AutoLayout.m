@@ -198,6 +198,10 @@ annotations = find_system(address,'FindAll','on','SearchDepth',1,'Type','annotat
 % Move all annotations to the right of the system
 handleAnnotations(layout, portlessInfo, annotations, NOTE_RULE);
 
+% Orient blocks left-to-right and place name on bottom
+setOrientations(systemBlocks);
+setNamePlacements(systemBlocks);
+
 % Zoom on system (if it ends up zoomed out that should mean there is
 % something near the borders)
 set_param(address, 'Zoomfactor', 'Fit to view');
