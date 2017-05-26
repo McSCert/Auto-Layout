@@ -23,8 +23,8 @@ ignorePortlessBlocks = true;
 vertSpace = 20; % Space to leave between blocks vertically
 horzSpace = 20; % Space to leave between blocks horizontally
 
-if strcmp(sort_portless, 'blocktype')
-    portlessInfo = sortPortlessInfo(portlessInfo);
+if ~strcmp(sort_portless, 'none')
+    portlessInfo = sortPortlessInfo(portlessInfo, sort_portless);
 end
 
 switch portless_rule
@@ -58,28 +58,36 @@ switch portless_rule
 end
 end
 
-function newPortlessInfo = sortPortlessInfo(portlessInfo)
-% Sort portlessInfo by block types
+function newPortlessInfo = sortPortlessInfo(portlessInfo, sort_portless)
+% Sort portlessInfo by the block parameter(s) designated by sort_portless.
 
-blockTypes = {};
+categories = {}; % Cell array of the different categories to put blocks in i.e. if sorting on block type there might be a 'SubSystem' or an 'Inport' category
 newPortlessInfo = {};
 
 for i = 1:length(portlessInfo) % for each portless block
-    isNewType = ~AinB(get_param(portlessInfo{i}.fullname,'BlockType'), blockTypes);
-    if isNewType % if block type is new to blockTypes
+    isNewType = ~AinB(getBlockCategory(portlessInfo{i}.fullname,sort_portless), categories);
+    if isNewType % if the block's value for the sort_portless is new to categories
         
-        % Record block type
-        blockTypes{end+1} = get_param(portlessInfo{i}.fullname,'BlockType');
+        % Record category
+        categories{end+1} = getBlockCategory(portlessInfo{i}.fullname,sort_portless);
         newPortlessInfo{end+1} = portlessInfo{i}; % (have to add each portlessInfo to the new one once)
         for j = i+1:length(portlessInfo) % for remaining portless blocks
-            if strcmp(get_param(portlessInfo{j}.fullname,'BlockType'),blockTypes{end}) % if type matches
+            if strcmp(getBlockCategory(portlessInfo{j}.fullname,sort_portless),categories{end}) % if parameter matches
                 % Add the portlessInfo
                 newPortlessInfo{end+1} = portlessInfo{j};
             end
-        end % All of blockTypes{end} should have been added now, so move on to find the next type
+        end % All of categories{end} should have been added now, so move on to find the next category
     end
 end
+end
 
+function cat = getBlockCategory(block,sort_portless)
+if strcmp(sort_portless, 'blocktype')
+    cat = get_param(block,sort_portless);
+elseif strcmp(sort_portless, 'masktype_blocktype')
+    params = strsplit('masktype_blocktype','_');
+    cat = [get_param(block,params{1}), '_', get_param(block,params{2})];
+end
 end
 
 function portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,vertSide)
@@ -95,17 +103,17 @@ elseif strcmp(vertSide, 'bottom')
     nextRow = botBound + vertSpace;
 end
 
-if strcmp(sort_portless,'blocktype') && ~isempty(portlessInfo)
-    oldBlockType = get_param(portlessInfo{1}.fullname, 'BlockType');
+if ~strcmp(sort_portless,'none') && ~isempty(portlessInfo)
+    oldCategory = getBlockCategory(portlessInfo{1}.fullname, sort_portless);
 end
 for i = 1:length(portlessInfo)
     block = portlessInfo{i}.fullname;
     
     flag = true; % Set flag to false to change row
-    if strcmp(sort_portless,'blocktype')
-        newBlockType = get_param(block, 'BlockType');
-        flag = strcmp(oldBlockType, newBlockType); % Check if block type changed 
-        % ^Change row when block type changes to sort by block type
+    if ~strcmp(sort_portless,'none')
+        newCategory = getBlockCategory(block, sort_portless);
+        flag = strcmp(oldCategory, newCategory); % Check if block category changed 
+        % ^Change row when block category changes to sort
     end
     
     if strcmp(smallOrLargeHalf(block),vertSide)
@@ -138,8 +146,8 @@ for i = 1:length(portlessInfo)
         portlessInfo{i}.position = [left top right bot];
     end
     
-    if strcmp(sort_portless,'blocktype')
-        oldBlockType = newBlockType;
+    if ~strcmp(sort_portless,'none')
+        oldCategory = newCategory;
     end
 end
 end
@@ -157,17 +165,17 @@ elseif strcmp(horzSide, 'right')
     nextCol = rightBound + horzSpace;
 end
 
-if strcmp(sort_portless,'blocktype') && ~isempty(portlessInfo)
-    oldBlockType = get_param(portlessInfo{1}.fullname, 'BlockType');
+if ~strcmp(sort_portless,'none') && ~isempty(portlessInfo)
+    oldCategory = getBlockCategory(portlessInfo{1}.fullname, sort_portless);
 end
 for i = 1:length(portlessInfo)
     block = portlessInfo{i}.fullname;
     
     flag = true; % Set flag to false to change column
-    if strcmp(sort_portless,'blocktype')
-        newBlockType = get_param(block, 'BlockType');
-        flag = strcmp(oldBlockType, newBlockType); % Check if block type changed 
-        % ^Change column when block type changes to sort by block type
+    if ~strcmp(sort_portless,'none')
+        newCategory = getBlockCategory(block, sort_portless);
+        flag = strcmp(oldCategory, newCategory); % Check if block category changed 
+        % ^Change column when block category changes to sort
     end
     
     if strcmp(smallOrLargeHalf(block),horzSide)
@@ -201,8 +209,8 @@ for i = 1:length(portlessInfo)
         portlessInfo{i}.position = [left top right bot];
     end
     
-    if strcmp(sort_portless,'blocktype')
-        oldBlockType = newBlockType;
+    if ~strcmp(sort_portless,'none')
+        oldCategory = newCategory;
     end
 end
 end

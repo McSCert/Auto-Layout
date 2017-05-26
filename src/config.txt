@@ -29,9 +29,10 @@ portless_rule: bottom
 #Default blocktype.
 #
 #Acceptable parameter values are:
-#	blocktype	(blocks will be grouped by their block type)
-#	none		(no means of grouping is used)
-portless_rule: blocktype
+#	blocktype			(blocks will be grouped by their BlockType parameter)
+#	masktype_blocktype	(blocks will be grouped for each unique MaskType-BlockType pair)
+#	none				(no means of grouping is used)
+sort_portless: blocktype
 
 #INPORT_RULE Indicates the rule by which inport blocks will be placed in
 #	the final layout.
