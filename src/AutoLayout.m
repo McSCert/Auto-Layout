@@ -10,7 +10,7 @@ function AutoLayout(address)
 %
 %   Example:
 %       AutoLayout('AutoLayoutDemo')
-%           Overwrites the AutoLayoutDemo system/subsystem with one that
+%           Modifies the AutoLayoutDemo system/subsystem with one that
 %           performs the same functionally, but is laid out to be more
 %           human readable.
 
