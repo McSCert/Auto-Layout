@@ -64,17 +64,4 @@ outport_rule: right_align
 #	on-right (annotations are moved to the right side of the system to be 
 #		found easily),
 #	none (annotations aren't moved by the tool at all)
-outport_rule: on-right
-
-#*****NOT CURRENTLY IMPLEMENTED*****
-#BLOCK_SIZING Indicates the rule by which blocks resized for the final layout.
-#Default fit_text.
-#
-#Acceptable parameter values are:
-#	ignore
-#	no-change (blocks will be left at their starting size)
-#	min_fit_text (smallest size to fit text within the block)
-#	fit_text (slightly larger than min_fit_text to better ensure the block is wide enough for the text)
-#	min_for_ports (smallest height to fit the block's ports)
-#	for_connected_blocks (resize vertically to better line up with blocks that connect to it)
-#	extra_space (large enough to allow extra space for each factor)
+note_rule: on-right
