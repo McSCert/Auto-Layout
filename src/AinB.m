@@ -1,7 +1,5 @@
 function bool = AinB(A,B)
 % AINB Determines if string A is an element in cell array B
-% There's probably a predefined MATLAB function for this that should be
-%   used instead...
 %
 %   Inputs:
 %       A       Character vector
@@ -15,6 +13,9 @@ function bool = AinB(A,B)
 %       AinB('a',{'abc'})       -> false
 %       AinB({'a'},{{'a'}})     -> bad input results not guaranteed
 %       AinB('a',{{'a'}})       -> false
+%
+%   Another method to do this using built-in functions:
+%       isempty(find(strcmp(A,B)))
 
 bool = false;
 if ischar(A) && iscell(B)
