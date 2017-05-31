@@ -58,6 +58,9 @@ end
 systemBlocks = find_system(address, 'SearchDepth',1);
 systemBlocks = systemBlocks(2:end); %Remove address itself
 
+% Make sum blocks rectangular so that they will look better
+makeSumsRectangular(systemBlocks);
+
 % Find which blocks have no ports
 portlessBlocks = getPortlessBlocks(systemBlocks);
 
