@@ -38,7 +38,7 @@ Model {
       Name		      "Out4"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.31"
+    ComputedModelVersion    "1.30"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -57,11 +57,11 @@ Model {
   Creator		  "postma"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "GM"
+  LastModifiedBy	  "monika"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon May 29 10:58:27 2017"
-  RTWModifiedTimeStamp	  417956302
-  ModelVersionFormat	  "1.%<AutoIncrement:31>"
+  LastModifiedDate	  "Mon Nov 14 15:39:12 2016"
+  RTWModifiedTimeStamp	  401038748
+  ModelVersionFormat	  "1.%<AutoIncrement:30>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -99,7 +99,6 @@ Model {
     $ObjectID		    1
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
     model_		    "testModelMessy"
-    signals_		    []
     overrideMode_	    [0.0]
     Array {
       Type		      "Cell"
@@ -643,13 +642,6 @@ Model {
 	  Version		  "1.11.1"
 	  Description		  "HDL Coder custom configuration component"
 	  Name			  "HDL Coder"
-	  Array {
-	    Type		    "Cell"
-	    Dimension		    1
-	    Cell		    ""
-	    PropName		    "HDLConfigFile"
-	  }
-	  HDLCActiveTab		  "0"
 	}
 	PropName		"Components"
       }
@@ -807,6 +799,22 @@ Model {
       Variant		      off
       GeneratePreprocessorConditionals off
     }
+    Block {
+      BlockType		      Sum
+      IconShape		      "rectangular"
+      Inputs		      "++"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      AccumDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
   }
   System {
     Name		    "AutoLayoutDemo"
@@ -824,7 +832,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "55"
+    SIDHighWatermark	    "54"
     Block {
       BlockType		      Inport
       Name		      "In2"
@@ -984,17 +992,6 @@ Model {
       SID		      "8"
       Ports		      [2, 1]
       Position		      [70, 267, 100, 298]
-      ZOrder		      -13
-      InputSameDT	      off
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      SaturateOnIntegerOverflow	off
-    }
-    Block {
-      BlockType		      Product
-      Name		      "Product2"
-      SID		      "55"
-      Ports		      [2, 1]
-      Position		      [610, 107, 640, 138]
       ZOrder		      -13
       InputSameDT	      off
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
@@ -1215,6 +1212,20 @@ Model {
       }
     }
     Block {
+      BlockType		      Sum
+      Name		      "Sum"
+      SID		      "49"
+      Ports		      [2, 1]
+      Position		      [570, 115, 590, 135]
+      ZOrder		      -18
+      ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|++"
+      InputSameDT	      off
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
       BlockType		      Outport
       Name		      "Out1"
       SID		      "7"
@@ -1353,9 +1364,9 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Product2"
+      SrcBlock		      "Sum"
       SrcPort		      1
-      Points		      [-35, 0; 0, -5; -315, 0]
+      Points		      [-300, 0]
       DstBlock		      "Gain1"
       DstPort		      1
     }
@@ -1385,15 +1396,15 @@ Model {
       Labels		      [0, 0]
       SrcBlock		      "Int7"
       SrcPort		      1
-      Points		      [130, 0; 0, -125]
-      DstBlock		      "Product2"
+      Points		      [95, 0]
+      DstBlock		      "Sum"
       DstPort		      2
     }
     Line {
       SrcBlock		      "Int6"
       SrcPort		      1
-      Points		      [215, 0; 0, -230]
-      DstBlock		      "Product2"
+      Points		      [180, 0]
+      DstBlock		      "Sum"
       DstPort		      1
     }
     Line {
