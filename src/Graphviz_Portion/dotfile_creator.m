@@ -1,16 +1,15 @@
 function [fullname, replacementMap] = dotfile_creator(name)
 % DOTFILE_CREATOR Parses a system and creates a graphviz dotfile.
 %
-%   Typical use:
-%       filename = dotfile_creator('testModel');
-%
 %	Inputs:
 %       name        Name of the Simulink file to be processed
 %
 %	Outputs:
 %       fullname    Name of the dotfile, as well as the resulting graphviz
 %                   output
-
+%
+%   Typical use:
+%       filename = dotfile_creator('testModel');
 
     %redraw_lines(name)
     %redraw_lines(name,autorouting,off)
@@ -38,6 +37,17 @@ function [fullname, replacementMap] = dotfile_creator(name)
             width = 30.0;
         end
         string = ['width="' num2str(width) '", height="' num2str(height) '", fixedsize=true];\n'];
+    end
+
+    function [newblockname, replaceMap] = replaceItems(blockname, replaceMap)
+        replacePattern = '[^\w]|^[0-9]';
+        items2Replace = regexp(blockname, replacePattern, 'match');
+        for i = 1:length(items2Replace)
+            replaceStr = ['badcharacterreplacement' dec2bin(items2Replace{i}, 8)];
+            blockname = strrep(blockname, items2Replace{i}, replaceStr);
+            replaceMap(replaceStr) = items2Replace{i};
+        end
+        newblockname = blockname;
     end
 
     portwidth = 'width="30.0", height="14.0", fixedsize=true];\n';
@@ -303,19 +313,38 @@ function [fullname, replacementMap] = dotfile_creator(name)
         end
     end
     
-    Gotos = find_system(name, 'SearchDepth', 1, 'BlockType', 'Goto', 'TagVisibility', 'local');
+    Gotos = find_system(name, 'SearchDepth', 1, 'BlockType', 'Goto');%, 'TagVisibility', 'local');
     GotosLength = length(Gotos);
     % When a local goto is found then asumme the Goto and From is connected
     for w = 1:GotosLength
         GotoTag = get_param(Gotos{w}, 'Gototag');
         Froms = find_system(name, 'BlockType', 'From', 'Gototag', GotoTag);
         GotoName = get_param(Gotos{w}, 'Name');
+        [GotoName, replacementMap] = replaceItems(GotoName, replacementMap);
         Fromslength = length(Froms);
         for h = 1:Fromslength
-            FromsName = get_param(Froms{h}, 'Name');
-            dotfile = [dotfile GotoName '->' FromsName sprintf('\n') ];
+            FromName = get_param(Froms{h}, 'Name');
+            [FromName, replacementMap] = replaceItems(FromName, replacementMap);
+            dotfile = [dotfile GotoName '->' FromName sprintf('\n') ];
         end
     end
+    
+    %Made this next bit from copying above with gotos
+    Writes = find_system(name, 'SearchDepth', 1, 'BlockType', 'DataStoreWrite');
+    WritesLength = length(Writes);
+    for w = 1:WritesLength
+        DataStoreName = get_param(Writes{w}, 'DataStoreName');
+        Reads = find_system(name, 'BlockType', 'DataStoreRead', 'DataStoreName', DataStoreName);
+        WriteName = get_param(Writes{w}, 'Name');
+        [WriteName, replacementMap] = replaceItems(WriteName, replacementMap);
+        Readslength = length(Reads);
+        for h = 1:Readslength
+            ReadName = get_param(Reads{h}, 'Name');
+            [ReadName, replacementMap] = replaceItems(ReadName, replacementMap);
+            dotfile = [dotfile WriteName '->' ReadName sprintf('\n') ];
+        end
+    end
+    
     dotfile = [dotfile '}']; 
     fullname = name;
     pattern = '[^\w]|^[0-9]';
