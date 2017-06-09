@@ -38,15 +38,15 @@ if strcmp(note_rule, 'on-right')
         % know what version the change happened in (first new version is 
         % somewhere between 2012b and 2014b (inclusive)).
         isAnchorVer = str2num(ver(1:4)) < 2014 ...
-            | (str2num(ver(1:4)) < 2014 & strcmp(str2num(ver(5)),'a')); % if pre-2014b
+            | (str2num(ver(1:4)) == 2014 & strcmp(str2num(ver(5)),'a')); % if pre-2014b
         
         % Annotation visual position used to depend on HorizontalAlignment
         % and VerticalAlignment parameters.
         %
         % First new version is somewhere between 2015b and 2016b
         % (inclusive).
-        isPositionWithAlignmentVer = str2num(ver(1:4)) < 2016 ...
-            | (str2num(ver(1:4)) < 2016 & strcmp(str2num(ver(5)),'a')); % if pre-2016b
+        isPositionWithAlignmentVer = str2num(ver(1:4)) < 2016; % if pre-2016a
+        
         if isAnchorVer %& isPositionWithAlignmentVer
             width = annotationStringWidth(annotations(i), get_param(annotations(i),'Text'));
             height = annotationStringHeight(annotations(i), get_param(annotations(i),'Text'));
