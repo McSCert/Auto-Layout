@@ -12,7 +12,7 @@ function layout = vertAlign(layout)
 
 % Figure out which blocks to try aligning.
 %   Currently requires the block to have specifically 1 port.
-%   This should later at least account for 1 port on either side - will 
+%   This should later at least account for 1 port on either side - will
 %       also need to update the while loop later as it assumes just 1 port.
 blocksToTryAlign = {}; % Record by indices in layout.grid
 for j = 1:size(layout.grid,2) % for each column
@@ -81,18 +81,32 @@ while(loop)
         %then mark to move and remove from list to align
         %else leave in list to align
         doAlign = false; % Used to see if the variable has space to undergo the alignment
-        curPos = layout.grid{row,col}.position;
+        curBounds = getPositionWithName(layout.grid{row,col}.fullname);
         if shamt < 0
-            if row == 1 || layout.grid{row-1,col}.position(4) < curPos(2) + shamt
+            if row == 1
                 % Block has enough space to move
                 doAlign = true;
                 blocksToTryAlign(i) = [];
+            else
+                blockBounds = getPositionWithName(layout.grid{row-1,col}.fullname);
+                if blockBounds(4) < curBounds(2) + shamt
+                    % Block has enough space to move
+                    doAlign = true;
+                    blocksToTryAlign(i) = [];
+                end
             end
         elseif shamt > 0
-            if row == layout.colLengths(col) || layout.grid{row+1,col}.position(2) > curPos(4) + shamt
+            if row == layout.colLengths(col)
                 % Block has enough space to move
                 doAlign = true;
                 blocksToTryAlign(i) = [];
+            else
+                blockBounds = getPositionWithName(layout.grid{row+1,col}.fullname);
+                if blockBounds(2) > curBounds(4) + shamt
+                    % Block has enough space to move
+                    doAlign = true;
+                    blocksToTryAlign(i) = [];
+                end
             end
         else
             %No alignment needed
@@ -102,6 +116,7 @@ while(loop)
         %Physically do the alignment
         if doAlign
             %Align block
+            curPos = layout.grid{row,col}.position;
             layout.grid{row,col}.position = [curPos(1), curPos(2) + shamt, curPos(3), curPos(4) + shamt];
             set_param(layout.grid{row,col}.fullname, 'Position', layout.grid{row,col}.position)
             
