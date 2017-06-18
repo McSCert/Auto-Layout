@@ -22,7 +22,7 @@ function varargout = AutoLayoutGUI(varargin)
 
 % Edit the above text to modify the response to help AutoLayoutGUI
 
-% Last Modified by GUIDE v2.5 15-Jun-2015 16:21:56
+% Last Modified by GUIDE v2.5 17-Jun-2017 19:58:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -93,3 +93,12 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 
 close(handles.autoLayoutGUI)
 AutoLayout(gcs);
+
+
+% --- Executes on button press in pushbutton3.
+function pushbutton3_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+close(handles.autoLayoutGUI)
