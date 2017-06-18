@@ -28,7 +28,7 @@ end
 %% Define the second action: Auto Layout
 function schema = getAutoLayoutTool(callbackinfo)
     schema = sl_action_schema;
-    schema.label = 'AutoLayout';
+    schema.label = 'Auto Layout';
     schema.userdata = 'autolayout';
     schema.callback = @AutoLayoutToolCallback;
 end
