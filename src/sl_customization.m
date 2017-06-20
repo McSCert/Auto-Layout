@@ -5,24 +5,7 @@ end
 
 %% Define custom menu function
 function schemaFcns = getMcMasterTool(callbackInfo)
-    if strcmp(get_param(gcb, 'Selected'), 'on') && ...
-            strcmp(get_param(gcb, 'BlockType'), 'SubSystem')
-        schemaFcns = {@getAutoLayoutTool, @getFlattenSubsystem};
-    else
-        schemaFcns = {@getAutoLayoutTool};
-    end
-end
-
-%% Define the first action: Flatten Subsystem
-function schema = getFlattenSubsystem(callbackInfo)
-    schema = sl_action_schema;
-    schema.label = 'Flatten Subsystem';
-    schema.userdata = 'flattenSubsystem';
-    schema.callback = @FlattenSubsystemCallback;
-end
-
-function FlattenSubsystemCallback(callbackInfo)
-    FlattenSubsystem(gcs, gcbs);
+    schemaFcns = {@getAutoLayoutTool};
 end
 
 %% Define the second action: Auto Layout
