@@ -20,97 +20,30 @@ if strcmp(note_rule, 'on-right')
     [~,topBound,rightBound,botBound] = sideExtremes(layout, portlessInfo, ignorePortlessBlocks);
     
     top = topBound;
-    right = rightBound + arbitraryBuffer;
+    left = rightBound + arbitraryBuffer;
     
     widest = 0;
     
     for i = 1:length(annotations)
         
         % Find width and height to maintain during repositioning
+        bounds = boundingBox(annotations(i));
+        
+        width = bounds(3) - bounds(1);
+        height = bounds(4) - bounds(2);
+        
+        % Get current position
         pos = get_param(annotations(i),'Position');
         
-        ver = version('-release');
-        % Annotation position values used to only contain an anchor point
-        % for top-left (given as [left, top]).
-        %
-        % Since the older version code seems to work in all versions,
-        % the following should work in all versions even though I don't
-        % know what version the change happened in (first new version is 
-        % somewhere between 2012b and 2014b (inclusive)).
-        isAnchorVer = str2num(ver(1:4)) < 2014 ...
-            | (str2num(ver(1:4)) == 2014 & strcmp(str2num(ver(5)),'a')); % if pre-2014b
+        adjustX = pos(1) - bounds(1);
+        adjustY = pos(2) - bounds(2);
         
-        % Annotation visual position used to depend on HorizontalAlignment
-        % and VerticalAlignment parameters.
-        %
-        % First new version is somewhere between 2015b and 2016b
-        % (inclusive).
-        isPositionWithAlignmentVer = str2num(ver(1:4)) < 2016; % if pre-2016a
-        
-        if isAnchorVer %& isPositionWithAlignmentVer
-            width = annotationStringWidth(annotations(i), get_param(annotations(i),'Text'));
-            height = annotationStringHeight(annotations(i), get_param(annotations(i),'Text'));
-            
-            if strcmp(get_param(annotations(i), 'HorizontalAlignment'), 'center')
-                adjustRight = ceil(0.5*width);
-            elseif strcmp(get_param(annotations(i), 'HorizontalAlignment'), 'right')
-                adjustRight = width;
-            elseif strcmp(get_param(annotations(i), 'HorizontalAlignment'), 'left')
-                adjustRight = 0;
-            else
-                error(['Error in ' mfilename ', unexpected HorizontalAlignment parameter value.']);
-            end
-            
-            if strcmp(get_param(annotations(i), 'VerticalAlignment'), 'middle')
-                adjustTop = ceil(0.5*height);
-            elseif strcmp(get_param(annotations(i), 'VerticalAlignment'), 'bottom')
-                adjustTop = height;
-            elseif strcmp(get_param(annotations(i), 'VerticalAlignment'), 'top')
-                adjustTop = 0;
-            else
-                error(['Error in ' mfilename ', unexpected VerticalAlignment parameter value.']);
-            end
-            
-            effectiveRight = right + adjustRight;
-            effectiveTop = top + adjustTop;
-
-            % Place annotation below previous or in top-right
-            set_param(annotations(i),'Position', [effectiveRight, effectiveTop])
-        elseif isPositionWithAlignmentVer %& ~isAnchorVer
-            width = pos(3) - pos(1);
-            height = pos(4) - pos(2);
-            
-            if strcmp(get_param(annotations(i), 'HorizontalAlignment'), 'center')
-                adjustRight = ceil(0.5*width);
-            elseif strcmp(get_param(annotations(i), 'HorizontalAlignment'), 'right')
-                adjustRight = width;
-            elseif strcmp(get_param(annotations(i), 'HorizontalAlignment'), 'left')
-                adjustRight = 0;
-            else
-                error(['Error in ' mfilename ', unexpected HorizontalAlignment parameter value.']);
-            end
-            
-            if strcmp(get_param(annotations(i), 'VerticalAlignment'), 'middle')
-                adjustTop = ceil(0.5*height);
-            elseif strcmp(get_param(annotations(i), 'VerticalAlignment'), 'bottom')
-                adjustTop = height;
-            elseif strcmp(get_param(annotations(i), 'VerticalAlignment'), 'top')
-                adjustTop = 0;
-            else
-                error(['Error in ' mfilename ', unexpected VerticalAlignment parameter value.']);
-            end
-            
-            effectiveRight = right + adjustRight;
-            effectiveTop = top + adjustTop;
-            
-            % Place annotation below previous or in top-right
-            set_param(annotations(i),'Position', [effectiveRight, effectiveTop, effectiveRight + width, effectiveTop + height])
+        if length(pos) == 2 % Older MATLAB version
+            set_param(annotations(i),'Position', [left + adjustX, top + adjustY])
+        elseif length(pos) == 4
+            set_param(annotations(i),'Position', [left + adjustX, top + adjustY, left + adjustX + width, top + adjustY + height])
         else
-            width = pos(3) - pos(1);
-            height = pos(4) - pos(2);
-            
-            % Place annotation below previous or in top-right
-            set_param(annotations(i),'Position', [right, top, right + width, top + height])
+            error(['Error in ', mfilename, '. Expecting 2 or 4 values in annotation position parameter.'])
         end
         
         if width > widest
@@ -118,7 +51,7 @@ if strcmp(note_rule, 'on-right')
         end
         
         if top + height > botBound % New annotation column to avoid extending too far down
-            right = right + widest + arbitraryBuffer;
+            left = left + widest + arbitraryBuffer;
             top = topBound;
             widest = 0;
         else
