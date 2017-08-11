@@ -27,12 +27,12 @@ function width = getTextWidth(string,fontName,fontSize)
         return
     end
 
-    %Create the text in a figure and check the size of that
+    % Create the text in a figure and check the size of that
     testFig = figure;
     uicontrol(testFig)
     x = uicontrol('Style', 'text', 'FontName', fontName, 'FontSize', fontSize);
     set(x, 'String', string);
     size = get(x, 'extent');
-    width = size(3);
+    width = size(3)-size(1);
     close(testFig);
 end
