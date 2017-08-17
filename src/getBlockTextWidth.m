@@ -134,7 +134,7 @@ function neededWidth = getBlockTextWidth(block)
             neededWidth = blockStringWidth(block, string);
             
         case 'Constant'
-            string = get_param(block, 'Name');
+            string = get_param(block, 'Value');
             neededWidth = blockStringWidth(block, string);
         
         case 'ModelReference'
@@ -167,6 +167,13 @@ function neededWidth = getBlockTextWidth(block)
             string = get_param(block, 'Gain');
             neededWidth = blockStringWidth(block, string);
             
+        case 'Switch'
+            criteria = get_param(block, 'Criteria');
+            thresh = get_param(block, 'Threshold');
+            string = strrep(strrep(criteria, 'u2 ', ''), 'Threshold', thresh);
+            stringWidth = blockStringWidth(block, string);
+            
+            neededWidth = ceil(2*stringWidth/5)*5+5; % Appoximate -- decided through some test cases
         otherwise
             neededWidth = 0;
     end
