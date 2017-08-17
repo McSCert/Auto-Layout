@@ -33,23 +33,25 @@ end
 if nargin == 4
     % Create annotation in given system
     name = varargin{1};
-    hdl = add_block('built-in/Note', [name '/annotation'], 'MakeNameUnique', 'On', ...
-        'Text', string, 'FontName', fontName, 'FontSize', fontSize);
-    ob = get_param(hdl, 'Object');
-    bounds = ob.getBounds;
-    delete(hdl)
+    [handle, bounds] = createNoteGetDims();
+    delete(handle)
 else
     % Create dummy model for the system and create annotation
     name = new_system_makenameunique('TempToFindTextSize');
     open_system(name)
-    hdl = add_block('built-in/Note', [name '/annotation'], ...
-        'Text', string, 'FontName', fontName, 'FontSize', fontSize);
-    ob = get_param(hdl, 'Object');
-    bounds = ob.getBounds;
+    [~, bounds] = createNoteGetDims();
     close_system(name, 0)
 end
 
 dims = bounds(3:4)-bounds(1:2);
+
+    function [hdl, bnds] = createNoteGetDims()
+        % Create note, then get dimensions
+        hdl = add_block('built-in/Note', [name '/annotation'], ...
+            'Text', string, 'FontName', fontName, 'FontSize', fontSize);
+        ob = get_param(hdl, 'Object');
+        bnds = ob.getBounds;
+    end
 end
 
 % % Old method - did not always get correct values for unknown reasons
