@@ -8,5 +8,6 @@ function width = blockStringWidth(block, string)
     if fontSize == -1
         fontSize = get_param(bdroot(block), 'DefaultBlockFontSize');
     end
-    width = getTextWidth(string,fontName,fontSize);
+    dims = getTextDims(string, fontName, fontSize, get_param(block, 'Parent'));
+    width = dims(1);
 end
