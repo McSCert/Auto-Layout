@@ -8,5 +8,6 @@ function height = blockStringHeight(block, string)
     if fontSize == -1
         fontSize = get_param(bdroot(block), 'DefaultBlockFontSize');
     end
-    height = getTextHeight(string,fontName,fontSize);
+    dims = getTextDims(string, fontName, fontSize, get_param(block, 'Parent'));
+    height = dims(2);
 end
