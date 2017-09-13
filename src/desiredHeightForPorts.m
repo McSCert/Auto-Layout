@@ -9,7 +9,7 @@ function desiredHeight = desiredHeightForPorts(block, varargin)
 %       varargin{2}     Indicates desired space above/below the top/bottom
 %                       ports of a block. Default uses a simple algorithm with
 %                       a value of either 5 or 30 depending on the block.
-%                       Arguments beyond the third are ignored.
+%                       Arguments beyond the second are ignored.
 %   
 %   Outputs:
 %       desiredHeight   Desired block height to accomodate its ports.
