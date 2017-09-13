@@ -16,8 +16,7 @@ if strcmp(get_param(block,'ShowName'),'on')
     blockWidth = position(3) - position(1);
     
     name = get_param(block, 'Name');
-    nameHeight = blockStringHeight(block, name);
-    nameWidth = blockStringWidth(block, name);
+    [nameHeight, nameWidth] = blockStringDims(block, name);
     namePlace = get_param(block, 'NamePlacement');
     
     if nameWidth > blockWidth

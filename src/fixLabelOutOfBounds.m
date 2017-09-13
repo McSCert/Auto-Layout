@@ -31,7 +31,7 @@ function labelSize = getLabelSize(block)
 % AutoLayout places it initially and we don't want to take that into account
 
     if strcmp(get_param(block, 'ShowName'),'on')
-        labelSize = blockStringWidth(block, get_param(block, 'Name'));
+        [~, labelSize] = blockStringDims(block, get_param(block, 'Name'));
     else
         labelSize = 0;
     end

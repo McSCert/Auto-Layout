@@ -18,10 +18,10 @@ function neededWidth = getBlockTextWidth(block)
         case 'SubSystem'
             if strcmp(get_param(block, 'MaskType'), 'DocBlock')
                 docString = 'DOC';
-                docWidth = blockStringWidth(block, docString);
+                [~, docWidth] = blockStringDims(block, docString);
                 
                 docTypeString = get_param(block,'DocumentType');
-                docTypeWidth = blockStringWidth(block, docTypeString);
+                [~, docTypeWidth] = blockStringDims(block, docTypeString);
                 
                 neededWidth = docWidth + docTypeWidth;
             else
@@ -39,7 +39,7 @@ function neededWidth = getBlockTextWidth(block)
             leftWidth = 0;
             for i = 1:length(inports)
                 string = get_param(inports{i}, 'Name');
-                width = blockStringWidth(block, string);
+                [~, width] = blockStringDims(block, string);
                 if width > leftWidth
                     leftWidth = width;
                 end
@@ -48,7 +48,7 @@ function neededWidth = getBlockTextWidth(block)
             rightWidth = 0;
             for i = 1:length(outports)
                 string = get_param(outports{i}, 'Name');
-                width = blockStringWidth(block, string);
+                [~, width] = blockStringDims(block, string);
                 if width > rightWidth
                     rightWidth = width;
                 end
@@ -56,7 +56,9 @@ function neededWidth = getBlockTextWidth(block)
             
             if strcmp(get_param(block, 'Mask'),'on')
                 maskType = get_param(block, 'MaskType');
-                centerWidth = max(blockStringWidth(block, block),blockStringWidth(block, maskType));
+                [~, blockWidth] = blockStringDims(block, block);
+                [~, maskWidth] = blockStringDims(block, maskType);
+                centerWidth = max(blockWidth,maskWidth);
             else
 %                 maskType = '';
                 centerWidth = 0;
@@ -64,7 +66,7 @@ function neededWidth = getBlockTextWidth(block)
             
 %             if strcmp(get_param(block,'ShowName'),'on')
 %                 string = block;
-%                 width = blockStringWidth(block, string);
+%                 [~, width] = blockStringDims(block, string);
 %                 if width > centerWidth
 %                     centerWidth = width;
 %                 end
@@ -83,7 +85,7 @@ function neededWidth = getBlockTextWidth(block)
             expressions = [{ifExpression} elseIfExpressions];
             width = 0;
             for i = 1:length(expressions)
-                width = blockStringWidth(block, expressions{i});
+                [~, width] = blockStringDims(block, expressions{i});
                 if width > width
                     width = width;
                 end
@@ -101,7 +103,7 @@ function neededWidth = getBlockTextWidth(block)
             else
                 throw(tagVisException)
             end
-            neededWidth = blockStringWidth(block, string);
+            [~, neededWidth] = blockStringDims(block, string);
             
         case 'From'
             string = get_param(block, 'gototag');
@@ -114,32 +116,32 @@ function neededWidth = getBlockTextWidth(block)
             else
                 throw(tagVisException)
             end
-            neededWidth = blockStringWidth(block, string);
+            [~, neededWidth] = blockStringDims(block, string);
 
         case 'GotoTagVisibility'
             string = get_param(block, 'gototag');
             string = ['[' string ']']; % Add for good measure (ideally would know how to check what brackets if any)
-            neededWidth = blockStringWidth(block, string);
+            [~, neededWidth] = blockStringDims(block, string);
             
         case 'DataStoreRead'
             string = get_param(block, 'DataStoreName');
-            neededWidth = blockStringWidth(block, string);
+            [~, neededWidth] = blockStringDims(block, string);
             
         case 'DataStoreWrite'
             string = get_param(block, 'DataStoreName');
-            neededWidth = blockStringWidth(block, string);
+            [~, neededWidth] = blockStringDims(block, string);
 
         case 'DataStoreMemory'
             string = get_param(block, 'DataStoreName');
-            neededWidth = blockStringWidth(block, string);
+            [~, neededWidth] = blockStringDims(block, string);
             
         case 'Constant'
             string = get_param(block, 'Value');
-            neededWidth = blockStringWidth(block, string);
+            [~, neededWidth] = blockStringDims(block, string);
         
         case 'ModelReference'
             string = get_param(block, 'ModelName');
-            modelNameWidth = blockStringWidth(block, string);
+            [~, modelNameWidth] = blockStringDims(block, string);
             
             try
                 [inWidth, outWidth] = getModelReferencePortWidths(block);
@@ -147,12 +149,12 @@ function neededWidth = getBlockTextWidth(block)
             catch ME
                 if strcmp(ME.identifier, 'Simulink:Commands:OpenSystemUnknownSystem')
                     string = 'Model Not Found';
-                    defaultCenterWidth = blockStringWidth(block, string);
+                    [~, defaultCenterWidth] = blockStringDims(block, string);
                     inWidth = 0;
                     outWidth = 0;
                 elseif strcmp(ME.identifier, 'Simulink:LoadSave:InvalidBlockDiagramName')
                     string = 'Unspecified Model Name';
-                    defaultCenterWidth = blockStringWidth(block, string);
+                    [~, defaultCenterWidth] = blockStringDims(block, string);
                     inWidth = 0;
                     outWidth = 0;
                 else
@@ -165,13 +167,13 @@ function neededWidth = getBlockTextWidth(block)
             
         case 'Gain'
             string = get_param(block, 'Gain');
-            neededWidth = blockStringWidth(block, string);
+            [~, neededWidth] = blockStringDims(block, string);
             
         case 'Switch'
             criteria = get_param(block, 'Criteria');
             thresh = get_param(block, 'Threshold');
             string = strrep(strrep(criteria, 'u2 ', ''), 'Threshold', thresh);
-            stringWidth = blockStringWidth(block, string);
+            [~, stringWidth] = blockStringDims(block, string);
             
             neededWidth = ceil(2*stringWidth/5)*5+5; % Appoximate -- decided through some test cases
         otherwise
@@ -195,7 +197,7 @@ function biggestNameWidth = getBiggestNameWidth(block, objects)
 biggestNameWidth = 0;
 for i = 1:length(objects)
     string = get_param(objects{i}, 'Name');
-    width = blockStringWidth(block, string);
+    [~, width] = blockStringDims(block, string);
     if width > biggestNameWidth
         biggestNameWidth = width;
     end
