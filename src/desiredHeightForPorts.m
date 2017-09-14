@@ -1,7 +1,7 @@
 function desiredHeight = desiredHeightForPorts(block, varargin)
-%DESIREDHEIGHTFORPORTS Determines a desirable block height to accomodate
-%   its ports.
-%   Note: This function currently assumes blocks have not been rotated
+% DESIREDHEIGHTFORPORTS Determine a desirable block height to accomodate
+% its ports.
+% Note: This function assumes blocks have not been rotated.
 %
 %   Inputs:
 %       block           Full name of a block (character array).
@@ -14,25 +14,25 @@ function desiredHeight = desiredHeightForPorts(block, varargin)
 %   Outputs:
 %       desiredHeight   Desired block height to accomodate its ports.
 
-ports = get_param(block, 'Ports');
-maxPorts = max(ports(1),ports(2));
+    ports = get_param(block, 'Ports');
+    maxPorts = max(ports(1),ports(2));
 
-if nargin > 2
-    buff = varargin{2};
-else
-    if maxPorts > 1
-        buff = 30; % Buffer above/below the top/bottom port of a block
+    if nargin > 2
+        buff = varargin{2};
     else
-        % Allow small heights for blocks with a max of one in/outport
-        buff = 5; % Buffer above/below the top/bottom port of a block
+        if maxPorts > 1
+            buff = 30; % Buffer above/below the top/bottom port of a block
+        else
+            % Allow small heights for blocks with a max of one in/outport
+            buff = 5; % Buffer above/below the top/bottom port of a block
+        end
     end
-end
 
-if nargin >= 2
-    pSpace = varagin{1}; % Desired spacing between ports
-else
-    pSpace = 40; % Desired spacing between ports
-end
+    if nargin >= 2
+        pSpace = varargin{1}; % Desired spacing between ports
+    else
+        pSpace = 40; % Desired spacing between ports
+    end
 
-desiredHeight = pSpace*(maxPorts-1) + 2*buff;
+    desiredHeight = pSpace*(maxPorts-1) + 2*buff;
 end
