@@ -1,7 +1,11 @@
 function sels = gcls
-%% gcls Get all currently selected lines
-%   gcls Returns a cell array of the currently selected line handles.
-%   M. Bialy
+%% GCLS Get all currently selected lines.
+%
+% 	Inputs:
+% 		N/A
+%
+% 	Outputs:
+%		sels   Cell array of line handles.
 
     objs = find_system(gcs,'LookUnderMasks','on','Findall','on','FollowLinks','on','Type','line','Selected','on');
     sels = flipud(objs);    % Flip to put in correct order (top to bottom position in model)
