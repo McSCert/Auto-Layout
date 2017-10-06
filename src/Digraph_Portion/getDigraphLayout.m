@@ -23,14 +23,17 @@ blocksInfo = struct('fullname', systemBlocks);
 yMax = max(p.YData);
 yMin = min(p.YData);
 
-scale = 90; % Arbitrary scaling factor to determine starting positions
+% Set semi-arbitrary scaling factors to determine starting positions
+scale = 90; % Pixels per unit increase in x or y in the plot
+scaleBack = 3; % Scale-back factor to determine block size
 
 for i = 1:length(systemBlocks)
-    blockwidth  = scale/3;
-    blockheight = scale/3;
+    blockwidth  = scale/scaleBack;
+    blockheight = scale/scaleBack;
     blockx      = scale*p.XData(i);
     blocky      = scale*yflip(yMax, yMin, p.YData(i));
     
+    % Keep the block centered where the node was
     left    = round(blockx - blockwidth/2);
     right   = round(blockx + blockwidth/2);
     top     = round(blocky - blockheight/2);
