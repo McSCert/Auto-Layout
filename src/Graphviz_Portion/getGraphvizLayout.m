@@ -1,8 +1,13 @@
-function blocksInfo = getLayout(address)
-% testinglayout.m
-%	combine all autolayout components into one script file that takes
-%	user input 
-%	
+function blocksInfo = getGraphvizLayout(address)
+% GETGRAPHVIZLAYOUT Perform the layout analysis on the system with Graphviz.
+%
+%   Input:
+%       address     System address in which to perform the analysis.
+%
+%   Output:
+%       blocksInfo  Struct of data representing the results of the
+%                   analysis.
+%
 %	first get the mdl file and the specific subsystem or system to
 %	autolayout
 %	next create the dotfile from the system or subsystem using
@@ -11,7 +16,7 @@ function blocksInfo = getLayout(address)
 %	files
 %	use Tplainparser class to use graphviz output to reposition
 %	simulink system/subsystem
-%
+
 % Get current directory
 % Change directory to predetermined batch location
     if ~isunix
