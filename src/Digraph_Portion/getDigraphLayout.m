@@ -23,11 +23,11 @@ blocksInfo = struct('fullname', systemBlocks);
 yMax = max(p.YData);
 yMin = min(p.YData);
 
-scale = 60; % Arbitrary scaling factor to determine starting positions
+scale = 90; % Arbitrary scaling factor to determine starting positions
 
 for i = 1:length(systemBlocks)
-    blockwidth  = scale/2;
-    blockheight = scale/2;
+    blockwidth  = scale/3;
+    blockheight = scale/3;
     blockx      = scale*p.XData(i);
     blocky      = scale*yflip(yMax, yMin, p.YData(i));
     
