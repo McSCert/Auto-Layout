@@ -14,7 +14,7 @@ function AutoLayout(address)
 %           performs the same functionally, but is laid out to be more
 %           human readable.
 
-% Constants:
+%% Constants:
 GRAPHING_ALG = getAutoLayoutConfig('graphing_alg', 'auto'); %Indicates which graphing algorithm to use
 SHOW_NAMES = getAutoLayoutConfig('show_names', 'no-change'); %Indicates which block names to show
 PORTLESS_RULE = getAutoLayoutConfig('portless_rule', 'bottom'); %Indicates how to place portless blocks
@@ -23,6 +23,7 @@ OUTPORT_RULE = getAutoLayoutConfig('outport_rule', 'none'); %Indicates how to pl
 SORT_PORTLESS = getAutoLayoutConfig('sort_portless', 'blocktype'); %Indicates how to group portless blocks
 NOTE_RULE = getAutoLayoutConfig('note_rule', 'on-right'); %Indicates what to do with annotations
 
+%%
 % Check number of arguments
 try
     assert(nargin == 1)
@@ -55,13 +56,14 @@ catch ME
     end
 end
 
-% Get blocks in address
+%% Get blocks in address
 systemBlocks = find_system(address, 'SearchDepth',1);
 systemBlocks = systemBlocks(2:end); %Remove address itself
 
-% Make sum blocks rectangular so that they will look better
+%% Make sum blocks rectangular so that they will look better
 makeSumsRectangular(systemBlocks);
 
+%%
 % Find which blocks have no ports
 portlessBlocks = getPortlessBlocks(systemBlocks);
 
@@ -76,6 +78,7 @@ end
 % Find where to place portless blocks in the final layout
 [portlessInfo, smallOrLargeHalf] = getPortlessInfo(PORTLESS_RULE, systemBlocks, portlessBlocks);
 
+%%
 if strcmp(SHOW_NAMES, 'no-change')
     % Find which block names are showing at the start
     nameShowing = containers.Map();
@@ -116,9 +119,8 @@ end
 % blocksInfo -  keeps track of where to move blocks so that they can all be
 %               moved at the end as opposed to throughout all of AutoLayout
 blocksInfo = getLayout(address);
-%%
 
-% Show block names as appropriate (getLayout sets it off)
+%% Show block names as appropriate (getLayout sets it off)
 if strcmp(SHOW_NAMES, 'no-change')
     % Return block names to be showing or not showing as they were
     % initially
@@ -147,6 +149,7 @@ else
     return
 end
 
+%%
 % Remove portless blocks from blocksInfo (they will be handled
 % separately at the end)
 for i = length(blocksInfo):-1:1 % Go backwards to remove elements without disrupting the indices that need to be checked after
@@ -159,10 +162,12 @@ for i = length(blocksInfo):-1:1 % Go backwards to remove elements without disrup
     end
 end
 
+%%
 % Find relative positioning of blocks in the layout from getLayout
 layout = getRelativeLayout(blocksInfo); %layout will also take over the role of blocksInfo
 updateLayout(address, layout); % Only included here for feedback purposes
 
+%%
 %TODO Split into three functions:
 %-ResizeBlocks in which blocks are resized while others are moved to
 %accomodate the changes
@@ -207,6 +212,7 @@ end % elseif 'none', then do nothing
 %Update block positions according to layout
 updateLayout(address, layout);
 
+%%
 % Check that sort_portless is set properly
 if ~AinB(SORT_PORTLESS, {'blocktype', 'masktype_blocktype', 'none'})
     % Invalid config setting
@@ -223,15 +229,18 @@ portlessInfo = repositionPortlessBlocks(portlessInfo, layout, PORTLESS_RULE, sma
 %Update block positions according to portlessInfo
 updatePortless(address, portlessInfo);
 
+%%
 % Get all annotations in address
 annotations = find_system(address,'FindAll','on','SearchDepth',1,'Type','annotation');
 % Move all annotations to the right of the system
 handleAnnotations(layout, portlessInfo, annotations, NOTE_RULE);
 
+%%
 % Orient blocks left-to-right and place name on bottom
 %setOrientations(systemBlocks);
 setNamePlacements(systemBlocks);
 
+%%
 % Zoom on system (if it ends up zoomed out that should mean there is
 % something near the borders)
 set_param(address, 'Zoomfactor', 'Fit to view');
