@@ -7,6 +7,8 @@ function makeSumsRectangular(blocks)
 for i = 1:length(blocks)
     if strcmp(get_param(blocks{i},'BlockType'),'Sum')
         set_param(blocks{i},'IconShape','rectangular');
+        signs = strrep(get_param(blocks{i},'ListOfSigns'),'|','');
+        set_param(blocks{i},'ListOfSigns',signs);
     end
 end
 
