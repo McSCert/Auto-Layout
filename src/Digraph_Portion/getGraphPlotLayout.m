@@ -1,6 +1,6 @@
-function blocksInfo = getDigraphLayout(address)
-% GETDIGRAPHLAYOUT Perform the layout analysis on the system with MATLAB's 
-%   digraph function.
+function blocksInfo = getGraphPlotLayout(address)
+% GETGRAPHPLOTLAYOUT Creates a GraphPlot representing the system using MATLAB 
+%   functions and then lays out the system according to that plot.
 %
 %   Input:
 %       address     System address in which to perform the analysis.

@@ -15,7 +15,7 @@ function AutoLayout(address)
 %           human readable.
 
 %% Constants:
-GRAPHING_ALG = getAutoLayoutConfig('graphing_alg', 'auto'); %Indicates which graphing algorithm to use
+GRAPHING_METHOD = getAutoLayoutConfig('graphing_method', 'auto'); %Indicates which graphing method to use
 SHOW_NAMES = getAutoLayoutConfig('show_names', 'no-change'); %Indicates which block names to show
 PORTLESS_RULE = getAutoLayoutConfig('portless_rule', 'bottom'); %Indicates how to place portless blocks
 INPORT_RULE = getAutoLayoutConfig('inport_rule', 'none'); %Indicates how to place inports
@@ -93,20 +93,20 @@ if strcmp(SHOW_NAMES, 'no-change')
 end
 
 %% Get Init Layout
-if strcmp(GRAPHING_ALG, 'auto')
+if strcmp(GRAPHING_METHOD, 'auto')
     ver = version('-release');
-    ge2015b = str2num(ver(1:4)) > 2015 || strcmp(ver(1:5),'2015b'); % logical: Greater-or-Equal to 2015b
+    ge2015b = str2num(ver(1:4)) > 2015 || strcmp(ver(1:5),'2015b'); % logical: version Greater-or-Equal to 2015b
     if ge2015b
-        %digraph
-        getLayout = @getDigraphLayout;
+        %graphplot
+        getLayout = @getGraphPlotLayout;
     else
         %graphviz
         getLayout = @getGraphvizLayout;
     end
-elseif strcmp(GRAPHING_ALG, 'digraph')
-    %digraph
-    getLayout = @getDigraphLayout;
-elseif strcmp(GRAPHING_ALG, 'graphviz')
+elseif strcmp(GRAPHING_METHOD, 'digraph')
+    %graphplot
+    getLayout = @getGraphPlotLayout;
+elseif strcmp(GRAPHING_METHOD, 'graphviz')
     %graphviz
     getLayout = @getGraphvizLayout;
 else

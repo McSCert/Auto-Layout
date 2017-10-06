@@ -1,13 +1,13 @@
-#GRAPHING_ALG Determines which graphing algorithm will be used for the initial
-#	layout. The chosen algorithm determines locations for nodes (blocks) in a 
-#	graph (Simulink diagram).
+#GRAPHING_METHOD Determines which method to use to generate an initial layout.
+#	The method looks at blocks as nodes and lines as edges to build a layered
+#	(hierarchical) plot which is then used to initially place the blocks.
 #Default is auto
 #
 #Acceptable parameter values are:
-#	digraph		(MATLAB graphing algorithm introduced in R2015b)
+#	graphplot	(Using built-in MATLAB functions compatible with R2015b and up)
 #	graphviz	(3rd party graphing algorithm which requires separate download)
-#	auto		(digraph if the MATLAB version is R2015b or above, else graphviz)
-graphing_alg: auto
+#	auto		(graphplot if the MATLAB version is R2015b or above, else graphviz)
+graphing_method: auto
 
 #SHOW_NAMES Indicates whether or not to show block names in the final layout. 
 #Default is no-change.
