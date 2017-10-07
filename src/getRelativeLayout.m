@@ -6,8 +6,8 @@ function [layout] = getRelativeLayout(blocksInfo)
 %
 %   Output:
 %       layout      Struct describing the layout of blocks in blocks info.
-%                   layout.grid is organized such that all blocks in
-%                   layout.grid{i,j} with the same j have the same x 
+%                   layout.grid is organized such that all blocks with the
+%                   same j in layout.grid{i,j} have the same x 
 %                   coordinate at their centre and such that the top 
 %                   position decreases with increase in i.
 %                   layout.colLengths is created such that
@@ -17,7 +17,7 @@ function [layout] = getRelativeLayout(blocksInfo)
 %                   The maximum j for layout.grid{i,j} is
 %                   size(layout.grid,2).
 %                   If (i <= colLengths(j)) then a block will be returned.
-%                   If (colLengths(j) < i <= size(blocksMatrix,1)) 
+%                   If (colLengths(j) < i <= size(layout.grid,1)) 
 %                   then [] will be returned.
 
     % Ordering is based on the horizontal midpoints of blocks. The justification 
@@ -31,12 +31,10 @@ function [layout] = getRelativeLayout(blocksInfo)
 	    [midXPos, ~] = rectCenter({blocksInfo(i).position});
 	    col = isWhere(midXPos, midXPositions);
 	    colLengths(col) = colLengths(col) + 1;
-% 	    grid{colLengths(col), col} = struct('fullname',{blocksInfo(i).fullname},'position',{blocksInfo(i).position});
         grid{colLengths(col), col} = blocksInfo(i);
     end
 
-    % Sort blocksMatrix
-% 	grid = sortBlocksMatrix(grid, colLengths);
+    % Sort grid
     grid = sortRelativeLayout(grid, colLengths);
     
     layout = struct('grid', {grid}, 'colLengths', {colLengths});
