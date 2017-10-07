@@ -18,10 +18,17 @@ p = plotSimulinkDigraph(address, dg2);
 set(0,'DefaultFigureVisible',defaultFigureVisible);
 
 systemBlocks = p.NodeLabel';
-blocksInfo = struct('fullname', systemBlocks);
+xs = p.XData;
+ys = p.YData;
 
-yMax = max(p.YData);
-yMin = min(p.YData);
+% keep = ~cellfun(@isempty,regexp(systemBlocks,'(:b$)','once'));
+% toss = ~cellfun(@isempty,regexp(systemBlocks,'(:[io][0-9]*$)','once')); % These aren't needed anymore
+% assert(all(xor(keep, toss)), 'Unexpected NodeLabel syntax.')
+% systemBlocks(toss) = [];
+% xs(toss) = [];
+% ys(toss) = [];
+
+blocksInfo = struct('fullname', systemBlocks);
 
 % Set semi-arbitrary scaling factors to determine starting positions
 scale = 90; % Pixels per unit increase in x or y in the plot
@@ -30,8 +37,8 @@ scaleBack = 3; % Scale-back factor to determine block size
 for i = 1:length(systemBlocks)
     blockwidth  = scale/scaleBack;
     blockheight = scale/scaleBack;
-    blockx      = scale*p.XData(i);
-    blocky      = scale*yflip(yMax, yMin, p.YData(i));
+    blockx      = scale*xs(i);
+    blocky      = scale*(max(ys) + min(ys) - ys(i)); % Accounting for different coordinate system between the plot and Simulink
     
     % Keep the block centered where the node was
     left    = round(blockx - blockwidth/2);
@@ -42,9 +49,4 @@ for i = 1:length(systemBlocks)
     pos = [left top right bottom];
     blocksInfo(i).position = pos;
 end
-
-    function ynew = yflip(ymax,ymin,y)
-        % Accounting for different coordinate system between the plot and Simulink
-        ynew = ymax + ymin - y;
-    end
 end
