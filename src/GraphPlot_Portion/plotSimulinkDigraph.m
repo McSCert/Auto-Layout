@@ -1,4 +1,4 @@
-    function h = plotSimulinkDigraph(sys, dg)
+function h = plotSimulinkDigraph(sys, dg)
 % PLOTSIMULINKDIGRAPH Plot a digraph representing a Simulink (sub)system in the 
 %   same fashion as a Simulink diagram, i.e., layered, left-to-right, etc.
 %
@@ -38,7 +38,7 @@
     
     % Use Simulink-like plot options
     % Info on options: https://www.mathworks.com/help/matlab/ref/graph.plot.html
-    ops = {'Layout', 'layered', 'Direction', 'right', 'AssignLayers', 'auto'};
+    ops = {'Layout', 'layered', 'Direction', 'right', 'AssignLayers', 'asap'};
     if ~isempty(src)
         ops = [ops 'Sources' {src}];
     end  

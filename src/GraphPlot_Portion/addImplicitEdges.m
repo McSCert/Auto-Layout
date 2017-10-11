@@ -1,5 +1,5 @@
 function dgNew = addImplicitEdges(sys, dg)
-% ADDIMPLICITEDGES Add edges to a digraph representings the implicit connections 
+% ADDIMPLICITEDGES Add edges to a digraph representing the implicit connections 
 %    between goto/froms.
 %
 %   Inputs:
