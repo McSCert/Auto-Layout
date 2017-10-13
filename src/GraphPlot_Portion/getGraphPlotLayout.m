@@ -14,7 +14,9 @@ dg2 = addImplicitEdges(address, dg);
 
 defaultFigureVisible = get(0,'DefaultFigureVisible');
 set(0,'DefaultFigureVisible','off');    % Don't show the figure
-p = plotSimulinkDigraph(address, dg2);
+% dg3 = addPorts(address, dg2);
+finalDg = dg2;
+p = plotSimulinkDigraph(address, finalDg);
 set(0,'DefaultFigureVisible',defaultFigureVisible);
 
 systemBlocks = p.NodeLabel';
@@ -24,9 +26,14 @@ ys = p.YData;
 % keep = ~cellfun(@isempty,regexp(systemBlocks,'(:b$)','once'));
 % toss = ~cellfun(@isempty,regexp(systemBlocks,'(:[io][0-9]*$)','once')); % These aren't needed anymore
 % assert(all(xor(keep, toss)), 'Unexpected NodeLabel syntax.')
-% systemBlocks(toss) = [];
-% xs(toss) = [];
-% ys(toss) = [];
+% systemBlocks = cellfun(@(x) x(1:end-2), systemBlocks(keep), 'UniformOutput', false);
+% xs = xs(keep);
+% ys = ys(keep);
+% % systemBlocks(toss) = [];
+% % xs(toss) = [];
+% % ys(toss) = [];
+
+systemBlocks = cellfun(@(x) x(1:end-2), systemBlocks, 'UniformOutput', false);
 
 blocksInfo = struct('fullname', systemBlocks);
 
