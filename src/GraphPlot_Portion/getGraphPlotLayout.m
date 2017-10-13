@@ -56,4 +56,42 @@ for i = 1:length(systemBlocks)
     pos = [left top right bottom];
     blocksInfo(i).position = pos;
 end
+
+%% TODO, make it so we don't need these two lines
+layout = getRelativeLayout(blocksInfo);
+updateLayout(address, layout);
+
+% Try to fix knots caused by the arbitrary ordering of out/inputs to a node
+for i = 1:length(systemBlocks)
+    ph = get_param(systemBlocks{i}, 'PortHandles');
+    out = ph.Outport;
+    if length(out) > 1
+        [snks, snkPositions] = arrangeSinks(systemBlocks{i}, true);
+        for j = 1:length(snks)
+            idx = findBlkInBlksInfo(blocksInfo, snks(j));
+            blocksInfo(idx).position = snkPositions(j, :);
+        end
+    end
+end
+for i = 1:length(systemBlocks)
+    ph = get_param(systemBlocks{i}, 'PortHandles');
+    in = ph.Inport;
+    if length(in) > 1
+        [srcs, srcPositions] = arrangeSources(systemBlocks{i}, true);
+        for j = 1:length(srcs)
+            idx = findBlkInBlksInfo(blocksInfo, srcs(j));
+            blocksInfo(idx).position = srcPositions(j, :);
+        end
+    end
+end
+
+    function idx = findBlkInBlksInfo(blxInfo, blk)
+        for z = 1:length(blxInfo)
+            if strcmp(blxInfo(z).fullname, blk{1})
+                idx = z;
+                return
+            end
+        end
+        error('Block not found in blxInfo');
+    end
 end
