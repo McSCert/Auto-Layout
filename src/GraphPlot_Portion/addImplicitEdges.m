@@ -44,7 +44,9 @@ function dgNew = addImplicitEdges(sys, dg)
         matchIdx = find(strcmp(get_param(gotos{i}, 'GotoTag'), fromTags));
         for j = 1:length(matchIdx)
             k = matchIdx(j);
-            dgNew = addedge(dgNew, gotos{i}, froms{k}, 1);
+            gotoName = applyNamingConvention(gotos{i});
+            fromName = applyNamingConvention(froms{k});
+            dgNew = addedge(dgNew, gotoName, fromName, 1);
         end
     end
     

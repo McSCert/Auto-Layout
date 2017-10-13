@@ -32,9 +32,11 @@ function h = plotSimulinkDigraph(sys, dg)
     
     % Get sources
     src = find_system(sys, 'SearchDepth', 1, 'BlockType', 'Inport');
+    src = strcat(src,':b');     % Apply naming convention
     
     % Get sinks
     snk = find_system(sys, 'SearchDepth', 1, 'BlockType', 'Outport');
+    snk = strcat(snk,':b');     % Apply naming convention
     
     % Use Simulink-like plot options
     % Info on options: https://www.mathworks.com/help/matlab/ref/graph.plot.html

@@ -2,9 +2,7 @@ function dg  = systemToDigraph(sys)
 % SYSTEMTODIGRAPH Create a digraph out of the subsystem. Takes Simulink blocks 
 %   as nodes and their singal line connections as edges. Weights are the
 %   default 1.
-%
-%   Inputs:
-%       sys     Path of the system for which to generate a digraph.
+% 
 %
 %   Outputs:
 %       dg      Digraph representing the system.
@@ -47,5 +45,6 @@ function dg  = systemToDigraph(sys)
             end
         end
     end
+    nodes = applyNamingConvention(nodes);
     dg = digraph(A, nodes);
 end

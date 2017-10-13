@@ -21,16 +21,20 @@ function dgNew = addPorts(sys, dg)
         nodeName = nodes(i);
         nodeName = nodeName{:};
         portInfo = get_param(nodeName, 'PortConnectivity');
+        portHandles = get_param(nodeName, 'PortHandles');
         inPortIdxs = find(~cellfun(@isempty, {portInfo.SrcPort}));
         outPortIdxs = find(~cellfun(@isempty, {portInfo.DstPort}));
         
+        nodeName = applyNamingConvention(nodeName);
+        
         if  length(inPortIdxs) > 1     % If multiple in ports
             newInPorts = cell(1, length(inPortIdxs));
-            for j = 1:length(inPortIdxs)   % For each port  
-                portName = [nodeName ':i' num2str(j)];
+            for j = 1:length(inPortIdxs)   % For each port
+                portName = portHandles.Inport;
+                portName = applyNamingConvention(portName(j));
                 newInPorts{j} = portName;
                 inInfo = portInfo(inPortIdxs(j));       
-                inName = getfullname(inInfo.SrcBlock);  
+                inName = applyNamingConvention(inInfo.SrcBlock);  
                 
                 dgNew = addnode(dgNew, portName);           % Add port node
                 dgNew = rmedge(dgNew, inName, nodeName);	% Delete incoming edge
@@ -44,11 +48,12 @@ function dgNew = addPorts(sys, dg)
         end
         if length(outPortIdxs) > 1      % If multiple out ports
             newOutPorts = cell(1, length(inPortIdxs));
-            for j = 1:length(outPortIdxs)   % For each port  
-                portName = [nodeName ':o' num2str(j)];
+            for j = 1:length(outPortIdxs)   % For each port
+                portName = portHandles.Outport;
+                portName = applyNamingConvention(portName(j));
                 newOutPorts{j} = portName;
                 outInfo = portInfo(outPortIdxs(j));       
-                outName = getfullname(outInfo.DstBlock);  
+                outName = applyNamingConvention(outInfo.DstBlock);  
 
                 dgNew = addnode(dgNew, portName);           % Add port node
                 dgNew = rmedge(dgNew, nodeName, outName);	% Delete outgoing edge
