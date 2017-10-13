@@ -56,7 +56,7 @@ function neededWidth = getBlockTextWidth(block)
             
             if strcmp(get_param(block, 'Mask'),'on')
                 maskType = get_param(block, 'MaskType');
-                [~, blockWidth] = blockStringDims(block, block);
+                [~, blockWidth] = blockStringDims(block, get_param(block, 'Name'));
                 [~, maskWidth] = blockStringDims(block, maskType);
                 centerWidth = max(blockWidth,maskWidth);
             else
