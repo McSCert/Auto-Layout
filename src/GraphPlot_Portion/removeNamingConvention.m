@@ -15,5 +15,5 @@ function name = removeNamingConvention(handle)
         error('Invalid handle.');
     end
 
-    % TODO
+    name = getfullname(handle);
 end
