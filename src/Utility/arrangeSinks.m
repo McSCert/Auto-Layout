@@ -1,6 +1,15 @@
-function [snks, snkPositions] = arrangeSinks(blk)
-% Swap block vertical positions to order destination blocks to the given block, 
-%   blk. -- Just finds the positions to allow for this.
+function [snks, snkPositions] = arrangeSinks(blk, doMove)
+% ARRANGESINKS Finds sinks of block, blk, and swaps their vertical
+%   positions to be ordered with respect to ports.
+%
+%   Inputs:
+%       blk     A Simulink block fullname or handle
+%       doMove  Logical true to move the blocks in the system. False to
+%               just return information to do the move.
+%   Outputs:
+%       snks            Cell array of source block name.
+%       snkPositions    Array of positions to move the srcs to 
+%                       (uses same indexing as srcs).
 % 
 % Assumes blocks use the tradional rotation (inports on left, outports on right)
 
@@ -36,4 +45,11 @@ end
 
 snks = orderedSnks;
 snkPositions = newPositions;
+
+if doMove
+    % Set positions
+    for j = 1:length(snks)
+        set_param(snks{j}, 'Position', snkPositions(j, :))
+    end
+end
 end
