@@ -66,10 +66,12 @@ for i = 1:length(systemBlocks)
     ph = get_param(systemBlocks{i}, 'PortHandles');
     out = ph.Outport;
     if length(out) > 1
-        [snks, snkPositions] = arrangeSinks(systemBlocks{i}, true);
-        for j = 1:length(snks)
-            idx = findBlkInBlksInfo(blocksInfo, snks(j));
-            blocksInfo(idx).position = snkPositions(j, :);
+        [snks, snkPositions, didMove] = arrangeSinks(systemBlocks{i}, true);
+        if didMove
+            for j = 1:length(snks)
+                idx = findBlkInBlksInfo(blocksInfo, snks(j));
+                blocksInfo(idx).position = snkPositions(j, :);
+            end
         end
     end
 end
@@ -77,10 +79,12 @@ for i = 1:length(systemBlocks)
     ph = get_param(systemBlocks{i}, 'PortHandles');
     in = ph.Inport;
     if length(in) > 1
-        [srcs, srcPositions] = arrangeSources(systemBlocks{i}, true);
-        for j = 1:length(srcs)
-            idx = findBlkInBlksInfo(blocksInfo, srcs(j));
-            blocksInfo(idx).position = srcPositions(j, :);
+        [srcs, srcPositions, didMove] = arrangeSources(systemBlocks{i}, true);
+        if didMove
+            for j = 1:length(srcs)
+                idx = findBlkInBlksInfo(blocksInfo, srcs(j));
+                blocksInfo(idx).position = srcPositions(j, :);
+            end
         end
     end
 end
