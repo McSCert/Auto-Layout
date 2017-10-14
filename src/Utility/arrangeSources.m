@@ -1,46 +1,65 @@
-function [srcs, srcPositions] = arrangeSources(blk, doMove)
+function [srcs, srcPositions, didMove] = arrangeSources(blk, doMove)
 % ARRANGESOURCES Finds sources of block, blk, and swaps their vertical
 %   positions to be ordered with respect to ports.
+%
+%   If there are branches or if a source has multiple outports,
+%   then no arranging will be attempted, but positions to rearrange them
+%   will still be given as output.
 %
 %   Inputs:
 %       blk     A Simulink block fullname or handle
 %       doMove  Logical true to move the blocks in the system. False to
 %               just return information to do the move.
+%
 %   Outputs:
 %       srcs            Cell array of source block name.
 %       srcPositions    Array of positions to move the srcs to 
 %                       (uses same indexing as srcs).
+%       didMove         True if the blocks were moved, else false. 
+%                       Notes: If doMove is false, this will always be false.
+%                       If doMove is true, this may still be false as a
+%                       result of branches/excessive ports (described
+%                       above).
 % 
 % Assumes blocks use the tradional rotation (inports on left, outports on right)
+%
 
 % TODO implement for triggers and if actions
-% TODO account for branches
-% TODO account for connected blocks with numerous outports
 
 % Find desired order
 ph = get_param(blk, 'PortHandles');
 in = ph.Inport;
-orderedSrcs = {};
-positions = [];
-tops = [];
+len = length(in);
+orderedSrcs = cell(1, len);
+positions = zeros(len,4);
+tops = zeros(len,1);
 for i = 1:length(in)
     lh = get_param(in(i), 'Line');
     src = get_param(lh, 'SrcPortHandle');
-    orderedSrcs = [orderedSrcs, {get_param(src, 'Parent')}];
+    orderedSrcs{i} = get_param(src, 'Parent');
     
-    positions = [positions; get_param(orderedSrcs{i}, 'Position')];
-    tops = [tops, positions(i, 2)];
+    srcph = get_param(orderedSrcs{i}, 'PortHandles');
+    srcout = srcph.Outport;
+    if isBranching(lh)
+        doMove = false;
+    end
+    if length(srcout) > 1
+        doMove = false;
+    end
+    
+    positions(i,:) = get_param(orderedSrcs{i}, 'Position');
+    tops(i) = positions(i, 2);
 end
 
 % Get old order
 newTops = sort(tops);
 
 % Use old order to swap top positions to place in the desired order
-newPositions = [];
-for j = 1:length(newTops)
+newPositions = zeros(len,4);
+for j = 1:len %length(newTops)
     newTop = newTops(j);
     newBot = newTops(j) + positions(j,4) - positions(j,2);
-    newPositions = [newPositions; positions(j,1), newTop, positions(j,3), newBot];
+    newPositions(j,:) = [positions(j,1), newTop, positions(j,3), newBot];
 end
 
 srcs = orderedSrcs;
@@ -48,8 +67,11 @@ srcPositions = newPositions;
 
 if doMove
     % Set positions
-    for j = 1:length(srcs)
+    for j = 1:len %length(srcs)
         set_param(srcs{j}, 'Position', srcPositions(j, :))
     end
+    didMove = true;
+else
+    didMove = false;
 end
 end
