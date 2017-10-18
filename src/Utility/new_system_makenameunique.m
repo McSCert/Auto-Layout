@@ -1,21 +1,18 @@
-function name = new_system_makenameunique(baseName, varargin)
-% Use varargin to pass additional arguments to the new_system command
+function h = new_system_makenameunique(baseName, varargin)
+% NEW_SYSTEM_MAKENAMEUNIQUE new_system command except that it appends a
+%   number to the name to ensure a file with the name does not exist.
+%
+%   For more information about new_system, type: "help new_system" at the
+%   command line.
 
-cont = true;
 name = baseName;
-count = 0;
-while cont
-    try
-        new_system(name,'ErrorIfShadowed',varargin{:})
-        cont = false;
-    catch ME
-        if strcmp(ME.identifier,'Simulink:Commands:NewSysAlreadyExists')
-            count = count + 1;
-            name = [baseName, num2str(count)];
-            cont = true;
-        else
-            rethrow(ME)
-        end
+if exist(name, 'file') == 4
+    n = 1;
+    while exist(strcat(name, num2str(n)), 'file') == 4
+        n = n + 1;
     end
+    name = strcat(name, num2str(n));
 end
+
+h = new_system(name,varargin{:});
 end
