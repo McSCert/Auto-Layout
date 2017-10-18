@@ -59,9 +59,8 @@ if strcmp(note_rule, 'on-right')
         end
     end
 elseif ~strcmp(note_rule, 'none')
-    % Invalid config setting
-    disp(['Error using ' mfilename ':' char(10) ...
-        ' invalid config parameter: note_rule. Please fix in the config.txt.'])
-    return
-end % elseif 'none', then don't move the annotations at all
+	% Invalid config setting should have already been caught
+	error(['Error using ' mfilename ':' char(10) ...
+        ' Something went wrong with the config parameter.'])
+end % elseif strcmp(note_rule, 'none'), then don't move the annotations at all
 end

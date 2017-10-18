@@ -23,6 +23,16 @@ OUTPORT_RULE = getAutoLayoutConfig('outport_rule', 'none'); %Indicates how to pl
 SORT_PORTLESS = getAutoLayoutConfig('sort_portless', 'blocktype'); %Indicates how to group portless blocks
 NOTE_RULE = getAutoLayoutConfig('note_rule', 'on-right'); %Indicates what to do with annotations
 
+    function ErrorInvalidConfig(config)
+        % Call this if a config setting was given an invalid value
+        %
+        % config is the name of the config, not value.
+        
+        error(['Error using ' mfilename ':' char(10) ...
+            ' Invalid config parameter: ' config '.' char(10) ...
+            ' Please fix in the config.txt.'])
+    end
+
 %%
 % Check number of arguments
 try
@@ -69,10 +79,7 @@ portlessBlocks = getPortlessBlocks(systemBlocks);
 
 % Check that portless_rule is set properly
 if ~AinB(PORTLESS_RULE, {'top', 'left', 'bottom', 'right', 'same_half_vertical', 'same_half_horizontal'})
-    % Invalid config setting
-    disp(['Error using ' mfilename ':' char(10) ...
-        ' invalid config parameter: portless_rule. Please fix in the config.txt.'])
-    return
+    ErrorInvalidConfig('portless_rule')
 end
 
 % Find where to place portless blocks in the final layout
@@ -101,31 +108,30 @@ if strcmp(GRAPHING_METHOD, 'auto')
     ge2015b = str2num(ver(1:4)) > 2015 || strcmp(ver(1:5),'2015b'); % logical: version Greater-or-Equal to 2015b
     if ge2015b
         %graphplot
-        getLayout = @getGraphPlotLayout;
+        initLayout = @GraphPlotLayout;
     else
         %graphviz
-        getLayout = @getGraphvizLayout;
+        initLayout = @GraphvizLayout;
     end
 elseif strcmp(GRAPHING_METHOD, 'digraph')
     %graphplot
-    getLayout = @getGraphPlotLayout;
+    initLayout = @GraphPlotLayout;
 elseif strcmp(GRAPHING_METHOD, 'graphviz')
     %graphviz
-    getLayout = @getGraphvizLayout;
+    initLayout = @GraphvizLayout;
 else
-    % Invalid config setting
-    error(['Error using ' mfilename ':' char(10) ...
-        ' invalid config parameter: graphing_alg. Please fix in the config.txt.'])
+    ErrorInvalidConfig('graphing_method')
 end
 
-% Get rough layout using a graphing algorithm
-getLayout(address);
+%% Get rough layout using a graphing algorithm
+initLayout(address);
 
+%%
 % blocksInfo -  keeps track of where to move blocks so that they can all be
 %               moved at the end as opposed to throughout all of AutoLayout
 blocksInfo = getBlocksInfo(address);
 
-%% Show block names as appropriate (getLayout sets it off)
+%% Show block names as appropriate (initLayout may set it off)
 if strcmp(SHOW_NAMES, 'no-change')
     % Return block names to be showing or not showing as they were
     % initially
@@ -148,10 +154,7 @@ elseif strcmp(SHOW_NAMES, 'none')
         set_param(systemBlocks{i}, 'ShowName', 'off')
     end
 else
-    % Invalid config setting
-    disp(['Error using ' mfilename ':' char(10) ...
-        ' invalid config parameter: show_names. Please fix in the config.txt.'])
-    return
+    ErrorInvalidConfig('show_names')
 end
 
 %%
@@ -168,7 +171,7 @@ for i = length(blocksInfo):-1:1 % Go backwards to remove elements without disrup
 end
 
 %%
-% Find relative positioning of blocks in the layout from getLayout
+% Find relative positioning of blocks in the layout from initLayout
 layout = getRelativeLayout(blocksInfo); %layout will also take over the role of blocksInfo
 updateLayout(address, layout); % Only included here for feedback purposes
 
@@ -201,20 +204,14 @@ if strcmp(INPORT_RULE, 'left_align')
     inports = find_system(address,'SearchDepth',1,'BlockType','Inport');
     layout = justifyBlocks(address, layout, inports, 1);
 elseif ~strcmp(INPORT_RULE, 'none')
-    % Invalid config setting
-    disp(['Error using ' mfilename ':' char(10) ...
-        ' invalid config parameter: inport_rule. Please fix in the config.txt.'])
-    return
+    ErrorInvalidConfig('inport_rule')
 end % elseif 'none', then do nothing
 if strcmp(OUTPORT_RULE, 'right_align')
     % Right align the outports
     outports = find_system(address,'SearchDepth',1,'BlockType','Outport');
     layout = justifyBlocks(address, layout, outports, 3);
 elseif ~strcmp(OUTPORT_RULE, 'none')
-    % Invalid config setting
-    disp(['Error using ' mfilename ':' char(10) ...
-        ' invalid config parameter: outport_rule. Please fix in the config.txt.'])
-    return
+    ErrorInvalidConfig('outport_rule')
 end % elseif 'none', then do nothing
 %Update block positions according to layout
 updateLayout(address, layout);
@@ -222,10 +219,7 @@ updateLayout(address, layout);
 %%
 % Check that sort_portless is set properly
 if ~AinB(SORT_PORTLESS, {'blocktype', 'masktype_blocktype', 'none'})
-    % Invalid config setting
-    disp(['Error using ' mfilename ':' char(10) ...
-        ' invalid config parameter: sort_portless. Please fix in the config.txt.'])
-    return
+    ErrorInvalidConfig('sort_portless')
 end
 
 % Place blocks that have no ports in a line along top/bottom or left/right
@@ -240,7 +234,11 @@ updatePortless(address, portlessInfo);
 % Get all annotations in address
 annotations = find_system(address,'FindAll','on','SearchDepth',1,'Type','annotation');
 % Move all annotations to the right of the system
-handleAnnotations(layout, portlessInfo, annotations, NOTE_RULE);
+if ~(strcmp(NOTE_RULE, 'none') || strcmp(NOTE_RULE, 'on-right'))
+    ErrorInvalidConfig('note_rule')
+else
+    handleAnnotations(layout, portlessInfo, annotations, NOTE_RULE);
+end
 
 %%
 % Orient blocks left-to-right and place name on bottom
