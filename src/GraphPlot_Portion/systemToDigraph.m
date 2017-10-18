@@ -24,6 +24,7 @@ function dg  = systemToDigraph(sys)
     nodes = find_system(sys, 'SearchDepth', '1', 'FindAll','off', 'Type', 'block');
     nodes(strcmp(nodes, sys), :) = [];  % If sys is a subsysttem, remove itself from the list
     numNodes = length(nodes);
+    nodes = nodes(length(nodes):-1:1); % This seems to help the layout in the usual case
     
     % Get neighbour data 
     param = cell(size(nodes)); 
