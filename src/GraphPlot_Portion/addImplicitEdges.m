@@ -35,22 +35,6 @@ function dgNew = addImplicitEdges(sys, dg)
     % Add Goto/Froms as edges
     gotos = find_system(sys, 'SearchDepth', 1, 'BlockType', 'Goto');
     froms = find_system(sys, 'SearchDepth', 1, 'BlockType', 'From');
-    
-% % With this implementation, the connection can be blocked if a
-% % corresponding block is within a subsystem.
-%     param = cell(size(froms)); 
-%     [param{:}] = deal('GotoTag');
-%     fromTags = cellfun(@get_param, froms, param, 'un', 0);
-%     
-%     for i = 1:length(gotos)
-%         matchIdx = find(strcmp(get_param(gotos{i}, 'GotoTag'), fromTags));
-%         for j = 1:length(matchIdx)
-%             k = matchIdx(j);
-%             gotoName = applyNamingConvention(gotos{i});
-%             fromName = applyNamingConvention(froms{k});
-%             dgNew = addedge(dgNew, gotoName, fromName, 1);
-%         end
-%     end
 
     for i = 1:length(gotos)
         subFroms = findFromsInScope(gotos{i});
@@ -78,22 +62,6 @@ function dgNew = addImplicitEdges(sys, dg)
     % Add Data Store Read/Writes as edges
     writes = find_system(sys, 'SearchDepth', 1, 'BlockType', 'DataStoreWrite');
     reads = find_system(sys, 'SearchDepth', 1, 'BlockType', 'DataStoreRead');
-
-% % With this implementation, the connection can be blocked if a
-% % corresponding block is within a subsystem.
-%     param = cell(size(reads)); 
-%     [param{:}] = deal('DataStoreName');
-%     readTags = cellfun(@get_param, reads, param, 'un', 0);
-%     
-%     for i = 1:length(writes)
-%         matchIdx = find(strcmp(get_param(writes{i}, 'DataStoreName'), readTags));
-%         for j = 1:length(matchIdx)
-%             k = matchIdx(j);
-%             writeName = applyNamingConvention(writes{i});
-%             readName = applyNamingConvention(reads{k});
-%             dgNew = addedge(dgNew, writeName, readName, 1);
-%         end
-%     end
 
     for i = 1:length(writes)
         subReads = findReadsInScope(writes{i});
