@@ -93,6 +93,9 @@ if strcmp(SHOW_NAMES, 'no-change')
 end
 
 %% Get Init Layout
+% Determine which external software to use
+%   -MATLAB's GraphPlot objects
+%   -Graphviz (requires separate install)
 if strcmp(GRAPHING_METHOD, 'auto')
     ver = version('-release');
     ge2015b = str2num(ver(1:4)) > 2015 || strcmp(ver(1:5),'2015b'); % logical: version Greater-or-Equal to 2015b
@@ -115,10 +118,12 @@ else
         ' invalid config parameter: graphing_alg. Please fix in the config.txt.'])
 end
 
-% Get rough layout using an external graphing algorithm
+% Get rough layout using a graphing algorithm
+getLayout(address);
+
 % blocksInfo -  keeps track of where to move blocks so that they can all be
 %               moved at the end as opposed to throughout all of AutoLayout
-blocksInfo = getLayout(address);
+blocksInfo = getBlocksInfo(address);
 
 %% Show block names as appropriate (getLayout sets it off)
 if strcmp(SHOW_NAMES, 'no-change')

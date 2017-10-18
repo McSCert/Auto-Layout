@@ -1,13 +1,10 @@
-function blocksInfo = getGraphPlotLayout(address)
+function getGraphPlotLayout(address)
 % GETGRAPHPLOTLAYOUT Creates a GraphPlot representing the system using MATLAB 
 %   functions and then lays out the system according to that plot.
 %
 %   Input:
 %       address     System address in which to perform the analysis.
 %
-%   Output:
-%       blocksInfo  Struct of data representing the results of the
-%                   analysis.
 
 dg = systemToDigraph(address);
 dg2 = addImplicitEdges(address, dg);
@@ -35,8 +32,6 @@ ys = p.YData;
 
 systemBlocks = cellfun(@(x) x(1:end-2), systemBlocks, 'UniformOutput', false);
 
-blocksInfo = struct('fullname', systemBlocks);
-
 % Set semi-arbitrary scaling factors to determine starting positions
 scale = 90; % Pixels per unit increase in x or y in the plot
 scaleBack = 3; % Scale-back factor to determine block size
@@ -54,48 +49,22 @@ for i = 1:length(systemBlocks)
     bottom  = round(blocky + blockheight/2);
     
     pos = [left top right bottom];
-    blocksInfo(i).position = pos;
+    setPositionAL(systemBlocks{i}, pos);
 end
-
-%% TODO, make it so we don't need these two lines
-layout = getRelativeLayout(blocksInfo);
-updateLayout(address, layout);
 
 % Try to fix knots caused by the arbitrary ordering of out/inputs to a node
 for i = 1:length(systemBlocks)
     ph = get_param(systemBlocks{i}, 'PortHandles');
     out = ph.Outport;
     if length(out) > 1
-        [snks, snkPositions, didMove] = arrangeSinks(systemBlocks{i}, true);
-        if didMove
-            for j = 1:length(snks)
-                idx = findBlkInBlksInfo(blocksInfo, snks(j));
-                blocksInfo(idx).position = snkPositions(j, :);
-            end
-        end
+        arrangeSinks(systemBlocks{i}, true);
     end
 end
 for i = 1:length(systemBlocks)
     ph = get_param(systemBlocks{i}, 'PortHandles');
     in = ph.Inport;
     if length(in) > 1
-        [srcs, srcPositions, didMove] = arrangeSources(systemBlocks{i}, true);
-        if didMove
-            for j = 1:length(srcs)
-                idx = findBlkInBlksInfo(blocksInfo, srcs(j));
-                blocksInfo(idx).position = srcPositions(j, :);
-            end
-        end
+        arrangeSources(systemBlocks{i}, true);
     end
 end
-
-    function idx = findBlkInBlksInfo(blxInfo, blk)
-        for z = 1:length(blxInfo)
-            if strcmp(blxInfo(z).fullname, blk{1})
-                idx = z;
-                return
-            end
-        end
-        error('Block not found in blxInfo');
-    end
 end

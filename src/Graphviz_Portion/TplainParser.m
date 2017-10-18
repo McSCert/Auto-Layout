@@ -43,10 +43,10 @@ classdef TplainParser < handle
             object.map = replacementMap;
         end
         
-        function blocksInfo = plain_wrappers(object)
+        function plain_wrappers(object)
             filename = [object.filename '-plain.txt'];
             [mapObj, graphinfo] = parse_the_Tplain(object, filename);
-            blocksInfo = find_the_right_spot(object, mapObj, graphinfo);
+            find_the_right_spot(object, mapObj, graphinfo);
 %             subsystems = find_system(object.RootSystemName,'Blocktype','SubSystem');
 %             sublength = length(subsystems);
 %             for z = 1:sublength
@@ -92,7 +92,7 @@ classdef TplainParser < handle
                     
                     mapObj(mapkey) = values;
                 end
-                % Do stuff with tline here
+                % TODO Do stuff with tline here
                 % ...
                 % (graphviz gives information about the edges in the graph
                 % as well, but nothing is currently done with it)
@@ -100,11 +100,10 @@ classdef TplainParser < handle
             fclose(inputfile); 
         end
         
-        function blocksInfo = find_the_right_spot(object, mapObj, graphinfo)            
+        function find_the_right_spot(object, mapObj, graphinfo)            
             % Get blocks in address
             systemBlocks = find_system(object.RootSystemName, 'SearchDepth',1);
             systemBlocks = systemBlocks(2:end); %Remove address itself
-            blocksInfo = struct('fullname', systemBlocks);          
 
             blocklength = length(systemBlocks);
             width = round(graphinfo(2));
@@ -125,7 +124,7 @@ classdef TplainParser < handle
                 bottom  = round(blocky + blockheight/2);
                 
                 pos = [left top right bottom];
-                blocksInfo(z).position = pos;
+                setPositionAL(systemBlocks{z}, pos);
             end
         end
     end

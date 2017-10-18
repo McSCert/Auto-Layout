@@ -1,12 +1,8 @@
-function blocksInfo = getGraphvizLayout(address)
+function getGraphvizLayout(address)
 % GETGRAPHVIZLAYOUT Perform the layout analysis on the system with Graphviz.
 %
 %   Input:
 %       address     System address in which to perform the analysis.
-%
-%   Output:
-%       blocksInfo  Struct of data representing the results of the
-%                   analysis.
 %
 %	first get the mdl file and the specific subsystem or system to
 %	autolayout
@@ -46,8 +42,9 @@ function blocksInfo = getGraphvizLayout(address)
     end
     % Change directory
 
+    % Do the initial layout.
     g = TplainParser(address, filename, map);
-    blocksInfo = g.plain_wrappers;
+    g.plain_wrappers;
 
     dotfilename = [filename '.dot'];
     delete(dotfilename);
