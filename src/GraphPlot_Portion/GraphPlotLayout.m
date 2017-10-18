@@ -1,5 +1,5 @@
-function getGraphPlotLayout(address)
-% GETGRAPHPLOTLAYOUT Creates a GraphPlot representing the system using MATLAB 
+function GraphPlotLayout(address)
+% GRAPHPLOTLAYOUT Creates a GraphPlot representing the system using MATLAB 
 %   functions and then lays out the system according to that plot.
 %
 %   Input:
@@ -11,9 +11,7 @@ dg2 = addImplicitEdges(address, dg);
 
 defaultFigureVisible = get(0,'DefaultFigureVisible');
 set(0,'DefaultFigureVisible','off');    % Don't show the figure
-% dg3 = addPorts(address, dg2);
-finalDg = dg2;
-p = plotSimulinkDigraph(address, finalDg);
+p = plotSimulinkDigraph(address, dg2);
 set(0,'DefaultFigureVisible',defaultFigureVisible);
 
 systemBlocks = p.NodeLabel';
