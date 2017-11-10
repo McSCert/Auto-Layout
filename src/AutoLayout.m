@@ -185,7 +185,7 @@ updateLayout(address, layout); % Only included here for feedback purposes
 
 [layout, portlessInfo] = resizeBlocks(layout, portlessInfo);
 
-layout = resizeInOutBlocks(layout);
+layout = fixSizeOfBlocks(layout);
 
 %Update block positions according to layout
 updateLayout(address, layout);
