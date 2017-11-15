@@ -188,7 +188,7 @@ if ~bdIsLoaded(modelName)
     load_system(modelName);
     closeAfter = true;
 else
-    claseAfter = false;
+    closeAfter = false;
 end
 
 load_system(modelName);
