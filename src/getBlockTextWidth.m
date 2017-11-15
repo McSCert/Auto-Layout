@@ -183,6 +183,14 @@ end
 
 function [inWidth, outWidth] = getModelReferencePortWidths(block)
 modelName = get_param(block, 'ModelName');
+
+if ~bdIsLoaded(modelName)
+    load_system(modelName);
+    closeAfter = true;
+else
+    claseAfter = false;
+end
+
 load_system(modelName);
 inports = find_system(modelName, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'Inport');
 outports = find_system(modelName, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'Outport');
@@ -190,7 +198,9 @@ outports = find_system(modelName, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'Bl
 inWidth = getBiggestNameWidth(block, inports);
 outWidth = getBiggestNameWidth(block, outports);
 
-close_system(modelName);
+if closeAfter
+    close_system(modelName);
+end
 end
 
 function biggestNameWidth = getBiggestNameWidth(block, objects)
