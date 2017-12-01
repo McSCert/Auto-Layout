@@ -40,7 +40,7 @@ function h = plotSimulinkDigraph(sys, dg)
     
     % Use Simulink-like plot options
     % Info on options: https://www.mathworks.com/help/matlab/ref/graph.plot.html
-    ops = {'Layout', 'layered', 'Direction', 'right', 'AssignLayers', 'asap'};
+    ops = {'Layout', 'layered', 'Direction', 'right', 'AssignLayers', 'alap'};
     if ~isempty(src)
         ops = [ops 'Sources' {src}];
     end  
