@@ -113,7 +113,7 @@ if strcmp(GRAPHING_METHOD, 'auto')
         %graphviz
         initLayout = @GraphvizLayout;
     end
-elseif strcmp(GRAPHING_METHOD, 'digraph')
+elseif strcmp(GRAPHING_METHOD, 'graphplot')
     %graphplot
     initLayout = @GraphPlotLayout;
 elseif strcmp(GRAPHING_METHOD, 'graphviz')
