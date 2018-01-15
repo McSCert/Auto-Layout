@@ -152,7 +152,9 @@ function neededWidth = getBlockTextWidth(block)
                     [~, defaultCenterWidth] = blockStringDims(block, string);
                     inWidth = 0;
                     outWidth = 0;
-                elseif strcmp(ME.identifier, 'Simulink:LoadSave:InvalidBlockDiagramName')
+                elseif any(strcmp(ME.identifier, ...
+                        {'Simulink:utility:InvalidBlockDiagramName', ...
+                        'Simulink:LoadSave:InvalidBlockDiagramName'}))
                     string = 'Unspecified Model Name';
                     [~, defaultCenterWidth] = blockStringDims(block, string);
                     inWidth = 0;
