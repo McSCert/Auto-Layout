@@ -22,8 +22,7 @@ function moveBlocks(address, blocks, positions)
     try
         assert(nargin == 3)
     catch
-        disp(['Error using ' mfilename ':' char(10) ...
-            ' Wrong number of arguments.' char(10)])
+        error('Wrong number of arguments.');
         return
     end
     
@@ -33,8 +32,7 @@ function moveBlocks(address, blocks, positions)
        assert(ischar(address));
        assert(bdIsLoaded(bdroot(address)));
     catch
-        disp(['Error using ' mfilename ':' char(10) ...
-            ' Invalid argument: address. Model may not be loaded or name is invalid.' char(10)])
+        error('Invalid argument: address. Model may not be loaded or name is invalid.');
         return
     end
 
@@ -44,8 +42,7 @@ function moveBlocks(address, blocks, positions)
     catch ME
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
-            disp(['Error using ' mfilename ':' char(10) ...
-                ' File is locked.'])
+            error('File is locked.');
             return
         end
     end

@@ -138,7 +138,7 @@ for i = 2:length(colDims) %for each column after first
         tempVSegs = vSegsInRange(vSegs, colDims{i-1}(1), colDims{i}(1));
         arrangeVSegs(tempVSegs, colDims{i-1}(2), colDims{i}(1));
     else
-        disp('Could not improve arrangement of vertical line segments within given space.')
+        error('Could not improve arrangement of vertical line segments within given space.');
     end
 end
 end

@@ -38,8 +38,7 @@ NOTE_RULE = getAutoLayoutConfig('note_rule', 'on-right'); %Indicates what to do 
 try
     assert(nargin == 1)
 catch
-    disp(['Error using ' mfilename ':' char(10) ...
-        ' Wrong number of arguments.' char(10)])
+    error(' Wrong number of arguments.');
     return
 end
 
@@ -49,8 +48,7 @@ try
     assert(ischar(address));
     assert(bdIsLoaded(bdroot(address)));
 catch
-    disp(['Error using ' mfilename ':' char(10) ...
-        ' Invalid argument: address. Model may not be loaded or name is invalid.' char(10)])
+    error(' Invalid argument: address. Model may not be loaded or name is invalid.');
     return
 end
 
@@ -60,8 +58,7 @@ try
 catch ME
     if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
             strcmp(ME.identifier, 'MATLAB:assertion:failed')
-        disp(['Error using ' mfilename ':' char(10) ...
-            ' File is locked.'])
+        error('File is locked');
         return
     end
 end
