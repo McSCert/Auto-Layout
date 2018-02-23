@@ -1,5 +1,5 @@
 function [leftBound,topBound,rightBound,botBound] = sideExtremes(layout, portlessInfo, ignorePortlessBlocks)
-% SIDEEXTREMES Finds the extreme positions (left, top, right, and bottom)
+% SIDEEXTREMES Find the extreme positions (left, top, right, and bottom)
 %   among blocks in layout and portlessInfo (unless portless blocks
 %   shouldn't be considered).
 %
@@ -15,12 +15,17 @@ function [leftBound,topBound,rightBound,botBound] = sideExtremes(layout, portles
 %       rightBound              Right bound of blocks of interest.
 %       botBound                Bottom bound of blocks of interest.
 
+
+% Extreme default values for the bounds
 rightBound = -32767;
 leftBound = 32767;
 botBound = -32767;
 topBound = 32767;
 
 %TODO - optimize this to only check needed blocks
+
+% Go through each block and determine the current max bounds, ignoring portless
+% blocks
 for j = 1:size(layout.grid,2)
     for i = 1:layout.colLengths(j)
         pos = layout.grid{i,j}.position;
@@ -40,6 +45,8 @@ for j = 1:size(layout.grid,2)
     end
 end
 
+% Determine the max bounds without ignoring portless blocks if the option is
+% selected
 if ~ignorePortlessBlocks
     for i = 1:length(portlessInfo)
         pos = portlessInfo{i}.position;

@@ -15,6 +15,7 @@ function AutoLayout(address)
 %           human readable.
 
 %% Constants:
+% Getting parameters for the tool to determine its behaviour
 GRAPHING_METHOD = getAutoLayoutConfig('graphing_method', 'auto'); %Indicates which graphing method to use
 SHOW_NAMES = getAutoLayoutConfig('show_names', 'no-change'); %Indicates which block names to show
 PORTLESS_RULE = getAutoLayoutConfig('portless_rule', 'bottom'); %Indicates how to place portless blocks
@@ -39,7 +40,6 @@ try
     assert(nargin == 1)
 catch
     error(' Wrong number of arguments.');
-    return
 end
 
 % Check address argument
@@ -49,7 +49,6 @@ try
     assert(bdIsLoaded(bdroot(address)));
 catch
     error(' Invalid argument: address. Model may not be loaded or name is invalid.');
-    return
 end
 
 % 2) Check that model is unlocked
@@ -59,7 +58,6 @@ catch ME
     if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
             strcmp(ME.identifier, 'MATLAB:assertion:failed')
         error('File is locked');
-        return
     end
 end
 
@@ -83,6 +81,10 @@ end
 [portlessInfo, smallOrLargeHalf] = getPortlessInfo(PORTLESS_RULE, systemBlocks, portlessBlocks);
 
 %%
+% 1) For each block, show or do not show its name depending on the SHOW_NAMES
+% parameter.
+% 2) Create a map that contains the info about whether the block should show its
+% name
 if strcmp(SHOW_NAMES, 'no-change')
     % Find which block names are showing at the start
     nameShowing = containers.Map();
@@ -155,8 +157,10 @@ else
 end
 
 %%
-% Remove portless blocks from blocksInfo (they will be handled
+% 1) Remove portless blocks from blocksInfo (they will be handled
 % separately at the end)
+% 2) Add the position infomation of the portless block to the struct array of
+% portless blocks
 for i = length(blocksInfo):-1:1 % Go backwards to remove elements without disrupting the indices that need to be checked after
     for j = 1:length(portlessInfo)
         if strcmp(blocksInfo(i).fullname, portlessInfo{j}.fullname)
@@ -174,17 +178,17 @@ updateLayout(address, layout); % Only included here for feedback purposes
 
 %%
 %TODO Split into three functions:
-%-ResizeBlocks in which blocks are resized while others are moved to
-%accomodate the changes
-%-RepositionBlocks in which the blocks undergo their more dramatic
-%repositioning (for better alignment primarily)
-%-FixLines in which the lines are routed as best as possible
+% 1) ResizeBlocks in which blocks are resized while others are moved to
+% accomodate the changes
+% 2) RepositionBlocks in which the blocks undergo their more dramatic
+% repositioning (for better alignment primarily)
+% 3) FixLines in which the lines are routed as best as possible
 
 [layout, portlessInfo] = resizeBlocks(layout, portlessInfo);
 
 layout = fixSizeOfBlocks(layout);
 
-%Update block positions according to layout
+% Update block positions according to layout
 updateLayout(address, layout);
 
 % Move blocks with single inport/outport so their port is in line with
@@ -203,6 +207,7 @@ if strcmp(INPORT_RULE, 'left_align')
 elseif ~strcmp(INPORT_RULE, 'none')
     ErrorInvalidConfig('inport_rule')
 end % elseif 'none', then do nothing
+
 if strcmp(OUTPORT_RULE, 'right_align')
     % Right align the outports
     outports = find_system(address,'SearchDepth',1,'BlockType','Outport');
@@ -210,7 +215,8 @@ if strcmp(OUTPORT_RULE, 'right_align')
 elseif ~strcmp(OUTPORT_RULE, 'none')
     ErrorInvalidConfig('outport_rule')
 end % elseif 'none', then do nothing
-%Update block positions according to layout
+
+% Update block positions according to layout
 updateLayout(address, layout);
 
 %%
@@ -224,7 +230,7 @@ end
 % PORTLESS_RULE.
 portlessInfo = repositionPortlessBlocks(portlessInfo, layout, PORTLESS_RULE, smallOrLargeHalf, SORT_PORTLESS);
 
-%Update block positions according to portlessInfo
+% Update block positions according to portlessInfo
 updatePortless(address, portlessInfo);
 
 %%

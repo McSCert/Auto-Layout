@@ -1,5 +1,5 @@
 function [layout, portlessInfo] = resizeBlocks(layout, portlessInfo)
-%RESIZEBLOCKS Determines desired end sizes for all blocks.
+%RESIZEBLOCKS Determine desired end sizes for all blocks.
 %
 %   Inputs:
 %       layout          As returned by getRelativeLayout.
@@ -9,10 +9,10 @@ function [layout, portlessInfo] = resizeBlocks(layout, portlessInfo)
 %       layout          With modified position information.
 %       portlessInfo    With modified position information.
 
-%Resize horizontally to fit the strings within blocks
+% Resize horizontally to fit the strings within blocks
 layout = adjustForText(layout);
 
-%Horizontally resize portless blocks for text too
+% Horizontally resize portless blocks for text too
 for i = 1:length(portlessInfo)
     portlessInfo{i}.position(3) = max(portlessInfo{i}.position(3), ...
         portlessInfo{i}.position(1) + getBlockTextWidth(portlessInfo{i}.fullname));

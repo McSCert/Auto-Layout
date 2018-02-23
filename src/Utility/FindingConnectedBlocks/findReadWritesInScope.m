@@ -16,7 +16,6 @@ function blockList = findReadWritesInScope(block)
         help(mfilename)
         blockList = {};
         error('Block parameter is not a Data Store Memory block.');
-        return
     end
 
     % Get all other Data Store Memory blocks

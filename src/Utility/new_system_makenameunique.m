@@ -6,7 +6,8 @@ function h = new_system_makenameunique(baseName, varargin)
 %   command line.
 
 name = baseName;
-if exist(name, 'file') == 4
+% exist returns 4 if the file is a Simulink model or a library file
+if exist(name, 'file') == 4 
     n = 1;
     while exist(strcat(name, num2str(n)), 'file') == 4
         n = n + 1;

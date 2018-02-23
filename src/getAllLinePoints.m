@@ -3,7 +3,10 @@ function linePoints = getAllLinePoints(lines)
 % with each of the corresponding input lines
 %
 %   Inputs:
-%       lines   Array of lines
+%       lines       Array of lines
+%
+%   Outputs:
+%       linepoints  
 
     linePoints = {};
     for i = 1:length(lines)

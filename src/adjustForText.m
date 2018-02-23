@@ -1,5 +1,5 @@
 function layout = adjustForText(layout)
-%ADJUSTFORTEXT Adjusts layout left/right positions to resize blocks to fit
+%ADJUSTFORTEXT Adjust left/right positions of blocks to resize blocks to fit
 %   their text without disturbing the relative layout.
 %
 %   Inputs:

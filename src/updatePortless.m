@@ -1,5 +1,5 @@
 function updatePortless(address, portlessInfo)
-%UPDATEPORTLESS Moves blocks to their new positions designated by
+%UPDATEPORTLESS Move blocks to their new positions designated by
 %   portlessInfo.
 %
 %   Inputs:

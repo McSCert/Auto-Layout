@@ -1,5 +1,5 @@
 function layout = adjustForPorts(layout)
-%ADJUSTFORTEXT Adjusts layout top/bot positions to resize blocks to
+%ADJUSTFORTEXT Adjust layout top/bot positions to resize blocks to
 %   reasonably accomodate their ports without disturbing the relative
 %   layout.
 %

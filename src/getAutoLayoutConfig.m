@@ -1,5 +1,5 @@
 function val = getAutoLayoutConfig(parameter, default)
-%% GETAUTOLAYOUTCONFIG Get a parameter from the tool configuration file.
+% GETAUTOLAYOUTCONFIG Get a parameter from the tool configuration file.
 %
 %   Inputs:
 %       parameter   Configuration parameter to retrieve value for.

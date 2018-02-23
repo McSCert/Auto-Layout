@@ -16,7 +16,6 @@ function writes = findWritesInScope(block)
         help(mfilename)
         writes = {};
         error('Block parameter is not a Data Store Read block.');
-        return
     end
 
     dataStoreName = get_param(block, 'DataStoreName');

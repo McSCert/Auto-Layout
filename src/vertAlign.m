@@ -1,5 +1,5 @@
 function layout = vertAlign(layout)
-%VERTALIGN Aligns blocks to facilitate the use of straight lines in
+%VERTALIGN Align blocks to facilitate the use of straight lines in
 %   connections by repositioning blocks vertically.
 %   Currently only attempts to align blocks which connect to a single block
 %   through an in/outport.
@@ -48,14 +48,14 @@ while(loop)
         ports1 = get_param(block1, 'Ports');
         portCon1 = get_param(block1, 'PortConnectivity');
         
-        % Figure out how much to shift
+        % Determine how much to shift the block
         if ports1(1) == 1
             block2 = portCon1(1).SrcBlock; % block to use as anchor
             ports2 = get_param(block2, 'Ports');
             portCon2 = get_param(block2, 'PortConnectivity');
             
-            %endHeight: Position of the associated port on the other block
-            %associated port #: #ports + 1 - #outports + n
+            % endHeight: Position of the associated port on the other block
+            % associated port #: #ports + 1 - #outports + n
             %                   end    + 1 - ports2(2) + portCon1(1).SrcPort
             %   (where the connection is with the nth outport of the other block)
             endHeight = portCon2(end+1-ports2(2)+portCon1(1).SrcPort).Position(2);
@@ -67,8 +67,8 @@ while(loop)
             % ports2 = get_param(block2, 'Ports'); % not needed
             portCon2 = get_param(block2, 'PortConnectivity');
             
-            %endHeight: Position of the associated port on the other block
-            %associated port #: minimum port + m
+            % endHeight: Position of the associated port on the other block
+            % associated port #: minimum port + m
             %                   1            + portCon1(end).DstPort
             %   (where the connection is with the mth inport of the other block)
             endHeight = portCon2(1+portCon1(end).DstPort).Position(2);
@@ -77,9 +77,9 @@ while(loop)
             shamt = endHeight - startHeight; %shift amount
         end
         
-        %if can move by shamt distance (i.e. no block obstruction)
-        %then mark to move and remove from list to align
-        %else leave in list to align
+        % If can move by the determined distance (i.e. no block obstruction),
+        % then mark to move and remove from list to align.
+        % Else leave in list to align
         doAlign = false; % Used to see if the variable has space to undergo the alignment
         curBounds = getPositionWithName(layout.grid{row,col}.fullname);
         if shamt < 0

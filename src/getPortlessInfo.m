@@ -16,6 +16,12 @@ function [portlessInfo, smallOrLargeHalf] = getPortlessInfo(portless_rule, syste
 %       smallOrLargeHalf    Map relating blocks with the side of the system
 %                           they should be placed on.
 
+
+% For each case:
+% 1) Create a struct array portlessInfo which contains the name of the portless
+% blocks and has their position for the struct set to null
+% 2) Create a map which specifies relative to where the portless blocks will be
+% placed
 switch portless_rule
     case 'top'
         portlessInfo = struct('fullname', {}, ...
@@ -96,7 +102,6 @@ switch portless_rule
         error(['portless_rule must be in the following ' ...
             '{''top'', ''left'', ''bot'', ''right'', ' ...
             '''same_half_vertical'', ''same_half_horizontal''}']);
-        return
 end
 end
 

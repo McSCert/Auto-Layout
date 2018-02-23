@@ -1,0 +1,25 @@
+digraph {
+	graph [rankdir=LR, ranksep="100.0", nodesep="40.0"];
+	node [shape=record];
+GeneratedAND0 [label="{{<i1>1|<i2>2}|GeneratedAND0|{<o1>1}}", width="30", height="31", fixedsize=true];
+GeneratedAND2 [label="{{<i1>1|<i2>2|<i3>3}|GeneratedAND2|{<o1>1}}", width="30", height="46", fixedsize=true];
+GeneratedNOT0 [label="{{<i1>1}|GeneratedNOT0|{<o1>1}}", width="30", height="31", fixedsize=true];
+GeneratedNOT1 [label="{{<i1>1}|GeneratedNOT1|{<o1>1}}", width="30", height="31", fixedsize=true];
+GeneratedOR0 [label="{{<i1>1|<i2>2}|GeneratedOR0|{<o1>1}}", width="30", height="31", fixedsize=true];
+GeneratedOR1 [label="{{<i1>1|<i2>2}|GeneratedOR1|{<o1>1}}", width="30", height="31", fixedsize=true];
+In1 [label="{{<i1>1}|In1|{<o1>1}}", width="30.0", height="14.0", fixedsize=true];
+In2 [label="{{<i1>1}|In2|{<o1>1}}", width="30.0", height="14.0", fixedsize=true];
+Out1 [label="{{<i1>1}|Out1|{<o1>1}}", width="30.0", height="14.0", fixedsize=true];
+GeneratedNOT1:o1 -> GeneratedAND0:i1
+In2:o1 -> GeneratedAND0:i2
+In1:o1 -> GeneratedAND2:i1
+GeneratedOR0:o1 -> GeneratedAND2:i2
+GeneratedOR1:o1 -> GeneratedAND2:i3
+In2:o1 -> GeneratedNOT0:i1
+In1:o1 -> GeneratedNOT1:i1
+GeneratedNOT0:o1 -> GeneratedOR0:i1
+GeneratedAND0:o1 -> GeneratedOR0:i2
+In1:o1 -> GeneratedOR1:i1
+GeneratedNOT0:o1 -> GeneratedOR1:i2
+GeneratedAND2:o1 -> Out1:i1
+}

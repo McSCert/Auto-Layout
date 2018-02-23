@@ -1,5 +1,5 @@
 function layout = horzAdjustBlocks(layout, col, x)
-%HORZADJUSTBLOCKS Horizontally moves blocks in layout to the right of 
+% HORZADJUSTBLOCKS Horizontally move blocks in layout to the right of 
 %   column col right by x
 %
 %   Inputs:

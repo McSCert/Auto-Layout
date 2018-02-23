@@ -1,5 +1,5 @@
 function moveBlocks(address, blocks, positions)
-%MOVEBLOCKS Moves blocks in address to the positions indicated in 
+%MOVEBLOCKS Move blocks in address to the positions indicated in 
 %   positions.
 %
 %   Inputs:
@@ -23,7 +23,6 @@ function moveBlocks(address, blocks, positions)
         assert(nargin == 3)
     catch
         error('Wrong number of arguments.');
-        return
     end
     
     % Check address argument
@@ -33,7 +32,6 @@ function moveBlocks(address, blocks, positions)
        assert(bdIsLoaded(bdroot(address)));
     catch
         error('Invalid argument: address. Model may not be loaded or name is invalid.');
-        return
     end
 
     % 2) Check that model is unlocked
@@ -43,7 +41,6 @@ function moveBlocks(address, blocks, positions)
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
             error('File is locked.');
-            return
         end
     end
 

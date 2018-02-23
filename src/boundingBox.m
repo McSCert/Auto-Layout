@@ -7,6 +7,7 @@ function bounds = boundingBox(object)
 %
 %   Output:
 %       bounds  Gives the bounds of the object as: [left, top, right, bottom]
+%       pixels
 
 objectType = get_param(object, 'Type');
 

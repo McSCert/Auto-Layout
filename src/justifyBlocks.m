@@ -1,4 +1,18 @@
 function layout = justifyBlocks(address, layout, blocks, justifyType)
+%JUSTIFYBLOCKS Align blocks to facilitate the use of straight lines in
+%   connections by repositioning blocks vertically.
+%   Currently only attempts to align blocks which connect to a single block
+%   through an in/outport.
+%
+%   Inputs:
+%       address
+%       layout
+%       blocks
+%       justifyType
+%
+%   Output:
+%       layout          With modified position information. 
+%
 % Pushes blocks either to far right or left.
 % If doing so would cause line crossings then affected blocks won't be
 % moved.

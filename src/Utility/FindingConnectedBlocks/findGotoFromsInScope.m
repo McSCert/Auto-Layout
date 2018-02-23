@@ -16,7 +16,6 @@ function blockList = findGotoFromsInScope(block)
         help(mfilename)
         blockList = {};
         error('Block parameter is not a Goto Tag Visibility block.');
-        return
     end
     
     % Get all other Goto Tag Visibility blocks

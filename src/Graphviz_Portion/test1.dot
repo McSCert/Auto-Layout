@@ -1,0 +1,26 @@
+digraph {
+	graph [rankdir=LR, ranksep="100.0", nodesep="40.0"];
+	node [shape=record];
+Databadcharacterreplacement00100000Storebadcharacterreplacement00001010Read [label="{Databadcharacterreplacement00100000Storebadcharacterreplacement00001010Read|{<o1>1}}", width="30", height="31", fixedsize=true];
+Databadcharacterreplacement00100000Storebadcharacterreplacement00001010Write [label="{{<i1>1}|Databadcharacterreplacement00100000Storebadcharacterreplacement00001010Write}", width="30", height="31", fixedsize=true];
+Databadcharacterreplacement00100000Storebadcharacterreplacement00100000Memory [label="{Databadcharacterreplacement00100000Storebadcharacterreplacement00100000Memory}", width="30", height="31", fixedsize=true];
+From [label="{From|{<o1>1}}", width="30", height="31", fixedsize=true];
+Goto [label="{{<i1>1}|Goto}", width="30", height="31", fixedsize=true];
+Gotobadcharacterreplacement00100000Tagbadcharacterreplacement00100000Visibility [label="{Gotobadcharacterreplacement00100000Tagbadcharacterreplacement00100000Visibility}", width="30", height="31", fixedsize=true];
+In1 [label="{{<i1>1}|In1|{<o1>1}}", width="30.0", height="14.0", fixedsize=true];
+In2 [label="{{<i1>1}|In2|{<o1>1}}", width="30.0", height="14.0", fixedsize=true];
+Out1 [label="{{<i1>1}|Out1|{<o1>1}}", width="30.0", height="14.0", fixedsize=true];
+Out2 [label="{{<i1>1}|Out2|{<o1>1}}", width="30.0", height="14.0", fixedsize=true];
+Subsystem[label="{{<i1>1|<i2>2}|Subsystem|{<o1>1|<o2>2}}", width="40.0", height="60", fixedsize=true];
+Subsystem1[label="{{<i1>1|<i2>2}|Subsystem1|{<o1>1|<o2>2}}", width="40.0", height="60", fixedsize=true];
+Subsystem:o1 -> Databadcharacterreplacement00100000Storebadcharacterreplacement00001010Write:i1
+Subsystem:o2 -> Goto:i1
+Subsystem1:o1 -> Out1:i1
+Subsystem1:o2 -> Out2:i1
+In1:o1 -> Subsystem:i1
+In2:o1 -> Subsystem:i2
+Databadcharacterreplacement00100000Storebadcharacterreplacement00001010Read:o1 -> Subsystem1:i1
+From:o1 -> Subsystem1:i2
+Goto->From
+Databadcharacterreplacement00100000Storebadcharacterreplacement00001010Write->Databadcharacterreplacement00100000Storebadcharacterreplacement00001010Read
+}

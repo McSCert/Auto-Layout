@@ -1,5 +1,5 @@
 function portlessInfo = repositionPortlessBlocks(portlessInfo, layout, portless_rule, smallOrLargeHalf, sort_portless)
-% REPOSITIONPORTLESSBLOCKS repositions portless blocks to a designated side
+% REPOSITIONPORTLESSBLOCKS reposition portless blocks to a designated side
 %   of the system. Also organizes portless blocks into groups on the
 %   designated sides.
 %
@@ -27,12 +27,13 @@ if ~strcmp(sort_portless, 'none')
     portlessInfo = sortPortlessInfo(portlessInfo, sort_portless);
 end
 
+% 
 switch portless_rule
     case 'left'
         %         doCheck = false;
         portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'left');
     case 'top'
-        %         doCheck = false;
+        %         doCheck = false;1
         portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'top');
     case 'right'
         %         doCheck = false;
@@ -53,7 +54,7 @@ switch portless_rule
         error(['portless_rule must be in the following ' ...
             '{''top'', ''left'', ''bot'', ''right'', ' ...
             '''same_half_vertical'', ''same_half_horizontal''}']);
-        return
+
 end
 end
 

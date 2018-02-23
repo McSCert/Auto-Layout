@@ -15,7 +15,6 @@ function goto = findGotosInScope(block)
         help(mfilename)
         goto = {};
         error('Block parameter is not a From block.');
-        return
     end
     
     tag = get_param(block, 'GotoTag');

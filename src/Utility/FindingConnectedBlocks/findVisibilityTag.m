@@ -17,7 +17,6 @@ function visBlock = findVisibilityTag(block)
         help(mfilename)
         visBlock = {};
         error('Block parameter is not a Goto or From block.');
-        return
     end
 
     tag = get_param(block, 'GotoTag');

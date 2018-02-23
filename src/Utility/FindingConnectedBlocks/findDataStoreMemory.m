@@ -16,7 +16,6 @@ function mem = findDataStoreMemory(block)
         help(mfilename)
         mem = {};
         error('Block parameter is not a Data Store Read or Write block.');
-        return
     end
 
     dataStoreName = get_param(block, 'DataStoreName');
