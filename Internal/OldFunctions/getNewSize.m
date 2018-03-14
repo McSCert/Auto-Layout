@@ -1,8 +1,18 @@
 function xIncrease = getNewSizeX(block)
+% GETNEWSIZEX calculate and increase the width of a block based on the string(s) inside the
+% block.
+%
+%   Inputs:
+%       block          Block that changes size.
+%
+%   Outputs:
+%       xIncrease      Amount the block's width is changed.
 
     xIncrease = 0;
     blockType = get_param(block, 'BlockType');
     
+    
+    %Determine what strings to look for based on the type of block
     switch blockType
         case 'SubSystem'
             inports = find_system(block, 'SearchDepth', 1, 'LookUnderMasks', 'all', 'BlockType', 'Inport');

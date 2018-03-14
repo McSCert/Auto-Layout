@@ -1,5 +1,5 @@
 function height = annotationStringHeight(annotation, string)
-% ANNOTATIONSTRINGHEIGHT Finds the height string has/would have within block
+% ANNOTATIONSTRINGHEIGHT Find the height string has/would have within a block
 %
 % TODO merge with blockStringHeight
 
