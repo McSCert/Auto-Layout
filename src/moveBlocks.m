@@ -1,5 +1,5 @@
 function moveBlocks(address, blocks, positions)
-%MOVEBLOCKS Move blocks in address to the positions indicated in 
+% MOVEBLOCKS Move blocks in address to the positions indicated in 
 %   positions.
 %
 %   Inputs:

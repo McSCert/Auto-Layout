@@ -1,5 +1,5 @@
 function layout = vertAlign(layout)
-%VERTALIGN Align blocks to facilitate the use of straight lines in
+% VERTALIGN Align blocks to facilitate the use of straight lines in
 %   connections by repositioning blocks vertically.
 %   Currently only attempts to align blocks which connect to a single block
 %   through an in/outport.

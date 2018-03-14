@@ -36,23 +36,29 @@ function dgNew = addImplicitEdges(sys, dg)
     gotos = find_system(sys, 'SearchDepth', 1, 'BlockType', 'Goto');
     froms = find_system(sys, 'SearchDepth', 1, 'BlockType', 'From');
 
+    % For each Goto tags, find the corresponding From tags
     for i = 1:length(gotos)
         subFroms = findFromsInScope(gotos{i});
         for j = 1:length(subFroms)
             snk = getFirstAncestor(subFroms{j});
             srcName = applyNamingConvention(gotos{i});
             snkName = applyNamingConvention(snk);
+            % If the implicit edge does not exist in the graph, add it to the
+            % graph
             if ~edgeExists(dgNew, srcName, snkName)
                 dgNew = addedge(dgNew, srcName, snkName, 1);
             end
         end
     end
+    % For each From tags, find the corresponding Goto tags
     for i = 1:length(froms)
         subGotos = findGotosInScope(froms{i});
         for j = 1:length(subGotos)
             src = getFirstAncestor(subGotos{j});
             srcName = applyNamingConvention(src);
             snkName = applyNamingConvention(froms{i});
+            % If the implicit edge does not exist in the graph, add it to the
+            % graph
             if ~edgeExists(dgNew, srcName, snkName)
                 dgNew = addedge(dgNew, srcName, snkName, 1);
             end
@@ -63,23 +69,29 @@ function dgNew = addImplicitEdges(sys, dg)
     writes = find_system(sys, 'SearchDepth', 1, 'BlockType', 'DataStoreWrite');
     reads = find_system(sys, 'SearchDepth', 1, 'BlockType', 'DataStoreRead');
 
+    % For each DataStoreWrite, find the corresponding DataStoreRead
     for i = 1:length(writes)
         subReads = findReadsInScope(writes{i});
         for j = 1:length(subReads)
             snk = getFirstAncestor(subReads{j});
             srcName = applyNamingConvention(writes{i});
             snkName = applyNamingConvention(snk);
+            % If the implicit edge does not exist in the graph, add it to the
+            % graph
             if ~edgeExists(dgNew, srcName, snkName)
                 dgNew = addedge(dgNew, srcName, snkName, 1);
             end
         end
     end
+    % For each DataStoreReads
     for i = 1:length(reads)
         subWrites = findWritesInScope(reads{i});
         for j = 1:length(subWrites)
             src = getFirstAncestor(subWrites{j});
             srcName = applyNamingConvention(src);
             snkName = applyNamingConvention(reads{i});
+            % If the implicit edge does not exist in the graph, add it to the
+            % graph
             if ~edgeExists(dgNew, srcName, snkName)
                 dgNew = addedge(dgNew, srcName, snkName, 1);
             end
@@ -101,6 +113,7 @@ function dgNew = addImplicitEdges(sys, dg)
         end
     end
 
+    % Check if the edge exists in the current graph
     function exists = edgeExists(dg, source, sink)
         exists = false;
         for z = 1:size(dg.Edges, 1)

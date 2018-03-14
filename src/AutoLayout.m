@@ -124,7 +124,8 @@ end
 
 %% Get rough layout using a graphing algorithm
 initLayout(address);
-
+% If using GraphvizLayout, the layout at this point will be organized based on
+% the GraphPlot and the blocks will be resized to the same size
 %%
 % blocksInfo -  keeps track of where to move blocks so that they can all be
 %               moved at the end as opposed to throughout all of AutoLayout
@@ -161,7 +162,9 @@ end
 % separately at the end)
 % 2) Add the position infomation of the portless block to the struct array of
 % portless blocks
-for i = length(blocksInfo):-1:1 % Go backwards to remove elements without disrupting the indices that need to be checked after
+% Go backwards to remove elements without disrupting the indices that need to be
+% checked after
+for i = length(blocksInfo):-1:1 
     for j = 1:length(portlessInfo)
         if strcmp(blocksInfo(i).fullname, portlessInfo{j}.fullname)
             portlessInfo{j}.position = blocksInfo(i).position;
@@ -188,7 +191,8 @@ updateLayout(address, layout); % Only included here for feedback purposes
 
 layout = fixSizeOfBlocks(layout);
 
-% Update block positions according to layout
+% Update block positions according to layout that was changed by resizeBlocks()
+% and fixSizeOfBlocks()
 updateLayout(address, layout);
 
 % Move blocks with single inport/outport so their port is in line with

@@ -1,5 +1,5 @@
 function bool = onSide(block, center, side)
-%ONSIDE Determines whether or not the center of block is on the given
+% ONSIDE Determines whether or not the center of block is on the given
 %   side of the system.
 %
 %   INPUTS

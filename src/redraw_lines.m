@@ -1,5 +1,5 @@
 function redraw_lines(name, varargin)
-%REDRAWBYBLOCKS Redraw all lines in the input system.
+% REDRAWBYBLOCKS Redraw all lines in the input system.
 %
 %   Inputs:
 %       name            System address.

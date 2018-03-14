@@ -1,6 +1,13 @@
 function blockList = findReadWritesInScope(block)
 % FINDREADWRITESINSCOPE Find all the Data Store Read and Data Store Write 
 % blocks associated with a Data Store Memory block.
+%
+%   Inputs:
+%       block       Data Store Memory block 
+%
+%   Outputs:
+%       blockList   Data Store Read and Data Store Write blocks associated with
+%       the Data Store Memory block
 
     if isempty(block)
         blockList = {};

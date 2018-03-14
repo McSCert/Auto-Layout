@@ -1,5 +1,5 @@
 function [layout] = getRelativeLayout(blocksInfo)
-%GETRELATIVELAYOUT Finds the relative layout of the blocks within a grid.
+% GETRELATIVELAYOUT Find the relative layout of the blocks within a grid.
 %
 %   Input:
 %       blocksInfo  As returned by getLayout.

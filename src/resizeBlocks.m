@@ -1,5 +1,5 @@
 function [layout, portlessInfo] = resizeBlocks(layout, portlessInfo)
-%RESIZEBLOCKS Determine desired end sizes for all blocks.
+% RESIZEBLOCKS Determine desired end sizes for all blocks.
 %
 %   Inputs:
 %       layout          As returned by getRelativeLayout.

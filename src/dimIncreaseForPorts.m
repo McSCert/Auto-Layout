@@ -1,5 +1,5 @@
 function [pos, yIncrease] = dimIncreaseForPorts(block, pos, varargin)
-%DIMINCREASEFORPORTS Finds the amount to increase the top and bot
+% DIMINCREASEFORPORTS Find the amount to increase the top and bot
 %   positions of block to reasonably accomodate its ports within it.
 %
 %   Inputs:

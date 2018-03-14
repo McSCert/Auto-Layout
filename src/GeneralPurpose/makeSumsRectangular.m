@@ -1,5 +1,5 @@
 function makeSumsRectangular(blocks)
-% MAKESUMSRECTANGULAR change the same of a 'sum' block to rectangular
+% MAKESUMSRECTANGULAR Change the shape of a sum block to rectangular
 %
 %   Inputs:
 %       blocks  Cell array of blocks. Non-Sum blocks will not be affected

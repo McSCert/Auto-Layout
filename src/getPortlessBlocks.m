@@ -1,5 +1,5 @@
 function portlessBlocks = getPortlessBlocks(blocks)
-%GETPORTLESSBLOCKS Find blocks which have no ports from a list of blocks.
+% GETPORTLESSBLOCKS Find blocks which have no ports from a list of blocks.
 %
 %   Inputs:
 %       blocks          Cell array of block names.

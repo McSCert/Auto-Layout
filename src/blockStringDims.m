@@ -1,5 +1,5 @@
 function [height, width] = blockStringDims(block, string)
-% BLOCKSTRINGDIMS Finds the height and width that a string has/would have 
+% BLOCKSTRINGDIMS Find the height and width that a string has/would have 
 %   within block.
 %
 %   Input

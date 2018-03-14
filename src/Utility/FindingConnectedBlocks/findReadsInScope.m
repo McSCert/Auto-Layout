@@ -1,6 +1,13 @@
 function reads = findReadsInScope(block)
 % FINDREADSINSCOPE Find all the Data Store Read blocks associated with a Data
 % Store Write block.
+%
+%   Inputs:
+%       block   Data Store Write block  
+%
+%   Outputs:
+%       reads   Data Store Read blocks associated with the DataStoreWrite input
+%       block
 
     if isempty(block)
         reads = {};

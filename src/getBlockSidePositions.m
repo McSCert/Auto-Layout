@@ -1,5 +1,5 @@
 function sidePositions = getBlockSidePositions(blocks, side)
-%GETBLOCKSIDEPOSITIONS Finds the *unique* block positions for a given side 
+% GETBLOCKSIDEPOSITIONS Find the *unique* block positions for a given side 
 %   of a set of blocks.
 %
 %   Inputs:
@@ -18,6 +18,7 @@ function sidePositions = getBlockSidePositions(blocks, side)
 %       sidePositions   A vector of unique doubles for the positions of a 
 %                       given side for each given block.
 
+    % Calculated the selected side position based on the side selected
     if side == 5
         sidePositions = [];
         for i = 1:length(blocks)

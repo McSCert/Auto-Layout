@@ -1,6 +1,13 @@
 function mem = findDataStoreMemory(block)
 % FINDDATASTOREMEMORY Find the Data Store Memory block of a Data Store
 % Read or Write block.
+%
+%   Inputs:
+%       block     Data Store Write block  
+%
+%   Outputs:
+%       mem       Data Store Memory block associated with the Data Store Write
+%       input block
 
     if isempty(block)
         mem = {};

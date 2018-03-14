@@ -1,5 +1,5 @@
 function [pos, xIncrease] = dimIncreaseForText(block, pos, varargin)
-%DIMINCREASEFORTEXT Finds the amount to increase the right and left
+% DIMINCREASEFORTEXT Find the amount to increase the right and left
 %   positions of block to fit its text within it.
 %
 %   Inputs:
@@ -50,7 +50,7 @@ end
 end
 
 function xIncrease = getTextXIncrease(block, pos)
-%GETTEXTXINCREASE Finds the needed amount to increase the width of block
+% GETTEXTXINCREASE Find the needed amount to increase the width of block
 %   in order to fit the text within it.
 %
 %   Input:

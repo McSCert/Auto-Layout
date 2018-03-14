@@ -1,5 +1,11 @@
 function goto = findGotosInScope(block)
 % FINDGOTOSINSCOPE Find the Goto block associated with a From block.
+%
+%   Inputs:
+%       block     From block
+%
+%   Outputs:
+%       froms   Corresponding Goto blocks for the From block input
 
     if isempty(block)
         goto = {};

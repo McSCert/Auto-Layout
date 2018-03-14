@@ -1,7 +1,12 @@
-
 function visBlock = findVisibilityTag(block)
 % FINDVISIBILITYTAG Find the Goto Visibility Tag block associated with a
 % scoped Goto or From block.
+%
+%   Inputs:
+%       block     Scoped Goto or From block
+%
+%   Outputs:
+%       visBlock   Visibility Block for the corresponding Goto block
 
     if isempty(block)
         visBlock = {};
@@ -46,6 +51,7 @@ function visBlock = findVisibilityTag(block)
         end
     end
     
+    % If the Goto Visibility Tag was found, return it, otherwise, return nothing
     if ~isempty(currentLevel)
         visBlock = find_system(currentLevel, 'FollowLinks', 'on', ...
             'SearchDepth', 1, 'BlockType', 'GotoTagVisibility', 'GotoTag', tag);

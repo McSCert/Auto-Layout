@@ -1,6 +1,12 @@
 function blockList = findGotoFromsInScope(block)
 % FINDGOTOFROMSINSCOPE Find all the Goto and From blocks associated with a 
 % Goto Tag Visibility block.
+%
+%   Inputs:
+%       block     Visibility Goto tag
+%
+%   Outputs:
+%       blockList   Goto and From tags corresponding to the visibility Goto tag
 
     if isempty(block)
         blockList = {};

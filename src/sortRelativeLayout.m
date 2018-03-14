@@ -1,5 +1,5 @@
 function grid = sortRelativeLayout(grid, colLengths)
-%SORTRELATIVELAYOUT Sorts blocks in grid within columns by their top 
+% SORTRELATIVELAYOUT Sort blocks in grid within columns by their top 
 %   positions.
 %
 %   Inputs:

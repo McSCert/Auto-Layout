@@ -1,5 +1,5 @@
 function [x,y] = rectCenter(positions)
-%RECTCENTER finds the coordinates of the center of a rectangle.
+% RECTCENTER Find the coordinates of the center of a rectangle.
 %
 %   Inputs:
 %       positions   Cell array of vectors of coordinates. Vectors come in 

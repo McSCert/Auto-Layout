@@ -1,5 +1,11 @@
 function froms = findFromsInScope(block)
 % FINDFROMSINSCOPE Find all the From blocks associated with a Goto block.
+%
+%   Inputs:
+%       block     Goto block
+%
+%   Outputs:
+%       froms   Corresponding From blocks for the Goto block input
 
     if isempty(block)
         froms = {};
@@ -29,6 +35,7 @@ function froms = findFromsInScope(block)
         froms = find_system(level, 'FollowLinks', 'on', 'SearchDepth', 1, ...
             'BlockType', 'From', 'GotoTag', tag);
         return
+    % Goto is scoped
     elseif strcmp(tagVis, 'scoped');
         visibilityBlock = findVisibilityTag(block);
         froms = findGotoFromsInScope(visibilityBlock);

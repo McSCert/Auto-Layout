@@ -1,14 +1,16 @@
 function layout = justifyBlocks(address, layout, blocks, justifyType)
-%JUSTIFYBLOCKS Align blocks to facilitate the use of straight lines in
+% JUSTIFYBLOCKS Align blocks to facilitate the use of straight lines in
 %   connections by repositioning blocks vertically.
 %   Currently only attempts to align blocks which connect to a single block
 %   through an in/outport.
 %
 %   Inputs:
-%       address
-%       layout
-%       blocks
-%       justifyType
+%       address         Simulink system name or path.
+%       layout          As returned by getRelativeLayout.
+%       blocks          List of blocks to be affected by the justification
+%       justifyType     How the blocks will be aligned
+%                           1 - left justify
+%                           3 - right justify
 %
 %   Output:
 %       layout          With modified position information. 
@@ -17,8 +19,6 @@ function layout = justifyBlocks(address, layout, blocks, justifyType)
 % If doing so would cause line crossings then affected blocks won't be
 % moved.
 %
-% justifyType:   1 - left justify
-%                3 - right justify
 
 for i = 1:length(blocks)
     [row,col] = findInLayout(layout, blocks(i));

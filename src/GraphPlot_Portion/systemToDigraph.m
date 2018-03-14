@@ -32,9 +32,15 @@ function dg  = systemToDigraph(sys)
     allPorts = cellfun(@get_param, nodes, param, 'un', 0);
     
     % Construct adjacency matrix
+    % Each row and column pertains to a unique block
+    % A value of '1' in an entry indicates that the two blocks (indicated by the
+    % column and row) are adjacent to each other because the one of the row block's output
+    % is connected to one of the column block's input
     A = zeros(numNodes);
     
     % Populate adjacency matrix
+    % For each block, check which block it is connected to by checking the
+    % block(s) it is connected to by filling the adjacency matrix
     for i = 1:numNodes
         data = allPorts{i};   
         neighbours = [data.DstBlock];

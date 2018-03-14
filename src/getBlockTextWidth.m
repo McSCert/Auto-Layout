@@ -1,5 +1,5 @@
 function neededWidth = getBlockTextWidth(block)
-%GETBLOCKTEXTWIDTH Determines appropriate block width in order to fit the
+% GETBLOCKTEXTWIDTH Determine appropriate block width in order to fit the
 %   text within it.
 %
 %   Inputs:
@@ -14,6 +14,9 @@ function neededWidth = getBlockTextWidth(block)
     msg = ['Unexpected Tag Visibility On ' block ' - Please Report Bug'];
     tagVisException = MException(msgID, msg);
     
+    
+    %Based on the type of block, calculate the minimum space required to fit the
+    %text in the block
     switch blockType
         case 'SubSystem'
             if strcmp(get_param(block, 'MaskType'), 'DocBlock')

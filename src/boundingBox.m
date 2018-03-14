@@ -1,5 +1,5 @@
 function bounds = boundingBox(object)
-% BOUNDINGBOX Finds the bounding box of a Simulink object. Supports blocks,
+% BOUNDINGBOX Find the bounding box of a Simulink object. Supports blocks,
 %   lines, and annotations.
 %
 %   Inputs:
