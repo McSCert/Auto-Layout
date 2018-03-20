@@ -41,6 +41,9 @@ function dgNew = addImplicitEdges(sys, dg)
         subFroms = findFromsInScope(gotos{i});
         for j = 1:length(subFroms)
             snk = getFirstAncestor(subFroms{j});
+            if(isempty(snk))
+                continue
+            end
             srcName = applyNamingConvention(gotos{i});
             snkName = applyNamingConvention(snk);
             % If the implicit edge does not exist in the graph, add it to the
@@ -55,6 +58,9 @@ function dgNew = addImplicitEdges(sys, dg)
         subGotos = findGotosInScope(froms{i});
         for j = 1:length(subGotos)
             src = getFirstAncestor(subGotos{j});
+            if(isempty(src))
+                continue
+            end
             srcName = applyNamingConvention(src);
             snkName = applyNamingConvention(froms{i});
             % If the implicit edge does not exist in the graph, add it to the
@@ -74,6 +80,9 @@ function dgNew = addImplicitEdges(sys, dg)
         subReads = findReadsInScope(writes{i});
         for j = 1:length(subReads)
             snk = getFirstAncestor(subReads{j});
+            if(isempty(snk))
+                continue
+            end
             srcName = applyNamingConvention(writes{i});
             snkName = applyNamingConvention(snk);
             % If the implicit edge does not exist in the graph, add it to the
@@ -88,6 +97,9 @@ function dgNew = addImplicitEdges(sys, dg)
         subWrites = findWritesInScope(reads{i});
         for j = 1:length(subWrites)
             src = getFirstAncestor(subWrites{j});
+            if(isempty(src))
+                continue
+            end            
             srcName = applyNamingConvention(src);
             snkName = applyNamingConvention(reads{i});
             % If the implicit edge does not exist in the graph, add it to the
@@ -100,14 +112,15 @@ function dgNew = addImplicitEdges(sys, dg)
     
     function anc = getFirstAncestor(blk)
         % Recursively get ancestors of the block until reaching sys.
-        %
+        % 
         % For a block in sys at some depth > 1, find the subsystem at 
         % depth == 1 which contains that block.
         % If the block is at depth == 1, return the block.
-        
         p = get_param(blk, 'Parent');
         if strcmp(p, sys)
             anc = blk;
+        elseif(isempty(p))
+                anc = '';
         else
             anc = getFirstAncestor(p);
         end

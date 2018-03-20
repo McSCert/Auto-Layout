@@ -18,7 +18,7 @@ function AutoLayout(address)
 % Getting parameters for the tool to determine its behaviour
 GRAPHING_METHOD = getAutoLayoutConfig('graphing_method', 'auto'); %Indicates which graphing method to use
 SHOW_NAMES = getAutoLayoutConfig('show_names', 'no-change'); %Indicates which block names to show
-PORTLESS_RULE = getAutoLayoutConfig('portless_rule', 'bottom'); %Indicates how to place portless blocks
+PORTLESS_RULE = 'top'%getAutoLayoutConfig('portless_rule', 'top'); %Indicates how to place portless blocks
 INPORT_RULE = getAutoLayoutConfig('inport_rule', 'none'); %Indicates how to place inports
 OUTPORT_RULE = getAutoLayoutConfig('outport_rule', 'none'); %Indicates how to place outports
 SORT_PORTLESS = getAutoLayoutConfig('sort_portless', 'blocktype'); %Indicates how to group portless blocks
@@ -200,7 +200,7 @@ updateLayout(address, layout);
 layout = vertAlign(layout);
 % % layout = easyAlign(layout); %old method, still relevant since it attempts to cover more cases
 
-% % layout = layout2(address, layout, systemBlocks); %temp removed, adding
+%layout = layout2(address, layout, systemBlocks); %temp removed, adding
 % it won't error, it's just not too likely to help
 
 % Align in/outport blocks if set to do so by in/outport rules
