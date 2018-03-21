@@ -40,7 +40,7 @@ function dgNew = addImplicitEdges(sys, dg)
     for i = 1:length(gotos)
         subFroms = findFromsInScope(gotos{i});
         for j = 1:length(subFroms)
-            snk = getFirstAncestor(subFroms{j});
+            snk = getRootInSys(subFroms{j});
             if(isempty(snk))
                 continue
             end
@@ -57,7 +57,7 @@ function dgNew = addImplicitEdges(sys, dg)
     for i = 1:length(froms)
         subGotos = findGotosInScope(froms{i});
         for j = 1:length(subGotos)
-            src = getFirstAncestor(subGotos{j});
+            src = getRootInSys(subGotos{j});
             if(isempty(src))
                 continue
             end
@@ -79,7 +79,7 @@ function dgNew = addImplicitEdges(sys, dg)
     for i = 1:length(writes)
         subReads = findReadsInScope(writes{i});
         for j = 1:length(subReads)
-            snk = getFirstAncestor(subReads{j});
+            snk = getRootInSys(subReads{j});
             if(isempty(snk))
                 continue
             end
@@ -96,10 +96,10 @@ function dgNew = addImplicitEdges(sys, dg)
     for i = 1:length(reads)
         subWrites = findWritesInScope(reads{i});
         for j = 1:length(subWrites)
-            src = getFirstAncestor(subWrites{j});
+            src = getRootInSys(subWrites{j});
             if(isempty(src))
                 continue
-            end            
+            end
             srcName = applyNamingConvention(src);
             snkName = applyNamingConvention(reads{i});
             % If the implicit edge does not exist in the graph, add it to the
@@ -110,19 +110,21 @@ function dgNew = addImplicitEdges(sys, dg)
         end
     end
     
-    function anc = getFirstAncestor(blk)
-        % Recursively get ancestors of the block until reaching sys.
-        % 
-        % For a block in sys at some depth > 1, find the subsystem at 
-        % depth == 1 which contains that block.
-        % If the block is at depth == 1, return the block.
+    function root = getRootInSys(blk)
+        % Recursively get parent system of the block until reaching sys.
+        % If blk is directly within sys, then it is "root",
+        % otherwise "root" is a subsystem directly within sys that contains
+        % blk at any depth (if it exists).
+        %
+        % The point is to find which block to create an edge with when the
+        % data flow implicitly goes into a subsystem.
         p = get_param(blk, 'Parent');
         if strcmp(p, sys)
-            anc = blk;
+            root = blk;
         elseif(isempty(p))
-                anc = '';
+                root = '';
         else
-            anc = getFirstAncestor(p);
+            root = getRootInSys(p);
         end
     end
 
