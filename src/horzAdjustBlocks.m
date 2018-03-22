@@ -1,11 +1,10 @@
 function layout = horzAdjustBlocks(layout, col, x)
-% HORZADJUSTBLOCKS Horizontally move blocks in layout to the right of 
-%   column col right by x
+% HORZADJUSTBLOCKS Horizontally move blocks in the layout, to the right of
+%   the column, right by x.
 %
 %   Inputs:
 %       layout          As returned by getRelativeLayout.
-%       col             Column number. Blocks in this column of
-%                       layout.grid and to its left will not be moved.
+%       col             Column number, to the left of which blocks will not be moved.
 %       x               Number of pixels to move blocks.
 %
 %   Outputs:

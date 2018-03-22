@@ -1,8 +1,8 @@
 function bool = onSide(block, center, side)
-% ONSIDE Determines whether or not the center of block is on the given
-%   side of the system.
+% ONSIDE Determine whether or not the center of block is on a particular side of
+%   the system.
 %
-%   INPUTS
+%   Inputs:
 %       block   Full block name.
 %       center  Center of the system for the given side (e.g. if side is
 %               'left', center will be halfway between the largest and
@@ -12,15 +12,14 @@ function bool = onSide(block, center, side)
 %               function checks if the center of the block is on the left
 %               half of the system (if it's a tie then choose left)
 %
-%   OUTPUTS
-%       bool    Indicates whether or not the given block is on the
-%               indicated side of the system.
+%   Outputs:
+%       bool    Whether or not the given block is on the indicated side of the system.
 
-switch side
-    case 'left'
-        midPos = getBlockSidePositions({block}, 5);
-    case 'top'
-        midPos = getBlockSidePositions({block}, 6);
-end
-bool = midPos <= center;
+    switch side
+        case 'left'
+            midPos = getBlockSidePositions({block}, 5);
+        case 'top'
+            midPos = getBlockSidePositions({block}, 6);
+    end
+    bool = midPos <= center;
 end

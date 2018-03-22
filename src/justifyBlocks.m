@@ -7,38 +7,37 @@ function layout = justifyBlocks(address, layout, blocks, justifyType)
 %   Inputs:
 %       address         Simulink system name or path.
 %       layout          As returned by getRelativeLayout.
-%       blocks          List of blocks to be affected by the justification
-%       justifyType     How the blocks will be aligned
-%                           1 - left justify
-%                           3 - right justify
+%       blocks          List of blocks to be affected by the justification.
+%       justifyType     How the blocks will be aligned: left justified (1) or
+%                       right justified (3).
 %
 %   Output:
-%       layout          With modified position information. 
+%       layout          With modified position information.
 %
-% Pushes blocks either to far right or left.
-% If doing so would cause line crossings then affected blocks won't be
-% moved.
-%
+% Pushes blocks either too far right or left.
+% If doing so would cause line crossings then affected blocks won't be moved.
 
-for i = 1:length(blocks)
-    [row,col] = findInLayout(layout, blocks(i));
-    if ~alreadyFullyJustified(layout, col, justifyType)
-        if ~blocksInTheWay(layout, row, col, justifyType) && ~linesInTheWay(address, layout, row, col, justifyType)
-            % Nothing in the way of justifying blocks(i)
-            
-            if justifyType == 1 % (justify left)
-                newCol = 1;
-            elseif justifyType == 3 % (justify right)
-                newCol = size(layout.grid,2);
+
+    for i = 1:length(blocks)
+        [row,col] = findInLayout(layout, blocks(i));
+        if ~alreadyFullyJustified(layout, col, justifyType)
+            if ~blocksInTheWay(layout, row, col, justifyType) && ~linesInTheWay(address, layout, row, col, justifyType)
+                % Nothing in the way of justifying blocks(i)
+
+                if justifyType == 1 % (justify left)
+                    newCol = 1;
+                elseif justifyType == 3 % (justify right)
+                    newCol = size(layout.grid,2);
+                end
+                layout = changeBlockColumn(layout, row, col, newCol);
             end
-            layout = changeBlockColumn(layout, row, col, newCol);
         end
     end
 end
-end
 
 function layout = changeBlockColumn(layout, oldRow, oldCol, newCol)
-% Removes block at layout.grid{oldRow, oldCol} from its column and adds it into newCol
+% CHANGEBLOCKCOLUMN Remove block at layout.grid{oldRow, oldCol} from its column
+%   and adds it into newCol.
 
     % Move layout.grid{oldRow,oldCol} (visually and with the .position)
     pos = get_param(layout.grid{oldRow, oldCol}.fullname, 'Position');
@@ -59,7 +58,7 @@ function layout = changeBlockColumn(layout, oldRow, oldCol, newCol)
 end
 
 function linesInTheWay = linesInTheWay(address, layout, row, col, jT)
-% Checks if any line crossings will result from the indicated justification
+% LINESINTHEWAY Check if any line crossings will result from the indicated justification
 % of block. Considers a line "in the way" if a box formed around the line
 % would cross.
 
@@ -74,7 +73,7 @@ function linesInTheWay = linesInTheWay(address, layout, row, col, jT)
     for i = 1:length(systemLines)
         points = get_param(systemLines(i), 'Points');
         point1 = points(1,:);
-        
+
         for j = 2:length(points)
             point2 = points(j,:);
 
@@ -90,8 +89,8 @@ function linesInTheWay = linesInTheWay(address, layout, row, col, jT)
                 end
             else
                 % if segment is on an angle
-                % uses same method as above, 
-                % if this returns true it will not always mean there would be a crossing 
+                % uses same method as above,
+                % if this returns true it will not always mean there would be a crossing
                 % if it returns false then there cannot be a crossing
                 if isRangeOverlap(point1(2), point2(2), pos(4), pos(2))
                     % vertical components overlap
@@ -108,9 +107,9 @@ function linesInTheWay = linesInTheWay(address, layout, row, col, jT)
 end
 
 function isRangeOverlap = isRangeOverlap(range1Val1, range1Val2, range2Val1, range2Val2)
-% The 1st 2 arguments form the 1st range,
-% while the 2nd 2 form the 2nd range
-% Returns whether or not the union of the two ranges have any intersection
+% ISRANGEOVERLAP Returns whether or not the union of the two ranges have any intersection.
+%
+% The 1st two arguments form the 1st range, while the 2nd two form the 2nd range.
 
     max1 = max(range1Val1, range1Val2);
     min1 = min(range1Val1, range1Val2);
@@ -120,9 +119,9 @@ function isRangeOverlap = isRangeOverlap(range1Val1, range1Val2, range2Val1, ran
 end
 
 function blocksInTheWay = blocksInTheWay(layout, row, col, jT)
-% Determine whether or not any blocks are in the way of justifying 
-% the block at layout.grid{row,col}
-%   Considers a block "in the way" if 
+% BLOCKSINTHEWAY Determine whether or not any blocks are in the way of justifying
+%   the block at layout.grid{row,col}.
+%   Considers a block "in the way" if:
 %       it's in a column on the side of justification from col
 %       and the top to bottom ranges of the 2 blocks overlap
 
@@ -146,8 +145,8 @@ function blocksInTheWay = blocksInTheWay(layout, row, col, jT)
 end
 
 function [row,col] = findInLayout(layout, block)
-% Searches for block in layout.grid and returns its indices
-% Returns row = [] and col = [] if block isn't found
+% FINDINLAYOUT Searches for block in layout.grid and returns its indices.
+% Returns row = [] and col = [] if block isn't found.
     row = []; col = [];
     for j = 1:size(layout.grid,2) % for each column
         for i = 1:layout.colLengths(j) % for each non empty row in column

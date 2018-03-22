@@ -1,12 +1,13 @@
 function sidePositions = getBlockSidePositions(blocks, side)
-% GETBLOCKSIDEPOSITIONS Find the *unique* block positions for a given side 
+% GETBLOCKSIDEPOSITIONS Find the *unique* block positions for a given side
 %   of a set of blocks.
 %
 %   Inputs:
-%       blocks          Cell array of the full names of one or more blocks.
-%                       If a cell array is given for one of the block 
-%                       names, the first element is used.
-%       side            Number, respesenting the following
+%       blocks          Cell array of the full names of block(s).
+%                       If a cell array is given for one of the block names,
+%                       the first element is used.
+%
+%       side            Number respesenting the following:
 %                           1 - Left
 %                           2 - Top
 %                           3 - Right
@@ -15,8 +16,7 @@ function sidePositions = getBlockSidePositions(blocks, side)
 %                           6 - Midpoint between results of 2 and 4
 %
 %   Outputs:
-%       sidePositions   A vector of unique doubles for the positions of a 
-%                       given side for each given block.
+%       sidePositions   Vector of unique doubles for the positions.
 
     % Calculated the selected side position based on the side selected
     if side == 5
@@ -31,7 +31,7 @@ function sidePositions = getBlockSidePositions(blocks, side)
                 sidePositions = [sidePositions, midX];
             end
         end
-        
+
     elseif side == 6
         sidePositions = [];
         for i = 1:length(blocks)
@@ -44,7 +44,7 @@ function sidePositions = getBlockSidePositions(blocks, side)
                 sidePositions = [sidePositions, midY];
             end
         end
-        
+
     else
         sidePositions = [];
         for i = 1:length(blocks)

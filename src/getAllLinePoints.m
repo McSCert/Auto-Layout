@@ -1,12 +1,12 @@
 function linePoints = getAllLinePoints(lines)
-% Returns a cell array where each element is the set of points associated
-% with each of the corresponding input lines
+% GETALLLINEPOINTS Return a cell array where each element is the set of points
+%   associated with each of the corresponding input lines.
 %
 %   Inputs:
-%       lines       Array of lines
+%       lines       Array of lines.
 %
 %   Outputs:
-%       linepoints  
+%       linepoints  Cell array of line points.
 
     linePoints = {};
     for i = 1:length(lines)

@@ -1,18 +1,15 @@
 function desiredHeight = desiredHeightForPorts(block, varargin)
-% DESIREDHEIGHTFORPORTS Determine a desirable block height to accomodate
-% its ports.
-% Note: This function assumes blocks have not been rotated.
+% DESIREDHEIGHTFORPORTS Determine a desirable block height to accomodate its ports.
+%   Note: This function assumes blocks have not been rotated.
 %
 %   Inputs:
-%       block           Full name of a block (character array).
-%       varargin{1}     Indicates desired space between ports. Defaults to 40.
-%       varargin{2}     Indicates desired space above/below the top/bottom
-%                       ports of a block. Default uses a simple algorithm with
-%                       a value of either 5 or 30 depending on the block.
-%                       Arguments beyond the second are ignored.
-%   
+%       block           Full name of a block (char array).
+%       varargin{1}     Desired space between ports. Default is 40.
+%       varargin{2}     Desired space above/below the top/bottom ports of a block.
+%                       Default is either 5 or 30, depending on the block.
+%
 %   Outputs:
-%       desiredHeight   Desired block height to accomodate its ports.
+%       desiredHeight   Block height required to accomodate its ports.
 
     ports = get_param(block, 'Ports');
     maxPorts = max(ports(1),ports(2));

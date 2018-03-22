@@ -1,6 +1,5 @@
 function secondLayout(address, systemBlocks, portlessInfo)
-% After running initLayout,
-% This function provides more automatic layout functionality.
+% SECONDLAYOUT After running initLayout, this function provides more automatic layout functionality.
 % The functionality it provides is listed below roughly ordered with when it
 % is done in this function.
 %   Moves inputs and outputs to the outsides when it is easy (and not messy) to do so
@@ -8,7 +7,7 @@ function secondLayout(address, systemBlocks, portlessInfo)
 %   Keeps labels on screen if they went off to the left
 %   Expands small blocks by extending their right side
 %   Adjusts spacing between blocks horizontally to be more reasonable
-%   Redraws lines, 
+%   Redraws lines,
 %       first uses the same method as in initLayout,
 %       then prevents/removes diagonal lines,
 %       then fixes a case where the autorouting isn't very good,
@@ -22,7 +21,7 @@ function secondLayout(address, systemBlocks, portlessInfo)
     % Adjust the spacing between adjacent blocks in columns of blocksMatrix
     adjustColVertSpacing(blocksMatrix, colLengths);
 
-    % Shift everything right if any label is too far left 
+    % Shift everything right if any label is too far left
     fixLabelOutOfBounds(blocksMatrix, colLengths);
 
     % Enlarge blocks to fit strings in them
@@ -78,12 +77,11 @@ function secondLayout(address, systemBlocks, portlessInfo)
 end
 
 function fixRedrawLinesOvershoot(vSegs)
-% Sometimes the redraw_lines function will cause a line to go further
-% than it should and then goes back to where it should have been
-% (it doesn't seem to improve line crossings).
-% This function merges the vertical segment of the overshoot
-% with a later vertical segment
-% (this isn't expected to fix a lot of cases, just a few specific ones).
+% FIXREDRAWLINESOVERSHOOT Sometimes the redraw_lines function will cause a line
+%   to go further than it should and then goes back to where it should have been
+%   (it doesn't seem to improve line crossings). This function merges the vertical
+%   segment of the overshoot with a later vertical segment (this isn't expected
+%   to fix a lot of cases, just a few specific ones).
 
     % This doesn't guarantee preservation of the validity of vSegs
     for i = 1:length(vSegs)
@@ -126,27 +124,27 @@ function fixRedrawLinesOvershoot(vSegs)
 end
 
 function spaceVSegs(vSegs, colDims)
-% Re-places vSegs, evenly spacing them between the columns of blocks
+% SPACEVSEGS Re-place vSegs, evenly spacing them between the columns of blocks.
 
-for i = 2:length(colDims) %for each column after first
-    freeSpace = colDims{i}(1) - colDims{i-1}(2);
-    if freeSpace > 0
-        
-        % Get vertical segments from anywhere between left side of previous
-        % column and the left side of the current column.
-        % If this code gets changed also change the equivalent part of adjustColWidths!
-        tempVSegs = vSegsInRange(vSegs, colDims{i-1}(1), colDims{i}(1));
-        arrangeVSegs(tempVSegs, colDims{i-1}(2), colDims{i}(1));
-    else
-        error('Could not improve arrangement of vertical line segments within given space.');
+    for i = 2:length(colDims) %for each column after first
+        freeSpace = colDims{i}(1) - colDims{i-1}(2);
+        if freeSpace > 0
+
+            % Get vertical segments from anywhere between left side of previous
+            % column and the left side of the current column.
+            % If this code gets changed also change the equivalent part of adjustColWidths!
+            tempVSegs = vSegsInRange(vSegs, colDims{i-1}(1), colDims{i}(1));
+            arrangeVSegs(tempVSegs, colDims{i-1}(2), colDims{i}(1));
+        else
+            error('Could not improve arrangement of vertical line segments within given space.');
+        end
     end
-end
 end
 
 function arrangeVSegs(vSegs, leftBound, rightBound)
-% Arranges vSegs evenly between leftBound and rightBound
+% ARRANGEVSEGS Arrange vSegs evenly between leftBound and rightBound.
 
-    vSegs = sortVSegs(vSegs); %So that they can be rearranged somewhat logically
+    vSegs = sortVSegs(vSegs); % Sort so that they can be rearranged somewhat logically
 
     for i = 1:length(vSegs)
         xnew = leftBound + (((rightBound - leftBound)*i)/(length(vSegs) + 1));
@@ -161,9 +159,8 @@ function arrangeVSegs(vSegs, leftBound, rightBound)
 end
 
 function vSegs = sortVSegs(vSegs)
-% Sorts vertical line segments, vSegs, giving priority to lowest x value,
-% and secondary priority to largest ymax value
-% no third level of priority is applied
+% SORTVSEGS Sort vertical line segments, vSegs, giving priority to lowest x value,
+%   and secondary priority to largest ymax value.
 
     % Sort vSegs from smallest x to largest x
     xVals = [];
@@ -173,7 +170,7 @@ function vSegs = sortVSegs(vSegs)
     [~, orderX] = sort(xVals);
     vSegs = vSegs(orderX);
 
-    % Maintain order of smallest x to largest x,
+    % Maintain order of smallest x to largest x.
     % Break ties by placing larger ymax earlier
     unSortedY = true;
     while unSortedY
@@ -196,7 +193,8 @@ function vSegs = sortVSegs(vSegs)
 end
 
 function adjustColVertSpacing(blocksMatrix, colLengths)
-% Expands space between blocks within columns of blocks if less than a minimum
+% ADJUSTCOLVERTSPACING Expand space between blocks within columns of blocks if
+%   less than a minimum.
 
     for j = 1:size(blocksMatrix, 2) % For each column
         pos1 = get_param(char(blocksMatrix{1, j}), 'Position');
@@ -218,8 +216,8 @@ function adjustColVertSpacing(blocksMatrix, colLengths)
 end
 
 function adjustHorzSpacing(blocksMatrix, colLengths, vSegs, colDims)
-% Expands space between columns of blocks if less than a minimum determined
-% by the number of vertical segments in that space.
+% ADJUSTHORZSPACING Expand space between columns of blocks if less than a
+%   minimum determined by the number of vertical segments in that space.
 
     minSpacePerVSeg = 20; % Min desired amount of space per vertical segment in the freeSpace
 
@@ -239,7 +237,8 @@ function adjustHorzSpacing(blocksMatrix, colLengths, vSegs, colDims)
 end
 
 function vSegs = vSegsInRange(vSegs, leftBound, rightBound)
-% Find all vertical line segments among vSegs that lie between leftBound and rightBound
+% VSEGSINRANGE Find all vertical line segments among vSegs that lie between
+%   leftBound and rightBound.
 
     tempVSegs = {};
     for i = 1:length(vSegs)
@@ -251,8 +250,11 @@ function vSegs = vSegsInRange(vSegs, leftBound, rightBound)
 end
 
 function colDims = getColumnDimensions(blocksMatrix, colLengths)
-% Returns the maximum positions of blocks on the x-axis for each column in blocksMatrix
-%   colDims{#} = [largestLeftPosition, largestRightPosition]
+% GETCOLUMNDIMENSIONS Return the maximum positions of blocks on the x-axis for
+%   each column in blocksMatrix.
+%
+%   Outputs:
+%       colDims{#} = [largestLeftPosition, largestRightPosition]
 
     colDims = {};
     for j = 1:size(blocksMatrix, 2) % For columns in blocksMatrix
@@ -313,11 +315,11 @@ function vSegs = getVSegs(lines)
 end
 
 function vSeg = updateVSeg(vSeg)
-% Returns an updated vSeg.
-% The following properties are assumed to already be up to date:
-%   vSeg.line, 
-%   vSeg.pointsInLine, 
-%   vSeg.pointIndex1, 
+% UPDATEVSEG Return an updated vSeg.
+% The following properties are assumed to already be up-to-date:
+%   vSeg.line,
+%   vSeg.pointsInLine,
+%   vSeg.pointIndex1,
 %   vSeg.pointIndex2
 
     vSeg.x = vSeg.pointsInLine(vSeg.pointIndex1, 1);

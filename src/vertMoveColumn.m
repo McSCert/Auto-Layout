@@ -1,14 +1,12 @@
 function layout = vertMoveColumn(layout, row, col, y)
-%VERTMOVECOL Vertically moves blocks in col and below row in layout.grid
-%   downward by y
+% VERTMOVECOLUMN Vertically move blocks in col and below row in layout.grid
+%   downward by y.
 %
 %   Inputs:
-%       layout          As returned by getRelativeLayout.
-%       row             Row number. Only blocks below this row of 
-%                       layout.grid will be moved.
-%       col             Column number. Only blocks in this column of
-%                       layout.grid will be moved.
-%       y               Number of pixels to move blocks.
+%       layout      As returned by getRelativeLayout.
+%       row         Row number, below which blocks will be moved.
+%       col         Column number, in whihch blocks will be moved.
+%       y           Number of pixels to move blocks.
 %
 %   Outputs:
 %       layout      With modified position information.

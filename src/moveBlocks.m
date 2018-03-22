@@ -1,10 +1,9 @@
 function moveBlocks(address, blocks, positions)
-% MOVEBLOCKS Move blocks in address to the positions indicated in 
-%   positions.
+% MOVEBLOCKS Move blocks in address to the given positions.
 %
 %   Inputs:
 %       address     Simulink system name or path.
-%       blocks      Cell array of full block names (e.g. gcb). 
+%       blocks      Cell array of full block names.
 %       positions   Cell array of positions corresponding with blocks (i.e.
 %                   blocks{i} should be moved to positions{i}; blocks and
 %                   positions are of the same length).
@@ -17,14 +16,14 @@ function moveBlocks(address, blocks, positions)
 %   Example:
 %       moveBlocks('AutoLayoutDemo',{'AutoLayoutDemo/In1', ...
 %           'AutoLayoutDemo/In2'}, {[-35,50,-15,70],[-35,185,-15,205]})
-    
+
     % Check number of arguments
     try
         assert(nargin == 3)
     catch
         error('Wrong number of arguments.');
     end
-    
+
     % Check address argument
     % 1) Check model at address is open
     try

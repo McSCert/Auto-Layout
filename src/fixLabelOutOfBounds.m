@@ -1,13 +1,12 @@
 function layout = fixLabelOutOfBounds(layout)
-%FIXLABELOUTOFBOUNDS Horizontally moves blocks in layout away from the 
-%   system's left bound if a block's name label extends past it
+% FIXLABELOUTOFBOUNDS Horizontally move blocks in the layout away from the
+%   system's left bound if a block's name label extends past it.
 %
 %   Inputs:
 %       layout  As returned by getRelativeLayout.
 %
 %   Outputs:
-%       layout  With modified (left, right) position information for
-%               labels.
+%       layout  With modified (left, right) position information for labels.
 
     for j = 1:size(layout.grid,2) % for each column
         largestX = 0;
@@ -27,10 +26,10 @@ function layout = fixLabelOutOfBounds(layout)
 end
 
 function labelSize = getLabelSize(block)
-% Get the size of a block's label, since it can create an offset for where
-% AutoLayout places it initially and we don't want to take that into account
+% GETLABELSIZE Get the size of a block's label, because it can create an offset
+% from where AutoLayout places it initially and we don't want to take that into account.
 
-    if strcmp(get_param(block, 'ShowName'),'on')
+    if strcmp(get_param(block, 'ShowName'), 'on')
         [~, labelSize] = blockStringDims(block, get_param(block, 'Name'));
     else
         labelSize = 0;

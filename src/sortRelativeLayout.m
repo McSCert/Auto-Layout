@@ -1,6 +1,5 @@
 function grid = sortRelativeLayout(grid, colLengths)
-% SORTRELATIVELAYOUT Sort blocks in grid within columns by their top 
-%   positions.
+% SORTRELATIVELAYOUT Sort blocks in grid within columns by their top positions.
 %
 %   Inputs:
 %       grid        Format as defined in getRelativeLayout.
@@ -20,12 +19,13 @@ function grid = sortRelativeLayout(grid, colLengths)
 end
 
 function sortedMat1D = sortByTopPos(mat1d)
-% Takes an unsorted matrix of blocks (format is important if some spaces are empty)
-% and returns a matrix of blocks sorted in the order they appear in the block diagram
+% SORTBYTOPPOS Takes an unsorted matrix of blocks (format is important if some
+%   spaces are empty) and returns a matrix of blocks sorted in the order they
+%   appear in the block diagram.
 
     tops = [];
     len = 0;   % len represents the number of non-empty values in mat1d
-    
+
     for i = 1:length(mat1d)
         if ~isempty(mat1d{i})
             pos = mat1d{i}.position;
@@ -44,8 +44,8 @@ function sortedMat1D = sortByTopPos(mat1d)
 end
 
 function colMatrix = getColMatrix(colNum, mat2d)
-% Takes a 2-D matrix and a column number (less than size(mat2d,2)) and
-% returns a 1-D matrix of the values in the designated column (in the same order)
+% GETCOLMATRIX Takes a 2-D matrix and a column number (less than size(mat2d,2)) and
+% returns a 1-D matrix of the values in the designated column (in the same order).
 
     for i = 1:size(mat2d,1)
         colMatrix{i} = mat2d{i, colNum};

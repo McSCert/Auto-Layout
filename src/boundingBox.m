@@ -3,38 +3,37 @@ function bounds = boundingBox(object)
 %   lines, and annotations.
 %
 %   Inputs:
-%       object  The object itself (either fullname or handle).
+%       object  The object itself (fullname or handle).
 %
-%   Output:
-%       bounds  Gives the bounds of the object as: [left, top, right, bottom]
-%       pixels
+%   Outputs:
+%       bounds  The bounds of the object as: [left, top, right, bottom] in pixels.
 
-objectType = get_param(object, 'Type');
+    objectType = get_param(object, 'Type');
 
-switch objectType
-    case 'block'
-        bounds = blockBounds(object);
-    case 'line'
-        bounds = lineBounds(object);
-    case 'annotation'
-        bounds = annotationBounds(object);
-    otherwise
-        error(['Error in ' mfilename '. Expected type of object to be ''block'', ''line'', or ''annotation'''])
-end
+    switch objectType
+        case 'block'
+            bounds = blockBounds(object);
+        case 'line'
+            bounds = lineBounds(object);
+        case 'annotation'
+            bounds = annotationBounds(object);
+        otherwise
+            error(['Error in ' mfilename '. Expected type of object to be ''block'', ''line'', or ''annotation'''])
+    end
 end
 
 function bounds = blockBounds(block)
-bounds = get_param(block,'Position');
+    bounds = get_param(block,'Position');
 end
 
 function bounds = lineBounds(line)
-points = get_param(line, 'Points');
-bounds = [min(points(:,1)) min(points(:,2)) max(points(:,1)) max(points(:,2))];
+    points = get_param(line, 'Points');
+    bounds = [min(points(:,1)) min(points(:,2)) max(points(:,1)) max(points(:,2))];
 end
 
 function bounds = annotationBounds(note)
-ob = get_param(note,'object');
-bounds = ob.getBounds;
+    ob = get_param(note,'object');
+    bounds = ob.getBounds;
 end
 
 % function bounds = annotationBounds(note)

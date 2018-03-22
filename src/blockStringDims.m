@@ -1,12 +1,12 @@
 function [height, width] = blockStringDims(block, string)
-% BLOCKSTRINGDIMS Find the height and width that a string has/would have 
+% BLOCKSTRINGDIMS Find the height and width that a string has/would have
 %   within block.
 %
-%   Input
+%   Inputs:
 %       block   Fullname or handle of a Simulink block.
-%       string  Some character array.
+%       string  A character array.
 %
-%   Output
+%   Outputs:
 %       height  Height of string if diplayed using the block's parameters.
 %       width   Width of string if diplayed using the block's parameters.
 

@@ -1,12 +1,12 @@
 function fixLineOverBlock(allLines, allBlocks)
-% FIXLINEOVERBLOCK draw new lines that do not go through any of the blocks in
-% the system
+% FIXLINEOVERBLOCK Draw new lines that do not go through any of the blocks in
+%   the system.
 %
 %   Inputs:
-%       allLines     all lines in the system
-%       allBlocks    all blocks in the the system
-% 
-%   Output:
+%       allLines     All lines in the system.
+%       allBlocks    All blocks in the the system.
+%
+%   Outputs:
 %       N/A
 
     for i = 1:length(allBlocks)

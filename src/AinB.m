@@ -1,12 +1,12 @@
 function bool = AinB(A,B)
-% AINB Determines if string A is an element in cell array B
+% AINB Determine if string A is an element in cell array B.
 %
 %   Inputs:
-%       A       Character vector
-%       B       Cell array
+%       A       Character vector.
+%       B       Cell array.
 %
 %   Outputs:
-%       bool    Logical
+%       bool    Whether A is in B (1), or not(0).
 %
 %   Examples:
 %       AinB('a',{'a','b','c'}) -> true
@@ -17,13 +17,13 @@ function bool = AinB(A,B)
 %   Another method to do this using built-in functions:
 %       isempty(find(strcmp(A,B)))
 
-bool = false;
-if ischar(A) && iscell(B)
-    for i = 1:length(B)
-        if ischar(B{i}) && strcmp(A,B{i})
-            bool = true;
-            return
+    bool = false;
+    if ischar(A) && iscell(B)
+        for i = 1:length(B)
+            if ischar(B{i}) && strcmp(A,B{i})
+                bool = true;
+                return
+            end
         end
     end
-end
 end

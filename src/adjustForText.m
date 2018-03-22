@@ -5,21 +5,21 @@ function layout = adjustForText(layout)
 %   Inputs:
 %       layout      As returned by getRelativeLayout.
 %
-%   Output:
+%   Outputs:
 %       layout      With modified position information.
 
-for j = 1:size(layout.grid,2) % for each column
-    largestX = 0; %Shift amount
-    for i = 1:layout.colLengths(j) % for each non empty row in column
-        block = layout.grid{i,j}.fullname; % block to resize
-        pos = layout.grid{i,j}.position;
-        [layout.grid{i,j}.position, xDisplace] = dimIncreaseForText(...
-            block, pos, 'right'); % Returns amount to move other blocks
-        if xDisplace > largestX
-            largestX = xDisplace;
+    for j = 1:size(layout.grid,2) % for each column
+        largestX = 0; %Shift amount
+        for i = 1:layout.colLengths(j) % for each non empty row in column
+            block = layout.grid{i,j}.fullname; % block to resize
+            pos = layout.grid{i,j}.position;
+            [layout.grid{i,j}.position, xDisplace] = dimIncreaseForText(...
+                block, pos, 'right'); % Returns amount to move other blocks
+            if xDisplace > largestX
+                largestX = xDisplace;
+            end
         end
+
+        layout = horzAdjustBlocks(layout, j, largestX);
     end
-    
-    layout = horzAdjustBlocks(layout, j, largestX);
-end
 end

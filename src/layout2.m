@@ -8,7 +8,7 @@ function layout = layout2(address, layout, systemBlocks)
 %   Keeps labels on screen if they went off to the left
 %   Expands small blocks by extending their right side
 %   Adjusts spacing between blocks horizontally to be more reasonable
-%   Redraws lines, 
+%   Redraws lines,
 %       first uses the same method as in initLayout,
 %       then prevents/removes diagonal lines,
 %       then fixes a case where the autorouting isn't very good,
@@ -23,12 +23,12 @@ function layout = layout2(address, layout, systemBlocks)
     layout = adjustColVertSpacing(layout);
     %Update block positions according to layout
     updateLayout(address, layout);
-    
-    % Shift everything right if any label is too far left 
+
+    % Shift everything right if any label is too far left
     layout = fixLabelOutOfBounds(layout);
     %Update block positions according to layout
     updateLayout(address, layout);
-    
+
     % Enlarge blocks to fit strings in them
     %layout = fixBlockSize(layout);
 
@@ -70,7 +70,7 @@ function layout = layout2(address, layout, systemBlocks)
 
     % Reorganize the placements of vertical line segments in the system
     spaceVSegs(vSegs, colDims);
-    
+
     % Place blocks that have no ports in a line along top or bottom horizontally
     % depending on where they were initially in the system
 %     placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, 'top', false);
@@ -128,19 +128,19 @@ end
 function spaceVSegs(vSegs, colDims)
 % Re-places vSegs, evenly spacing them between the columns of blocks
 
-for i = 2:length(colDims) %for each column after first
-    freeSpace = colDims{i}(1) - colDims{i-1}(2);
-    if freeSpace > 0
-        
-        % Get vertical segments from anywhere between left side of previous
-        % column and the left side of the current column.
-        % If this code gets changed also change the equivalent part of adjustColWidths!
-        tempVSegs = vSegsInRange(vSegs, colDims{i-1}(1), colDims{i}(1));
-        arrangeVSegs(tempVSegs, colDims{i-1}(2), colDims{i}(1));
-    else
-        disp('Could not improve arrangement of vertical line segments within given space.')
+    for i = 2:length(colDims) %for each column after first
+        freeSpace = colDims{i}(1) - colDims{i-1}(2);
+        if freeSpace > 0
+
+            % Get vertical segments from anywhere between left side of previous
+            % column and the left side of the current column.
+            % If this code gets changed also change the equivalent part of adjustColWidths!
+            tempVSegs = vSegsInRange(vSegs, colDims{i-1}(1), colDims{i}(1));
+            arrangeVSegs(tempVSegs, colDims{i-1}(2), colDims{i}(1));
+        else
+            disp('Could not improve arrangement of vertical line segments within given space.')
+        end
     end
-end
 end
 
 function arrangeVSegs(vSegs, leftBound, rightBound)
@@ -315,9 +315,9 @@ end
 function vSeg = updateVSeg(vSeg)
 % Returns an updated vSeg.
 % The following properties are assumed to already be up to date:
-%   vSeg.line, 
-%   vSeg.pointsInLine, 
-%   vSeg.pointIndex1, 
+%   vSeg.line,
+%   vSeg.pointsInLine,
+%   vSeg.pointIndex1,
 %   vSeg.pointIndex2
 
     vSeg.x = vSeg.pointsInLine(vSeg.pointIndex1, 1);

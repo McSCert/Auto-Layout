@@ -1,15 +1,21 @@
 function redraw_lines(name, varargin)
-% REDRAWBYBLOCKS Redraw all lines in the input system.
+% REDRAWBYBLOCKS Redraw all lines in the system.
 %
 %   Inputs:
-%       name            System address.
+%       name            Simulink system name or path.
 %       varargin{1}     Set to 'autorouting' to enable use of varargin{2}.
 %       varargin{2}     Indicates whether or not the program should attempt
 %                       autorouting. Values: 'on' or 'off'. Default: 'off'.
+%
+%   Outputs:
+%       N/A
+%
 %   Examples:
-%       redraw_lines(name) -- redraws lines with autorouting off
-%       redraw_lines(name, 'autorouting', 'on') -- redraws lines with
-%           autorouting on
+%       redraw_lines(name)
+%           Redraws lines with autorouting off.
+%
+%       redraw_lines(name, 'autorouting', 'on')
+%           Redraws lines with autorouting on.
 
     if isempty(varargin) || length(varargin) < 2
         autorouting = 'off';
@@ -21,11 +27,11 @@ function redraw_lines(name, varargin)
 
     redrawByBlocks(name,autorouting);
 %     redrawByLines(name,autorouting);
-    
+
 end
 
 function redrawByBlocks(name, autorouting)
-%REDRAWBYBLOCKS Redraws all lines by using get_param(name,'Blocks') and 
+% REDRAWBYBLOCKS Redraw all lines by using get_param(name,'Blocks') and
 %   then finding the line handles of each line on each block to find all
 %   lines.
 %
@@ -33,6 +39,9 @@ function redrawByBlocks(name, autorouting)
 %       name            System address.
 %       autorouting     Indicates whether or not the program should attempt
 %                       autorouting. Values ('on' or 'off').
+%
+%   Outputs:
+%       N/A
 
     Blocks = get_param(name,'Blocks');
     for n = 1:length(Blocks)
@@ -52,7 +61,7 @@ function redrawByBlocks(name, autorouting)
 end
 
 % function redrawByLines(name, autorouting)
-% %REDRAWBYLINES Redraws all lines by using get_param(name,'Lines') to find
+% % REDRAWBYLINES Redraw all lines by using get_param(name,'Lines') to find
 % %   all lines.
 % %   This method is untested, but may be better than the 'ByBlocks' method
 % %   (robustness, speed, modifiability, etc.).
@@ -62,7 +71,7 @@ end
 % %       name            System address.
 % %       autorouting     Indicates whether or not the program should attempt
 % %                       autorouting. Values ('on' or 'off').
-% 
+%
 %     lines = get_param(name,'Lines');
 %     for n = 1:length(lines)
 %         %src = lines(n).SrcBlock;

@@ -1,5 +1,5 @@
 function placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, topOrBot, preserveFormat)
-% Places blocks with no ports along the top or bottom of the system
+% PLACEPORTLESSBLOCKS Place blocks with no ports along the top or bottom of the system
 % topOrBot should be 'top' or 'bottom' depending on where blocks are being placed
 % preserveFormat is a boolean which decides the method to be used for spacing the blocks
 %   if preserveFormat is true, then blocks will be placed in line with the
@@ -29,12 +29,12 @@ function placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, to
         portlessBlocks = {portlessInfo.portlessBlocks};
         topOrBottomMap = portlessInfo(1).topOrBottomMap;
 
-        % Find the highest (if isTop)/lowest (if isBot) dimension 
+        % Find the highest (if isTop)/lowest (if isBot) dimension
         for i = 1:length(colLengths)
             dim = getBlockSidePositions(blocksMatrix(greatestInCol(i),i),sideNum);
             if hasPorts(blocksMatrix{greatestInCol(i), i})
                 if ~exist('greatestOfDim', 'var') || ...
-                        (dim < greatestOfDim && isTop) || ...   % recall top positions are higher the smaller they are 
+                        (dim < greatestOfDim && isTop) || ...   % recall top positions are higher the smaller they are
                         (dim > greatestOfDim && isBot)          % (opposite for bottom positions)
                     greatestOfDim = dim;
                 end
@@ -113,7 +113,7 @@ function placePortlessBlocks(address, portlessInfo, blocksMatrix, colLengths, to
 end
 
 function [top, right, bot, newGreatestOfDim] = getTopRightBotAndNGOD(greatestOfDim, newGreatestOfDim, width, height, left, isTop, isBot)
-% This function is mostly just to save from a copy and paste
+% GETTOPRIGHTBOTANDNGOD This function is mostly just to save from a copy and paste.
     vertSpace = 30;
     right = left + width;
     if isTop
@@ -125,17 +125,17 @@ function [top, right, bot, newGreatestOfDim] = getTopRightBotAndNGOD(greatestOfD
         bot = top + height;
         dim = bot;
     end
-    if (dim < newGreatestOfDim && isTop) || ...   % recall top positions are higher the smaller they are
-            (dim > newGreatestOfDim && isBot)          % (opposite for bottom positions)
+    if (dim < newGreatestOfDim && isTop) || (dim > newGreatestOfDim && isBot)
+        % Recall that top positions are higher the smaller they are (opposite for bottom positions)
         newGreatestOfDim = dim;
     end
 end
 
 function [top, bot, greatestOfDim, newGreatestOfDim] = moveEverythingDown(address,blocksMatrix,colLengths,top,bot,greatestOfDim,newGreatestOfDim)
-% Move all blocks down appropriately. Move all lines to where they should go.
-% Adjust top and bot appropriately. Adjust the greatestOfDim and 
+% MOVEEVERYTHINGDOWN Move all blocks down appropriately. Move all lines to where they should go.
+% Adjust top and bot appropriately. Adjust the greatestOfDim and
 % newGreatestOfDim appropriately. Other things may have been forgotten...
-
+% TODO: What 'other things' were forgotten?
     buffer = 30;
     shiftAmount = -top + buffer;
 
@@ -155,7 +155,8 @@ function [top, bot, greatestOfDim, newGreatestOfDim] = moveEverythingDown(addres
 end
 
 function linePoints = determineNewLinePoints(lines,shiftAmount)
-% Determines what the shifted positions of the points that form the lines will be
+% DETERMINENEWLINEPOINTS Determines what the shifted positions of the points
+%   that form the lines will be.
 
     linePoints = getAllLinePoints(lines);
     for i = 1:length(linePoints) % for all lines
@@ -165,8 +166,8 @@ function linePoints = determineNewLinePoints(lines,shiftAmount)
     end
 end
 
-function moveBlocksDown(blocksMatrix,colLengths,shiftAmount)
-% Moves blocks in blocksMatrix down by shiftAmount
+function moveBlocksDown(blocksMatrix, colLengths, shiftAmount)
+% MOVEBLOCKSDOWN Move blocks in blocksMatrix down by shiftAmount.
 
     for i = 1:size(blocksMatrix,2) % for each column
         for j = 1:colLengths(i) % for each non empty row in column
@@ -176,9 +177,8 @@ function moveBlocksDown(blocksMatrix,colLengths,shiftAmount)
     end
 end
 
-function moveLinePoints(lines,linePoints)
-% Moves lines to linePoints
-
+function moveLinePoints(lines, linePoints)
+% MOVELINEPOINTS Moves lines to linePoints.
     for i = 1:length(lines) % for all lines
         currentPoints = get_param(lines(i), 'Points');
         if linePoints{i}(1,2) == linePoints{i}(2,2)
@@ -196,8 +196,9 @@ end
 
 %%% May not need the functions below
 
-function findMaxPortlessBlockHeight(portlessBlocks,topOrBottomMap)
-% Finds the maximum height among relevant portlessBlocks:
+function findMaxPortlessBlockHeight(portlessBlocks, topOrBottomMap)
+% FINDMAXPORTLESSBLOCKHEIGHT Find the maximum height among relevant portlessBlocks.
+% TODO: Explain what 'relevant' means
     for i = 1:length(portlessBlocks)
         if strcmp(topOrBottomMap(portlessBlocks{i}), 'top') % If the block is being moved to the top
             pos = get_param(portlessBlocks{i}, 'Position');
