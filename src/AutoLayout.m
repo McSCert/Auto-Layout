@@ -18,7 +18,7 @@ function AutoLayout(address)
 % Getting parameters for the tool to determine its behaviour
 GRAPHING_METHOD = getAutoLayoutConfig('graphing_method', 'auto'); %Indicates which graphing method to use
 SHOW_NAMES = getAutoLayoutConfig('show_names', 'no-change'); %Indicates which block names to show
-PORTLESS_RULE = 'top'%getAutoLayoutConfig('portless_rule', 'top'); %Indicates how to place portless blocks
+PORTLESS_RULE = getAutoLayoutConfig('portless_rule', 'top'); %Indicates how to place portless blocks
 INPORT_RULE = getAutoLayoutConfig('inport_rule', 'none'); %Indicates how to place inports
 OUTPORT_RULE = getAutoLayoutConfig('outport_rule', 'none'); %Indicates how to place outports
 SORT_PORTLESS = getAutoLayoutConfig('sort_portless', 'blocktype'); %Indicates how to group portless blocks

@@ -21,7 +21,7 @@ show_names: no-change
 
 #PORTLESS_RULE Indicates the rule by which blocks with no ports will be 
 #	placed in the final layout.
-#Default bottom.
+#Default top.
 #
 #Acceptable parameter values are:
 #	bottom (blocks will be placed along the bottom side of the system),
@@ -32,7 +32,7 @@ show_names: no-change
 #		the system according to which half they started in),
 #	same_half_horizontal (blocks will be placed along the left/right side
 #		of the system according to which half they started in)
-portless_rule: bottom
+portless_rule: top
 
 #SORT_PORTLESS Indicates the rule by which blocks with no ports will be 
 #	grouped within the placement designated by PORTLESS_RULE in the final
@@ -47,7 +47,7 @@ sort_portless: blocktype
 
 #INPORT_RULE Indicates the rule by which inport blocks will be placed in
 #	the final layout.
-#Default none.
+#Default left_align.
 #
 #Acceptable parameter values are:
 #	left_align (Inports will be aligned along the left bound of the system
@@ -58,7 +58,7 @@ inport_rule: left_align
 
 #OUTPORT_RULE Indicates the rule by which outport blocks will be placed in
 #	the final layout.
-#Default none.
+#Default right_align.
 #
 #Acceptable parameter values are:
 #	right_align (Outports will be aligned along the right bound of the
