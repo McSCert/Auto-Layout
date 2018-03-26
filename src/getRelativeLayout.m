@@ -48,7 +48,7 @@ function i = isWhere(val, mat1d)
 %   Outputs:
 %       i       Position of the value, otherwise 0 if it is not found.
 
-Return 0 if val not found in mat1d.
+% Return 0 if val not found in mat1d.
     for i = 1:length(mat1d)
         if val == mat1d(i)
             return
