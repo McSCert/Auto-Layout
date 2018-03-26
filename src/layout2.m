@@ -75,7 +75,8 @@ function layout = layout2(address, layout, systemBlocks)
     vSegs = getVSegs(systemLines);
 
     % Reorganize the placements of vertical line segments in the system
-    spaceVSegs(vSegs, colDims);
+%     spaceVSegs(vSegs, colDims); % Commented out for now since it can
+%     cause diagonal lines
 
     % Place blocks that have no ports in a line along top or bottom horizontally
     % depending on where they were initially in the system
