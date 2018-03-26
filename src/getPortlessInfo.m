@@ -102,27 +102,3 @@ function [portlessInfo, smallOrLargeHalf] = getPortlessInfo(portless_rule, syste
                 '''same_half_vertical'', ''same_half_horizontal''}']);
     end
 end
-
-%%
-%This function is related, but outdated.
-%%
-% function inLeftHalf = inLeftHalf(blocks,block)
-% %INLEFTHALF Determines whether or not the middle of block is Left of the majority of blocks
-%
-%     midXPos = getBlockSidePositions({block}, 5);
-%     numBlocksOnRight = 0;
-%     numBlocksOnLeft = 0;
-%     for i = 1:length(blocks)
-%         midXPos2 = getBlockSidePositions(blocks(i), 5);
-%         if midXPos > midXPos2
-%             numBlocksOnRight = numBlocksOnRight + 1;
-%         elseif midXPos < midXPos2
-%             numBlocksOnLeft = numBlocksOnLeft + 1;
-%         end % Do nothing if equal
-%     end
-%     if numBlocksOnLeft < numBlocksOnRight % if more blocks are above than below
-%         inLeftHalf = true;
-%     else
-%         inLeftHalf = false;
-%     end
-% end
