@@ -27,21 +27,6 @@ function [pos, yIncrease] = dimIncreaseForPorts(block, pos, varargin)
 %       pos         New position of the block.
 %       yIncrease   Amount this block's height should be adjusted.
 
-
-% notes (to delete):
-% resize(block):
-% if ~resized
-%     find relevant blocks to this one
-%     resize relevant blocks before current block
-%     resize current block:
-%         increase up until passing a signal, or height surpasses relevant blocks
-%         increase down until passing a signal, or height surpasses relevant blocks
-%         then increase evenly until minimum height
-%             minimum height = max(# connections on a side)*min amount per port + buffer
-%     mark as resized
-%     adjust other blocks in same column as block
-%%
-
     if nargin == 4
         yIncrease = getPortYIncrease(block, pos, varargin{2});
     elseif nargin > 4
