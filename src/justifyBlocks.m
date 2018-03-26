@@ -9,7 +9,10 @@ function layout = justifyBlocks(address, layout, blocks, justifyType)
 %       layout          As returned by getRelativeLayout.
 %       blocks          List of blocks to be affected by the justification.
 %       justifyType     How the blocks will be aligned: left justified (1) or
-%                       right justified (3).
+%                       right justified (3) (The numbers correspond with
+%                       the position parameter of blocks i.e. a block with
+%                       position [1 2 3 4] has a left position 1 and a
+%                       right position of 3).
 %
 %   Output:
 %       layout          With modified position information.

@@ -1,4 +1,11 @@
 function preventDiagVSegs(systemLines)
+% PREVENTDIAGVSEGS Places an additional point on lines that go straight
+% down from their source so that they first go right 1 pixel. This can
+% prevent some issues that may occur.
+%
+% Inputs:
+%   systemLines     Vector of line handles.
+
     for i = 1:length(systemLines)
         line = systemLines(i);
         linePoints = get_param(line, 'points');

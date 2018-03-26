@@ -1,5 +1,8 @@
 function fixDiagonalLines(systemLines)
-% FIXDIAGONALLINES Remove diagonal lines by
+% FIXDIAGONALLINES Remove diagonal lines by checking all pairs of points
+%   and if the pair form a diagonal line segment, then redraws the line
+%   with two 90 degree turns instead.
+%
 %   Inputs:
 %       systemLines     Lines that are checked to see if they are diagonal.
 %
@@ -14,7 +17,7 @@ function fixDiagonalLines(systemLines)
             % column. If not, the line is diagonal
             if linePoints(j,1) ~= linePoints(j+1,1) && linePoints(j,2) ~= linePoints(j+1,2)
                 firstPoint = linePoints(1,:);
-                sLastPoint = linePoints(end-1,:);
+                sLastPoint = linePoints(end-1,:); % 2nd last point
                 lastPoint = linePoints(end,:);
                 middlePixel = floor((firstPoint(1) + lastPoint(1)) / 2);
                 firstMidpoint = [middlePixel, firstPoint(2)];

@@ -179,13 +179,6 @@ function AutoLayout(address)
     updateLayout(address, layout); % Only included here for feedback purposes
 
     %%
-    % TODO: Split into three functions:
-    % 1) ResizeBlocks in which blocks are resized while others are moved to
-    % accomodate the changes
-    % 2) RepositionBlocks in which the blocks undergo their more dramatic
-    % repositioning (for better alignment primarily)
-    % 3) FixLines in which the lines are routed as best as possible
-
     [layout, portlessInfo] = resizeBlocks(layout, portlessInfo);
 
     layout = fixSizeOfBlocks(layout);
@@ -199,8 +192,7 @@ function AutoLayout(address)
     layout = vertAlign(layout);
     % % layout = easyAlign(layout); %old method, still relevant since it attempts to cover more cases
 
-    %layout = layout2(address, layout, systemBlocks); %temp removed, adding
-    % it won't error, it's just not too likely to help
+    layout = layout2(address, layout, systemBlocks);
 
     % Align inport/outport blocks if set to do so by inport/outport rules
     if strcmp(INPORT_RULE, 'left_align')

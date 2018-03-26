@@ -1,8 +1,7 @@
 function layout = layout2(address, layout, systemBlocks)
-% After running initLayout,
-% This function provides more automatic layout functionality.
-% The functionality it provides is listed below roughly ordered with when it
-% is done in this function.
+% LAYOUT2 Performs a series of operations to further improve the layout
+% from AutoLayout. The functionality it provides is listed below roughly 
+% ordered with when it is done in this function.
 %   Moves inputs and outputs to the outsides when it is easy (and not messy) to do so
 %   Adjusts the vertical spacing between close blocks
 %   Keeps labels on screen if they went off to the left
@@ -16,8 +15,15 @@ function layout = layout2(address, layout, systemBlocks)
 %       and then fixes overlapping between vertical segments of lines
 %   Places blocks with no ports (such as Data Store Memory blocks) along the top or bottom of the system horizontally
 %       It chooses which half the system to place the block in based on the half it started in
-
-    %[blocksMatrix, colLengths] = getOrderMatrix(systemBlocks);
+%
+%   Inputs:
+%       address         Simulink system name or path.
+%       systemBlocks    List of blocks in address.
+%
+%   Updates:
+%       layout          Input in the same format as returned by 
+%                       getRelativeLayout. Returned according to the
+%                       operations performed in this function.
 
     % Adjust the spacing between adjacent blocks in columns of layout.grid
     layout = adjustColVertSpacing(layout);
@@ -205,7 +211,7 @@ function layout = adjustColVertSpacing(layout)
             freeSpace = pos2(2) - pos1(4);
 
             string = layout.grid{i, j}.fullname;
-            minSpace = getTextHeight(string, layout.grid{i, j}.fullname);
+            [minSpace, ~] = blockStringDims(layout.grid{i, j}.fullname, string);
 
             if freeSpace < minSpace
                 adjustment = minSpace - freeSpace;
