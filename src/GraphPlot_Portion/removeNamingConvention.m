@@ -1,9 +1,9 @@
 function name = removeNamingConvention(handle)
-% REMOVENAMINGCONVENTION Remove a naming convention from blocks and ports. 
+% REMOVENAMINGCONVENTION Remove a naming convention from blocks and ports.
 %   May be expanded to other elements in the future.
 %
 %   Inputs:
-%       handle  Handle of the block/port. Block name is also accepted.      
+%       handle  Handle of the block/port. Block name is also accepted.
 %
 %   Outputs:
 %       name    Name with convention removed from it.

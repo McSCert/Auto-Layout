@@ -1,6 +1,5 @@
 function tf = isdigraph(d)
-% ISDIGRAPH Return logical 1 (true) if d is a digraph and logical 0 (false)
-%   otherwise.
+% ISDIGRAPH Return true (1) if d is a digraph and false (0) otherwise.
 
     tf = isa(d, 'digraph');
 end

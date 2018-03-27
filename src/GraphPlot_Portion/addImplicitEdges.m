@@ -1,5 +1,5 @@
 function dgNew = addImplicitEdges(sys, dg)
-% ADDIMPLICITEDGES Add edges to a digraph representing the implicit connections 
+% ADDIMPLICITEDGES Add edges to a digraph representing the implicit connections
 %    between goto/froms.
 %
 %   Inputs:
@@ -13,25 +13,25 @@ function dgNew = addImplicitEdges(sys, dg)
     try
         assert(ischar(sys));
     catch
-        error('A string to a valid Simulink (sub)system must be provided.');     
+        error('A string to a valid Simulink (sub)system must be provided.');
     end
-    
+
     try
         assert(bdIsLoaded(bdroot(sys)));
     catch
-        error('Simulink system provided is invalid or not loaded.');     
+        error('Simulink system provided is invalid or not loaded.');
     end
-    
+
     % Check second input
     try
         assert(isdigraph(dg));
     catch
         error('Digraph argument provided is not a digraph');
     end
-    
+
     % Duplicate
     dgNew = dg;
-    
+
     % Add Goto/Froms as edges
     gotos = find_system(sys, 'SearchDepth', 1, 'BlockType', 'Goto');
     froms = find_system(sys, 'SearchDepth', 1, 'BlockType', 'From');
@@ -109,7 +109,7 @@ function dgNew = addImplicitEdges(sys, dg)
             end
         end
     end
-    
+
     function root = getRootInSys(blk)
         % Recursively get parent system of the block until reaching sys.
         % If blk is directly within sys, then it is "root",

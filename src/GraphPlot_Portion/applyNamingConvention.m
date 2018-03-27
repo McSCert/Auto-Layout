@@ -1,24 +1,24 @@
 function name = applyNamingConvention(handle)
-% APPLYNAMINGCONVENTION Apply a naming convention to blocks and ports. 
+% APPLYNAMINGCONVENTION Apply a naming convention to blocks and ports.
 %   May be expanded to other elements in the future.
 %
 %   Inputs:
-%       handle  Handle of the block/port. Block name is also accepted.      
+%       handle  Handle of the block/port. Block name is also accepted.
 %
 %   Outputs:
 %       name    Name with convention applied to it.
-    
+
     % Check handle argument
     try
         assert(~isempty(handle));
     catch
         error('Invalid handle.');
     end
-    
+
     rows = size(handle, 1);
     cols = size(handle, 2);
-    
-    if (rows == 1 && cols == 1) || ischar(handle) % Scalar or string 
+
+    if (rows == 1 && cols == 1) || ischar(handle) % Scalar or string
         type = get_param(handle, 'Type');
         if strcmp(type, 'block')
             % Blocks
