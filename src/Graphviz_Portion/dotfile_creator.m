@@ -2,13 +2,13 @@ function [fullname, replacementMap] = dotfile_creator(name)
 % DOTFILE_CREATOR Parses a system and creates a graphviz dotfile.
 %
 %	Inputs:
-%       name        Name of the Simulink file to be processed
+%       name        Name of the Simulink file to be processed.
 %
 %	Outputs:
-%       fullname    Name of the dotfile, as well as the resulting graphviz
-%                   output
+%       fullname    Name of the dotfile, as well as the resulting graphviz output.
+%       replacementMap
 %
-%   Typical use:
+%   Example:
 %       filename = dotfile_creator('testModel');
 
     %redraw_lines(name)
@@ -29,8 +29,8 @@ function [fullname, replacementMap] = dotfile_creator(name)
             height = 31;
         end
         if strcmp(blocktype, 'Bus Creator') ...
-            || strcmp(blocktype, 'Bus Selector')...
-            ||strcmp(blocktype, 'Mux')...
+            || strcmp(blocktype, 'Bus Selector') ...
+            ||strcmp(blocktype, 'Mux') ...
             || strcmp(blocktype, 'Demux')
             width = 9.0;
         else
@@ -56,15 +56,15 @@ function [fullname, replacementMap] = dotfile_creator(name)
     replacementMap = containers.Map();
     Blocks = find_system(name, 'SearchDepth',1);
     Blocks = setdiff(Blocks, name);
-    
+
     % Iterate through blocks in address
     for n = 1:length(Blocks)
         BlockType = get_param(Blocks{n}, 'BlockType');
         Ports = get_param(Blocks{n}, 'Ports');
-        
+
         % dotfile notations for different block types
         switch BlockType
-        
+
             case 'SubSystem'
                 % dotfile notation for subsystem by finding number of inputs and outputs
                 inputnum = Ports(1) + Ports(3) + Ports(4) + Ports(8);
@@ -95,7 +95,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 end
                 c = max([inputnum outputnum]) ;
                 dotfile = [dotfile '}}", ' subwidth(c)];
-                
+
             case 'Inport'
                 blockname = get_param(Blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
@@ -107,7 +107,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 end
                 dotfile = [dotfile blockname];
                 dotfile = [dotfile ' [label="{{<i1>1}|' blockname '|{<o1>1}}", ' portwidth];
-                
+
             case 'Outport'
                 blockname = get_param(Blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
@@ -119,7 +119,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 end
                 dotfile = [dotfile blockname];
                 dotfile = [dotfile ' [label="{{<i1>1}|' blockname '|{<o1>1}}", ' portwidth];
-                
+
             otherwise
                 blockname = get_param(Blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
@@ -161,7 +161,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
 
         end
     end
-    
+
     % dotfile notations for connections
     for n = 1:length(Blocks)
         linesH = get_param(Blocks{n}, 'LineHandles');
@@ -242,8 +242,8 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 else
                     ifactionLine = linesH.Ifaction(m);
                 end
-                
-                %Find source port number and source block name
+
+                % Find source port number and source block name
                 src = get_param(ifactionLine, 'SrcBlockHandle');
                 srcName = get_param(src, 'Name');
                 pattern = '[^\w]|^[0-9]';
@@ -268,7 +268,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 srcPortinfo = get_param(src, 'Ports');
                 srcinputnum = srcPortinfo(1);
                 srcoutputnum = srcPortinfo(2);
-                
+
                 % Find destination block and port
                 dest = get_param(ifactionLine, 'DstBlockHandle');
                 destName = get_param(dest, 'Name');
@@ -312,7 +312,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
             end
         end
     end
-    
+
     Gotos = find_system(name, 'SearchDepth', 1, 'BlockType', 'Goto');%, 'TagVisibility', 'local');
     GotosLength = length(Gotos);
     % When a local goto is found then asumme the Goto and From is connected
@@ -328,8 +328,8 @@ function [fullname, replacementMap] = dotfile_creator(name)
             dotfile = [dotfile GotoName '->' FromName sprintf('\n') ];
         end
     end
-    
-    %Made this next bit from copying above with gotos
+
+    % Same as above, but for Data Stores
     Writes = find_system(name, 'SearchDepth', 1, 'BlockType', 'DataStoreWrite');
     WritesLength = length(Writes);
     for w = 1:WritesLength
@@ -344,8 +344,8 @@ function [fullname, replacementMap] = dotfile_creator(name)
             dotfile = [dotfile WriteName '->' ReadName sprintf('\n') ];
         end
     end
-    
-    dotfile = [dotfile '}']; 
+
+    dotfile = [dotfile '}'];
     fullname = name;
     pattern = '[^\w]|^[0-9]';
     itemsToReplace = regexp(fullname, pattern, 'match');
