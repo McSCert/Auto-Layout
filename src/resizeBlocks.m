@@ -18,7 +18,7 @@ function [layout, portlessInfo] = resizeBlocks(layout, portlessInfo)
             portlessInfo{i}.position(1) + getBlockTextWidth(portlessInfo{i}.fullname));
     end
 
-    %Resize vertically to comfortably fit ports
+    % Resize vertically to comfortably fit ports
     layout = adjustForPorts(layout); % Result does not consider surrounding blocks, code is much cleaner
     % layout = resizeForPorts(layout); % Result considers surrounding blocks, code is less clean
 end
