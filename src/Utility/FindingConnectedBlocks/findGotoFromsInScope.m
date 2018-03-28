@@ -1,12 +1,12 @@
 function blockList = findGotoFromsInScope(block)
-% FINDGOTOFROMSINSCOPE Find all the Goto and From blocks associated with a 
-% Goto Tag Visibility block.
+% FINDGOTOFROMSINSCOPE Find all Goto and From blocks associated with a
+%   Goto Tag Visibility block.
 %
 %   Inputs:
-%       block     Visibility Goto tag
+%       block       Goto Tag Visibility path name.
 %
 %   Outputs:
-%       blockList   Goto and From tags corresponding to the visibility Goto tag
+%       blockList   Goto and/or From block path names.
 
     if isempty(block)
         blockList = {};
@@ -23,14 +23,14 @@ function blockList = findGotoFromsInScope(block)
         blockList = {};
         error('Block parameter is not a Goto Tag Visibility block.');
     end
-    
+
     % Get all other Goto Tag Visibility blocks
     gotoTag = get_param(block, 'GotoTag');
     blockParent = get_param(block, 'parent');
     tagsSameName = find_system(blockParent, 'FollowLinks', 'on', ...
         'BlockType', 'GotoTagVisibility', 'GotoTag', gotoTag);
     tagsSameName = setdiff(tagsSameName, block);
-    
+
     % Any Goto/From blocks in their scopes are listed as blocks not in the
     % input Goto Tag Visibility block's scope
     blocksToExclude = {};
@@ -41,8 +41,8 @@ function blockList = findGotoFromsInScope(block)
         blocksToExclude = [blocksToExclude; find_system(tagParent, ...
             'FollowLinks', 'on', 'BlockType', 'Goto', 'GotoTag', gotoTag)];
     end
-    
-    % All Froms associated with local Gotos are listed as blocks not in the 
+
+    % All Froms associated with local Gotos are listed as blocks not in the
     % scope of input Goto Tag Visibility block
     localGotos = find_system(blockParent, 'FollowLinks', 'on', ...
         'BlockType', 'Goto', 'GotoTag', gotoTag, 'TagVisibility', 'local');
@@ -51,7 +51,7 @@ function blockList = findGotoFromsInScope(block)
             'FollowLinks', 'on', 'SearchDepth', 1, 'BlockType', 'From', 'GotoTag', gotoTag);
         blocksToExclude = [blocksToExclude; localGotos{i}; froms];
     end
-    
+
     % Remove all excluded blocks
     blockList = find_system(blockParent, 'FollowLinks', 'on', ...
         'BlockType', 'From', 'GotoTag', gotoTag);

@@ -7,10 +7,9 @@ function b = isBranching(lh)
 %   Output:
 %       b   Logical. True if line is branching, else false.
 
-srcs = get_param(lh, 'SrcPortHandle');
-dsts = get_param(lh, 'DstPortHandle');
+    srcs = get_param(lh, 'SrcPortHandle');
+    dsts = get_param(lh, 'DstPortHandle');
 
-assert(length(srcs) <= 1, 'Error unexpected number of sources for line.')
-b = length(dsts) > 1;
-
+    assert(length(srcs) <= 1, 'Error unexpected number of sources for line.')
+    b = length(dsts) > 1;
 end

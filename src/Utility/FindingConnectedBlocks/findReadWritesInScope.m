@@ -1,13 +1,12 @@
 function blockList = findReadWritesInScope(block)
-% FINDREADWRITESINSCOPE Find all the Data Store Read and Data Store Write 
-% blocks associated with a Data Store Memory block.
+% FINDREADWRITESINSCOPE Find all the Data Store Read and Data Store Write
+%   blocks associated with a Data Store Memory block.
 %
 %   Inputs:
-%       block       Data Store Memory block 
+%       block       Data Store Memory block path name.
 %
 %   Outputs:
-%       blockList   Data Store Read and Data Store Write blocks associated with
-%       the Data Store Memory block
+%       blockList   Data Store Read and/or Data Store Write block path names.
 
     if isempty(block)
         blockList = {};
@@ -31,8 +30,8 @@ function blockList = findReadWritesInScope(block)
     memsSameName = find_system(blockParent, 'FollowLinks', 'on', ...
         'BlockType', 'DataStoreMemory', 'DataStoreName', dataStoreName);
     memsSameName = setdiff(memsSameName, block);
-    
-    % Exclude any Data Store Read/Write blocks which are in the scope of 
+
+    % Exclude any Data Store Read/Write blocks which are in the scope of
     % other Data Store Memory blocks
     blocksToExclude = {};
     for i = 1:length(memsSameName)
@@ -42,7 +41,7 @@ function blockList = findReadWritesInScope(block)
         blocksToExclude = [blocksToExclude; find_system(memParent, 'FollowLinks', ...
             'on', 'BlockType', 'DataStoreWrite', 'DataStoreName', dataStoreName)];
     end
-    
+
     % Remove the blocks to exclude from the list of Reads/Writes with the
     % same name as input Data Store Memory block
     blockList = find_system(blockParent, 'FollowLinks', 'on', ...

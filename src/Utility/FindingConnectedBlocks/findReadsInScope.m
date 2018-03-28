@@ -1,20 +1,19 @@
 function reads = findReadsInScope(block)
 % FINDREADSINSCOPE Find all the Data Store Read blocks associated with a Data
-% Store Write block.
+%   Store Write block.
 %
 %   Inputs:
-%       block   Data Store Write block  
+%       block   Data Store Write block path name.
 %
 %   Outputs:
-%       reads   Data Store Read blocks associated with the DataStoreWrite input
-%       block
+%       reads   Data Store Read block path names.
 
     if isempty(block)
         reads = {};
         return
     end
 
-    % Ensure input is a valid data store write block
+    % Ensure input is a valid Data Store Write block
     try
         assert(strcmp(get_param(block, 'type'), 'block'));
         blockType = get_param(block, 'BlockType');
@@ -24,7 +23,7 @@ function reads = findReadsInScope(block)
         reads = {};
         error('Block parameter is not a Data Store Write block.');
     end
-    
+
     dataStoreName = get_param(block, 'DataStoreName');
     memBlock = findDataStoreMemory(block);
     reads = findReadWritesInScope(memBlock);

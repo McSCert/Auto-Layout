@@ -1,6 +1,12 @@
 function writes = findWritesInScope(block)
 % FINDWRITESINSCOPE Find all the Data Store Writes associated with a Data
-% Store Read block.
+%   Store Read block.
+%
+%   Inputs:
+%       block   Data Store Read block path name.
+%
+%   Outputs:
+%       reads   Data Store Write block path names.
 
     if isempty(block)
         writes = {};

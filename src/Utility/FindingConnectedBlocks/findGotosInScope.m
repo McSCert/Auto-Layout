@@ -2,10 +2,10 @@ function goto = findGotosInScope(block)
 % FINDGOTOSINSCOPE Find the Goto block associated with a From block.
 %
 %   Inputs:
-%       block     From block
+%       block   From block path name.
 %
 %   Outputs:
-%       froms   Corresponding Goto blocks for the From block input
+%       froms   Goto block path name.
 
     if isempty(block)
         goto = {};
@@ -22,16 +22,15 @@ function goto = findGotosInScope(block)
         goto = {};
         error('Block parameter is not a From block.');
     end
-    
+
     tag = get_param(block, 'GotoTag');
     goto = find_system(get_param(block, 'parent'),'SearchDepth', 1,  ...
         'FollowLinks', 'on', 'BlockType', 'Goto', 'GotoTag', tag, 'TagVisibility', 'local');
     if ~isempty(goto)
         return
     end
-    
-    % Get the corresponding Gotos for a given From that are in the
-    % correct scope
+
+    % Get the corresponding Gotos for a given From that are in the correct scope
     visibilityBlock = findVisibilityTag(block);
     if isempty(visibilityBlock)
         goto = find_system(bdroot(block), 'FollowLinks', 'on', ...

@@ -1,13 +1,12 @@
 function mem = findDataStoreMemory(block)
-% FINDDATASTOREMEMORY Find the Data Store Memory block of a Data Store
-% Read or Write block.
+% FINDDATASTOREMEMORY Find the Data Store Memory block of a Data Store Read or
+%   Write block.
 %
 %   Inputs:
-%       block     Data Store Write block  
+%       block   Data Store Read or Write path name.
 %
 %   Outputs:
-%       mem       Data Store Memory block associated with the Data Store Write
-%       input block
+%       mem     Data Store Memory block path name.
 
     if isempty(block)
         mem = {};
@@ -30,10 +29,10 @@ function mem = findDataStoreMemory(block)
         'BlockType', 'DataStoreMemory', 'DataStoreName', dataStoreName);
     level = get_param(block, 'parent');
     currentLevel = '';
-    
+
     % Level of the Data Store Read/Write being split into subsystem name tokens
     levelSplit = regexp(level, '/', 'split');
-    
+
     for i = 1:length(dataStoreMems)
         % Get level of subsystem for the Data Store Memory
         memScope = get_param(dataStoreMems{i}, 'parent');
@@ -49,7 +48,7 @@ function mem = findDataStoreMemory(block)
             end
         end
     end
-    
+
     if ~isempty(currentLevel)
         mem = find_system(currentLevel, 'FollowLinks', 'on', 'SearchDepth', 1, ...
             'BlockType', 'DataStoreMemory', 'DataStoreName', dataStoreName);

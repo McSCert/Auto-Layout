@@ -1,17 +1,17 @@
 function froms = findFromsInScope(block)
-% FINDFROMSINSCOPE Find all the From blocks associated with a Goto block.
+% FINDFROMSINSCOPE Find all From blocks associated with a Goto block.
 %
 %   Inputs:
-%       block     Goto block
+%       block   Goto block path name.
 %
 %   Outputs:
-%       froms   Corresponding From blocks for the Goto block input
+%       froms   From block path names.
 
     if isempty(block)
         froms = {};
         return
     end
-    
+
     % Ensure block parameter is a valid Goto block
     try
         assert(strcmp(get_param(block, 'type'), 'block'));
@@ -22,7 +22,7 @@ function froms = findFromsInScope(block)
         froms = {};
         error('Block parameter is not a Goto block.');
     end
-    
+
     tag = get_param(block, 'GotoTag');
     scopedTags = find_system(bdroot(block), 'FollowLinks', 'on', ...
         'BlockType', 'GotoTagVisibility', 'GotoTag', tag);
@@ -55,7 +55,7 @@ function froms = findFromsInScope(block)
             fromsToExclude = [fromsToExclude find_system(get_param(localGotos{i}, 'parent'), ...
                 'SearchDepth', 1, 'FollowLinks', 'on', 'BlockType', 'From', 'GotoTag', tag)];
         end
-        
+
         froms = find_system(bdroot(block), 'FollowLinks', 'on', ...
             'BlockType', 'From', 'GotoTag', tag);
         froms = setdiff(froms, fromsToExclude);
