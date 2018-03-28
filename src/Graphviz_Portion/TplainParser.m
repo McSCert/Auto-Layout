@@ -3,31 +3,38 @@ classdef TplainParser < handle
 %   blocks to their appropriate locations.
 %
 %   Examples:
-%       g = TplainParser('testModel', testModel.txt);
+%       1)
+%       g = TplainParser('testModel', testModel.txt, containers.Map());
 %       g.plain_wrappers;
+%
+%       2)
+%       [filename, map] = dotfile_creator('testModel');
+%       h = TplainParser('testModel', filename, map);
+%       h.plain_wrappers;
 
     properties
         RootSystemName  % Simulink model name (or top-level system name).
-        filename        % Name of the GraphViz output txt file.
-        map             % ??
+        Filename        % Name of the GraphViz output txt file.
+        Map             % (See dotfile_creator).
     end
 
     methods
         function object = TplainParser(RootSystemName, filename, replacementMap)
-        % Constructor for the TplainParser object. This object represents the mapping
-        %   between GraphViz and Simulink block locations. (?? MJ: check that this is accurate)
+        % Constructor for the TplainParser object. This object represents
+        %   the mapping between GraphViz node locations and Simulink block
+        %   locations.
         %
         %   Inputs:
         %       RootSystemName      Simulink model name (or top-level system name).
         %       filename            Name of the GraphViz output txt file.
-        %       replacementMap      ??
+        %       replacementMap      (See dotfile_creator).
         %
         %   Outputs:
         %       object              TplainParser object.
 
             object.RootSystemName = RootSystemName;
-            object.filename = filename;
-            object.map = replacementMap;
+            object.Filename = filename;
+            object.Map = replacementMap;
         end
 
         function plain_wrappers(object)
@@ -40,7 +47,7 @@ classdef TplainParser < handle
         %   Outputs:
         %       N/A
 
-            filename = [object.filename '-plain.txt'];
+            filename = [object.Filename '-plain.txt'];
             [mapObj, graphinfo] = parse_the_Tplain(object, filename);
             find_the_right_spot(object, mapObj, graphinfo);
 %             subsystems = find_system(object.RootSystemName,'Blocktype','SubSystem');
@@ -55,26 +62,36 @@ classdef TplainParser < handle
         end
 
         function [mapObj, graphinfo] = parse_the_Tplain(object, filename)
-        % Parse the GraphViz output txt file and ??
+        % Parse the GraphViz output txt file to construct objects with more
+        %   direct mappings from block names to coordinates in the GraphViz
+        %   graph.
         %
         %   Inputs:
         %       object    TplainParser object.
         %       filename  Name of the GraphViz output txt file.
         %
         %   Outputs:
-        %       mapObj    Contains the height and width of the graph in graphinfo,
-        %                 and the size and location of the blocks, with the names
-        %                 of the blocks corresponsing to the keys and their info
-        %                 in the values.
+        %       mapObj    Mapping from blocks to coordinates and dimensions
+        %                 those blocks within the GraphViz graph (this is a
+        %                 different coordinate system than MATLAB's).
+        %                 The keys are block names, the values of the map
+        %                 are cell arrays where:
+        %                 value{1} = center coord of x axis
+        %                 value{2} = center coord of y axis
+        %                 value{3} = block width
+        %                 value{4} = block height
         %
-        %       graphinfo   ??
+        %       graphinfo   Info for width and height of the graph.
+        %                   graphinfo(1) - unused
+        %                   graphinfo(2) - width
+        %                   graphinfo(3) - height
 
             inputfile = fopen(filename);
             tline = fgetl(inputfile);
             C = textscan(tline, '%s %f %f %f');
             % Info for width and height of window
             graphinfo = [C{2} C{3} C{4}];
-            % Map for the ?? (MJ:this comment was incomplete)
+            
             mapObj = containers.Map();
             while 1
                 % Get a line from the input file
@@ -94,16 +111,15 @@ classdef TplainParser < handle
                     mapkey = C{2}{1}; % Block name
 
                     % Used for blocks names using certain characters
-                    itemsToReplace = keys(object.map);
+                    itemsToReplace = keys(object.Map);
                     for item = 1:length(itemsToReplace)
-                        mapkey = strrep(mapkey, itemsToReplace{item}, object.map(itemsToReplace{item}));
+                        mapkey = strrep(mapkey, itemsToReplace{item}, object.Map(itemsToReplace{item}));
                     end
 
                     mapObj(mapkey) = values;
                 end
-                % TODO: Do something with tline.
-                % GraphViz gives information about the edges in the graph
-                % as well, but nothing is currently done with it
+                % Note that GraphViz also gives information about the edges
+                % in the graph, but this information is not used.
             end
             fclose(inputfile);
         end
@@ -113,8 +129,8 @@ classdef TplainParser < handle
         %
         %   Inputs:
         %       object      TplainParser object.
-        %       mapObj      ??
-        %       graphInfo   ??
+        %       mapObj      (same as in parse_the_Tplain in this file)
+        %       graphinfo   (same as in parse_the_Tplain in this file)
         %
         %   Outputs:
         %       N/A
@@ -124,7 +140,7 @@ classdef TplainParser < handle
             systemBlocks = systemBlocks(2:end); % Remove address itself
 
             blocklength = length(systemBlocks);
-            width = round(graphinfo(2));
+            width = round(graphinfo(2)); % This is unused currently, but is left in case it is needed in the future
             height = round(graphinfo(3));
 
             for z = 1:blocklength

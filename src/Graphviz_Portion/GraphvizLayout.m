@@ -1,19 +1,18 @@
-function getGraphvizLayout(address)
-% GETGRAPHVIZLAYOUT Perform the layout analysis on the system with Graphviz.
+function GraphvizLayout(address)
+% GRAPHVIZLAYOUT Perform the layout analysis on the system with Graphviz.
 %
 %   Inputs:
 %       address     System address in which to perform the analysis.
 %
 %   Outputs:
 %       N/A
-%
-%   1) Get the mdl file and the specific (sub)system to auto layout.
-%   2) Create the dotfile from the system or subsystem using dotfile_creator.
-%   3) Use batchthingie.bat to automatically create the graphviz output files.
-%   4) Use Tplainparser class to use Graphviz output to reposition Simulink (sub)system.
 
-    % 1) Get current directory
-    % 2) Change directory to predetermined batch location
+    %   Implementation Approach:
+    %   1) Create the dotfile from the system or subsystem using dotfile_creator.
+    %   2) Use autoLayout.bat/.sh to automatically create the graphviz output files.
+    %   3) Use Tplainparser class to use Graphviz output to reposition Simulink (sub)system.
+
+    % Get current directory
     if ~isunix
         oldDir = pwd;
         batchDir = mfilename('fullpath');
@@ -32,16 +31,22 @@ function getGraphvizLayout(address)
         end
     end
 
+    % Change directory to predetermined batch location
     cd(batchDir);
+
+    % 1) Create the dotfile from the system or subsystem using dotfile_creator.
     [filename, map] = dotfile_creator(address);
+    
+    % 2) Use autoLayout.bat/.sh to automatically create the graphviz output files.
     if ~isunix
         [~, ~] = system('autoLayout.bat'); % Suppressed output with "[~, ~] ="
     else
         [~, ~] = system('sh autoLayout.sh'); % Suppressed output with "[~, ~] ="
     end
 
+    % 3) Use Tplainparser class to use Graphviz output to reposition Simulink (sub)system.
     % Do the initial layout
-    g = TplainParser(address, filename, map);
+    g = TplainParser(address, filename, containers.Map());
     g.plain_wrappers;
 
     % Delete unneeded files
@@ -52,6 +57,6 @@ function getGraphvizLayout(address)
     delete(plainfilename);
     delete(pdffilename);
 
-    % Change directory
+    % Change directory back
     cd(oldDir);
 end

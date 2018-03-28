@@ -5,8 +5,13 @@ function [fullname, replacementMap] = dotfile_creator(name)
 %       name        Name of the Simulink file to be processed.
 %
 %	Outputs:
-%       fullname    Name of the dotfile, as well as the resulting graphviz output.
-%       replacementMap
+%       fullname        Name of the dotfile, as well as the resulting
+%                       graphviz output.
+%       replacementMap  A containers.Map. Characters in block names that
+%                       aren't supported in the dotfile (values in the map)
+%                       will be replaced by another string (keys in the
+%                       map), later block names will need to be restored by
+%                       replacing the keys with the values in block names.
 %
 %   Example:
 %       filename = dotfile_creator('testModel');
@@ -14,6 +19,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
     %redraw_lines(name)
     %redraw_lines(name,autorouting,off)
     function string = subwidth(number)
+        % Get dimensions for a SubSystem for the dotfile graph
         if number > 3
             height = 60 + (number-3) * 20 ;
         else
@@ -23,6 +29,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
     end
 
     function string = blockwidth(number, blocktype)
+        % Get dimensions for an arbitrary block for the dotfile graph
         if number > 2
             height = 31 + (number-2) * 15 ;
         else
@@ -40,6 +47,8 @@ function [fullname, replacementMap] = dotfile_creator(name)
     end
 
     function [newblockname, replaceMap] = replaceItems(blockname, replaceMap)
+        % Get new blocknames by replacing unsupported characters with other
+        % strings and update the replaceMap which defines the replacements
         replacePattern = '[^\w]|^[0-9]';
         items2Replace = regexp(blockname, replacePattern, 'match');
         for i = 1:length(items2Replace)
@@ -97,6 +106,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 dotfile = [dotfile '}}", ' subwidth(c)];
 
             case 'Inport'
+                % Add text to the dotfile to represent the block
                 blockname = get_param(Blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
                 itemsToReplace = regexp(blockname, pattern, 'match');
@@ -109,6 +119,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 dotfile = [dotfile ' [label="{{<i1>1}|' blockname '|{<o1>1}}", ' portwidth];
 
             case 'Outport'
+                % Add text to the dotfile to represent the block
                 blockname = get_param(Blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
                 itemsToReplace = regexp(blockname, pattern, 'match');
@@ -121,6 +132,9 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 dotfile = [dotfile ' [label="{{<i1>1}|' blockname '|{<o1>1}}", ' portwidth];
 
             otherwise
+                % Add text to the dotfile to represent the block along
+                % with its ports and the relative positions of the ports so
+                % this information can be used
                 blockname = get_param(Blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
                 itemsToReplace = regexp(blockname, pattern, 'match');
@@ -313,9 +327,11 @@ function [fullname, replacementMap] = dotfile_creator(name)
         end
     end
 
+    % Create edges between gotos and froms so the final graph will place
+    % them closer to each other
     Gotos = find_system(name, 'SearchDepth', 1, 'BlockType', 'Goto');%, 'TagVisibility', 'local');
     GotosLength = length(Gotos);
-    % When a local goto is found then asumme the Goto and From is connected
+    % When a local goto is found then assume the Goto and From is connected
     for w = 1:GotosLength
         GotoTag = get_param(Gotos{w}, 'Gototag');
         Froms = find_system(name, 'BlockType', 'From', 'Gototag', GotoTag);
