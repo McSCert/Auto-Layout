@@ -4,8 +4,8 @@ function redraw_lines(name, varargin)
 %   Inputs:
 %       name            Simulink system name or path.
 %       varargin{1}     Set to 'autorouting' to enable use of varargin{2}.
-%       varargin{2}     Indicates whether or not the program should attempt
-%                       autorouting. Values: 'on' or 'off'. Default: 'off'.
+%       varargin{2}     Type of automatic line routing around other blocks:
+%                       'on', 'off', 'smart'. Default: 'off'.
 %
 %   Outputs:
 %       N/A
@@ -25,9 +25,7 @@ function redraw_lines(name, varargin)
         end
     end
 
-    redrawByBlocks(name,autorouting);
-%     redrawByLines(name,autorouting);
-
+    redrawByBlocks(name, autorouting);
 end
 
 function redrawByBlocks(name, autorouting)
@@ -37,8 +35,8 @@ function redrawByBlocks(name, autorouting)
 %
 %   Inputs:
 %       name            System address.
-%       autorouting     Indicates whether or not the program should attempt
-%                       autorouting. Values ('on' or 'off').
+%       autorouting     Type of automatic line routing around other blocks:
+%                       'on', 'off', 'smart'. Default: 'off'.
 %
 %   Outputs:
 %       N/A
