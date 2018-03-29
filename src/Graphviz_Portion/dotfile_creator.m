@@ -1,12 +1,12 @@
 function [fullname, replacementMap] = dotfile_creator(name)
-% DOTFILE_CREATOR Parses a system and creates a graphviz dotfile.
+% DOTFILE_CREATOR Parses a system and creates a Graphviz dotfile.
 %
-%	Inputs:
-%       name        Name of the Simulink file to be processed.
+%   Inputs:
+%       name            Name of the Simulink file to be processed.
 %
-%	Outputs:
+%   Outputs:
 %       fullname        Name of the dotfile, as well as the resulting
-%                       graphviz output.
+%                       Graphviz output.
 %       replacementMap  A containers.Map. Characters in block names that
 %                       aren't supported in the dotfile (values in the map)
 %                       will be replaced by another string (keys in the
@@ -206,7 +206,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 srcPortinfo = get_param(src, 'Ports');
                 srcinputnum = srcPortinfo(1);
                 srcoutputnum = srcPortinfo(2);
-                %Find destination block and port
+                % Find destination block and port
                 dest = get_param(linesH.Inport(m), 'DstBlockHandle');
                 destName = get_param(dest, 'Name');
                 pattern = '[^\w]|^[0-9]';

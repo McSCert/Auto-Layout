@@ -36,7 +36,7 @@ function GraphvizLayout(address)
 
     % 1) Create the dotfile from the system or subsystem using dotfile_creator.
     [filename, map] = dotfile_creator(address);
-    
+
     % 2) Use autoLayout.bat/.sh to automatically create the graphviz output files.
     if ~isunix
         [~, ~] = system('autoLayout.bat'); % Suppressed output with "[~, ~] ="

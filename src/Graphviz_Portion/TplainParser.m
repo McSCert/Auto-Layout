@@ -1,5 +1,5 @@
 classdef TplainParser < handle
-% TPLAINPARSER A class for parsing a GraphViz output txt file, and moving Simulink
+% TPLAINPARSER A class for parsing a Graphviz output txt file, and moving Simulink
 %   blocks to their appropriate locations.
 %
 %   Examples:
@@ -14,31 +14,31 @@ classdef TplainParser < handle
 
     properties
         RootSystemName  % Simulink model name (or top-level system name).
-        Filename        % Name of the GraphViz output txt file.
+        Filename        % Name of the Graphviz output txt file.
         Map             % (See dotfile_creator).
     end
 
     methods
-        function object = TplainParser(RootSystemName, filename, replacementMap)
+        function object = TplainParser(rootSystemName, filename, replacementMap)
         % Constructor for the TplainParser object. This object represents
-        %   the mapping between GraphViz node locations and Simulink block
+        %   the mapping between Graphviz node locations and Simulink block
         %   locations.
         %
         %   Inputs:
-        %       RootSystemName      Simulink model name (or top-level system name).
-        %       filename            Name of the GraphViz output txt file.
+        %       rootSystemName      Simulink model name (or top-level system name).
+        %       filename            Name of the Graphviz output txt file.
         %       replacementMap      (See dotfile_creator).
         %
         %   Outputs:
         %       object              TplainParser object.
 
-            object.RootSystemName = RootSystemName;
+            object.RootSystemName = rootSystemName;
             object.Filename = filename;
             object.Map = replacementMap;
         end
 
         function plain_wrappers(object)
-        % Parse the GraphViz output file and find where to move the Simulink
+        % Parse the Graphviz output file and find where to move the Simulink
         %   blocks in the system.
         %
         %   Inputs:
@@ -62,17 +62,17 @@ classdef TplainParser < handle
         end
 
         function [mapObj, graphinfo] = parse_the_Tplain(object, filename)
-        % Parse the GraphViz output txt file to construct objects with more
-        %   direct mappings from block names to coordinates in the GraphViz
+        % Parse the Graphviz output txt file to construct objects with more
+        %   direct mappings from block names to coordinates in the Graphviz
         %   graph.
         %
         %   Inputs:
         %       object    TplainParser object.
-        %       filename  Name of the GraphViz output txt file.
+        %       filename  Name of the Graphviz output txt file.
         %
         %   Outputs:
         %       mapObj    Mapping from blocks to coordinates and dimensions
-        %                 those blocks within the GraphViz graph (this is a
+        %                 those blocks within the Graphviz graph (this is a
         %                 different coordinate system than MATLAB's).
         %                 The keys are block names, the values of the map
         %                 are cell arrays where:
@@ -91,7 +91,7 @@ classdef TplainParser < handle
             C = textscan(tline, '%s %f %f %f');
             % Info for width and height of window
             graphinfo = [C{2} C{3} C{4}];
-            
+
             mapObj = containers.Map();
             while 1
                 % Get a line from the input file
@@ -118,7 +118,7 @@ classdef TplainParser < handle
 
                     mapObj(mapkey) = values;
                 end
-                % Note that GraphViz also gives information about the edges
+                % Note that Graphviz also gives information about the edges
                 % in the graph, but this information is not used.
             end
             fclose(inputfile);
@@ -145,13 +145,13 @@ classdef TplainParser < handle
 
             for z = 1:blocklength
                 subsystemblocksName = get_param(systemBlocks{z}, 'Name');
-                % Block's position information from GraphViz
+                % Block's position information from Graphviz
                 blockPosInfo = mapObj(subsystemblocksName);
 
                 blockwidth  = blockPosInfo{3};
                 blockheight = blockPosInfo{4};
                 blockx      = blockPosInfo{1};
-                blocky      = round(height - blockPosInfo{2}); % Account for different coordinate system between GraphViz and MATLAB
+                blocky      = round(height - blockPosInfo{2}); % Account for different coordinate system between Graphviz and MATLAB
 
                 left    = round(blockx - blockwidth/2);
                 right   = round(blockx + blockwidth/2);
