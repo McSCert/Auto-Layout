@@ -15,7 +15,7 @@ function bool = AinB(A,B)
 %       AinB('a',{{'a'}})       -> false
 %
 %   Another method to do this using built-in functions:
-%       isempty(find(strcmp(A,B)))
+%       ~isempty(find(strcmp(A,B)))
 
     bool = false;
     if ischar(A) && iscell(B)
