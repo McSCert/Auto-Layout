@@ -1,0 +1,405 @@
+% !TeX encoding = UTF-8
+% !TeX spellcheck = en_CA
+\documentclass[12pt,letterpaper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[toc,page]{appendix}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[destlabel,pdfusetitle]{hyperref}
+\usepackage{hhline} % for tabular expressions
+\usepackage{multirow} % "
+\usepackage{algorithmic} % code in the tabular expression explanation
+\usepackage{caption}
+\usepackage{subcaption} % subfigures
+\usepackage{geometry} % to adjust margins
+\usepackage{longtable}
+\usepackage{tabu}
+\usepackage[numbered,framed]{matlab-prettifier}
+\usepackage{comment}
+
+\renewcommand{\contentsname}{Table of Contents}
+
+\newcommand{\Appendixautorefname}{Appendix}%
+\renewcommand{\chapterautorefname}{Chapter}%
+\renewcommand{\sectionautorefname}{Section}%
+\renewcommand{\subsectionautorefname}{Section}%
+\renewcommand{\subsubsectionautorefname}{Section}%
+\setcounter{secnumdepth}{3}
+
+% abbreviations environment for acronyms
+\makeatletter
+\newcommand{\tocfill}{\cleaders\hbox{$\m@th \mkern\@dotsep mu . \mkern\@dotsep mu$}\hfill}
+\makeatother
+\newcommand{\abbrlabel}[1]{\makebox[3cm][l]{\textbf{#1}\ \tocfill}}
+\newenvironment{abbreviations}{\begin{list}{}{\renewcommand{\makelabel}{\abbrlabel}%
+                                              \setlength{\itemsep}{0pt}}}{\end{list}}
+
+%Raising \hypertarget links a line https://tex.stackexchange.com/questions/17057/hypertarget-seems-to-aim-a-line-too-low
+%above does not work for tabular-like environments, replaced hypertarged with \phantomsection\label{key} as per https://tex.stackexchange.com/questions/212161/adjust-jump-location-of-hypertargets
+%combined above with \raisebox as seen here https://tex.stackexchange.com/questions/54935/reference-to-a-label-linked-with-a-longtable-row
+\makeatletter
+\newcommand{\mylabel}[1]{\raisebox{\f@size pt}{\phantomsection}\label{#1}}
+\makeatother
+
+\newcommand{\PushDownLink}{The Data Store Push-Down Tool}
+%Requirement links
+\newcommand{\TestingInputsOutputsLink}{\hyperref{srs.pdf}{}{subsec:TestingInputsOutputs}{the Testing Inputs \& Outputs Requirement}}
+\newcommand{\IntegrationLink}{\hyperref{srs.pdf}{}{subsec:Integration}{the Integration Requirement}}
+\newcommand{\SOCReqLink}{\hyperref{srs.pdf}{}{subsec:SOC}{the SOC Requirement}}
+\newcommand{\BPCMFlowchartLink}{\hyperref{srs.pdf}{}{fig:BPCMflowchart}{the BPCM Flowchart}}
+\hypersetup{
+  linktocpage,
+  colorlinks,
+  linkcolor=blue,
+  urlcolor=blue,
+  pdfkeywords={{AutoLayout} {documentation} {Simulink} {McMaster University}},
+  pdfstartpage=2
+}
+
+\begin{document}
+  
+  \title{Auto Layout: Software Design Description (Draft)}
+  
+  \author{
+    Harjot Nijjar\\
+  }
+  
+  \maketitle
+  
+  \tableofcontents
+
+\chapter{Introduction}
+
+\par This document is a Software Design Description (SDD) of the Auto Layout Tool. The purpose of the tool is to automatically format any Simulink model to improve its visual layout. This is accomplished by arranging the blocks and lines such that the readability of the model increases.
+
+\chapter{GraphPlot Code} \label{GraphPlotLabel}
+
+\section{Introduction}
+\par With the introduction of MATLAB 2016b, Mathworks allowed users to create directed graphs (graphs with edges and nodes). This allowed for the creation of a graph that could represent the layout of a Simulink model by representing the model using a directed graph. Nodes would be used to represent blocks and edges would be used to represent connections between nodes (blocks). By using directed graphs, it became easier to create a basic layout for a Simulink model and then make changes to it.
+
+\section{Hierarchy}
+\par The function GraphPlotLayout is called by AutoLayout, and it calls other functions pertaining to the creation of the directed graph which represents the system. There are several family of functions that GraphPlotLayout calls which have similar functionality. The family of functions are: Arranging  Blocks, Implicit Connections, Directed Graph. The Arranging Blocks family deals with the re-positioning of the blocks in the Simulink model. The Implicit Connections family deals with finding implicit connections in the Simulink model so that they can be added to the directed graph which represents the system. The last family of functions is Directed Graph which deals with the creation and editing of the directed graph.
+
+\section{Arranging  Blocks}
+\par This family of functions is responsible for re-arranging and re-positioning the blocks in the model. The functions in this family are:
+\begin{itemize}
+	\item isBranching
+	\item arrangeSources
+	\item arrangeSinks
+\end{itemize}
+
+\subsection{isBranching}
+\paragraph{Prototype:} b = isBranching(lh)
+\paragraph{Functionality:} Determine if a given line is a branching line
+\paragraph{Code Description:} The line is determined to be branching if the output of the line it is connected to more than 1 block. The number of outputs is determined by the DstPortHandle property.
+
+\subsection{arrangeSources}
+\paragraph{Prototype:} [srcs, srcPositions, didMove] = arrangeSources(blk, doMove)
+\paragraph{Functionality:} Find the sources of a block and reposition its sources to vertically arrange them such that they are ordered with respect to the ports.
+\paragraph{Code Description:} %COMPLETE THIS
+
+\subsection{arrangeSinks}
+\paragraph{Prototype:} [snks, snkPositions, didMove] = arrangeSinks(blk, doMove)
+\paragraph{Functionality:} Find the sinks of a block and reposition its sinks to vertically arrange them such that they are ordered with respect to the ports.
+\paragraph{Code Description:}
+
+\section{Implicit Connections}
+\par This family of functions is responsible for implicit connections throughout the model. The functions in this family are:
+\begin{itemize}
+	\item findReadWritesInScope
+	\item findDataStoreMemory
+	\item findVisibilityTag
+	\item findGotoFromsInScope
+	\item findWritesInScope
+	\item findReadsInScope
+	\item findGotosInScope
+	\item findFromsInScope
+\end{itemize}
+
+\subsection{findReadWritesInScope}
+\paragraph{Prototype:} blockList = findReadWritesInScope(block)
+\paragraph{Functionality:} Find all Data Store Read and Data Store Write blocks that are associated with a Data Store Memory block.
+\paragraph{Code Description:} The blocks are found by searching for blocks in the system that have the same DataStoreName property value as the Data Store Memory block. Also, a list of blocks that have the same DataStoreName property as the input Data Store Memory block are ignored by finding all Data Store Memory blocks with the same DataStoreName property and its associated Data Store Write and Data Store Read blocks. Then, all Data Store Write and Data Store Read blocks DataStoreName property value are found and put into an array. This array is compared to the previous array and blocks that are not in both arrays belong to the Data Store Memory block.
+
+\subsection{findDataStoreMemory}
+\paragraph{Prototype:} mem = findDataStoreMemory(block)
+\paragraph{Functionality:} Find the assocaited Data Store Memory block for a given Data Store Write or Data Store Read block.
+\paragraph{Code Description:} The Data Store Memory block is found by finding all Data Story Memory blocks that have the same DataStoreName property as the input block. Then, the Data Store Memory block that corresponds to the input block is found by finding the DataStoreName Data Store Memory block that includes the input block in its scope and is the closest to the input block in terms of system level hierarchy. This is accomplished by comparing the Parent block property string value of the Data Store Memory blocks to the Parent block property string value of the input block.
+
+\subsection{findWritesInScope}
+\paragraph{Prototype:} writes = findWritesInScope(block)
+\paragraph{Functionality:} Find all Data Store Write blocks that are associated with a Data Store Read block.
+\paragraph{Code Description:} The Data Store Write blocks are found by first finding the associated Data Store Memory block for the Data Store Read block, and this is accomplished by calling the function findDataStoreMemory. Then, all Data Store Read and Data Store Write blocks that are associated with the Data Store Memroy block are found and stored in an array by calling the function findReadWritesInScope. Next, an array is created which contains only Data Store Read blocks that share the same DataStoreName property value as the Data Store Memory block. Lastly, the blocks that are not in the two arrays are the Data Store Write blocks that are associated with the input Data Store Read block.
+
+\subsection{findReadsInScope}
+\paragraph{Prototype:} reads = findReadsInScope(block)
+\paragraph{Functionality:} Find all Data Store Read blocks that are associated with a Data Store Write block.
+\paragraph{Code Description:}
+
+\subsection{findVisibilityTag}
+\paragraph{Prototype:} visBlock = findVisibilityTag(block)
+\paragraph{Functionality:} Find the Goto Visibility Tag block that is associated with a scoped Goto or From block.
+\paragraph{Code Description:} The Goto Visibility Tag is found by finding all Goto Visibility Tag in the system that have the same GotoTag property value as the input block and by finding the Goto Visibility Tag that is closest to and above the input block with respect to the system level hierarchy. This is accomplished by comparing the string value of the parent property values for the Goto Visibility Tag blocks and the input block.
+
+\subsection{findGotoFromsInScope}
+\paragraph{Prototype:} blockList = findGotoFromsInScope(block)
+\paragraph{Functionality:} Find all Goto and From blocks that are associated with a Goto Tag Visibility block.
+\paragraph{Code Description:} 
+
+\subsection{findGotosInScope}
+\paragraph{Prototype:} goto = findGotosInScope(block)
+\paragraph{Functionality:} Find the Goto blok associated with a From block.
+\paragraph{Code Description:}
+
+\subsection{findFromsInScope}
+\paragraph{Prototype:} froms = findFromsInScope(block)
+\paragraph{Functionality:} Find all From blocks that are associated with a Goto block.
+\paragraph{Code Description:}
+
+\section{Directed Graph}
+\par This family of functions is responsible for the creating and editing of the directed graph which represents the connections of the various block at a system level. The functions in this family are:
+\begin{itemize}
+	\item applyNamingConvention
+	\item isdigraph
+	\item plotSimulinkDigraph
+	\item systemToDigraph
+	\item addImplicitEdges
+\end{itemize}
+
+\subsection{applyNamingConvention}
+\paragraph{Prototype:} name = applyNamingConvention(handle)
+\paragraph{Functionality:} Modify a name by applying a naming convention to block and port names.
+\paragraph{Code Description:}
+
+\subsection{isdigraph}
+\paragraph{Prototype:} tf = isdigraph(d)
+\paragraph{Functionality:} Returns a boolean value which is true if the input is a digraph, and false if it is not.
+\paragraph{Code Description:}
+
+\subsection{plotSimulinkDigraph}
+\paragraph{Prototype:} h = plotSimulinkDigraph(sys, dg)
+\paragraph{Functionality:} Plot  the directed graph that represents the connections between the various blocks in a system. The nodes are plotted such that the sources are to the left and sinks are to the right of a block.
+\paragraph{Code Description:}
+
+\subsection{systemToDigraph}
+\paragraph{Prototype:} dg  = systemToDigraph(sys)
+\paragraph{Functionality:} Create a directed graph for a subsystem. Blocks are represented as nodes and the connection between nodes are represented as edges.
+\paragraph{Code Description:}
+
+\subsection{addImplicitEdges}
+\paragraph{Prototype:} dg = addImplicitEdges(sys, dg)
+\paragraph{Functionality:} Add edges to a directed graph to represent the implicit connections in a subsystem.
+\paragraph{Code Description:}
+
+\chapter{Layout Code}
+
+\section{Introduction}
+\par After creating a directed graph to represent the subsystem and moving the blocks based on the directed graph, the blocks are then repositioned and resized to improve the layout.
+
+\section{Hierarchy}
+\par The function AutoLayout is the top-level function for the AutoLayout tool. There are several family of functions that AutoLayout calls which have similar functionality. The family of functions are: GraphPlot, Moving Blocks, Block Positioning Calculations, Adjustments, and Text/String.
+
+\section{GraphPlot}
+\par Refer to Chapter \ref{GraphPlotLabel}.
+
+
+%MOVING BLOCKS ***********************************************************************************************************************************************
+\section{Moving Blocks}
+\par This family of functions is responsible for the creating and editing of the directed graph which represents the connections of the various block at a system level. The functions in this family are:
+\begin{itemize}
+	\item moveBlocks
+\end{itemize}
+
+\subsection{moveBlocks}
+\paragraph{Prototype:} moveBlocks(address, blocks, positions)
+\paragraph{Functionality:} Move blocks in a subsystem to new positions indicated by the input.
+\paragraph{Code Description:}
+
+\subsection{horzAdjustBlocks}
+\paragraph{Prototype:} horzAdjustBlocks(layout, col, x)
+\paragraph{Functionality:} Hrozontally move the blocks in the layout to the right of a column by 'x' pixels.
+\paragraph{Code Description:}
+
+\subsection{vertMoveColumn}
+\paragraph{Prototype:} layout = vertMoveColumn(layout, row, col, y)
+\paragraph{Functionality:} Vertically move the blocks in the layout downward by 'y' pixels.
+\paragraph{Code Description:}
+
+\subsection{vertAlign}
+\paragraph{Prototype:} layout = vertAlign(layout)
+\paragraph{Functionality:} Align blocks to facilitate the use of straight lines in connections by repositioning blocks vertically. Currently only attempts to align blocks which connect to a single block through an inport/outport.
+\paragraph{Code Description:}
+
+\subsection{justifyBlocks}
+\paragraph{Prototype:} layout = justifyBlocks(address, layout, blocks, justifyType)
+\paragraph{Functionality:} Align blocks to facilitate the use of straight lines in connections by repositioning blocks vertically. Currently only attempts to align blocks which connect to a single block through an in/outport.
+\paragraph{Code Description:}
+
+\subsection{updatePortless}
+\paragraph{Prototype:} updatePortless(address, portlessInfo)
+\paragraph{Functionality:} Reposition the portless blocks in the layout.
+\paragraph{Code Description:}
+
+\subsection{handleAnnotations}
+\paragraph{Prototype:} handleAnnotations(layout, portlessInfo, annotations, note\_rule)
+\paragraph{Functionality:} Move annotations in the layout based on the note rule configuration setting.
+\paragraph{Code Description:}
+
+%BLOCK POSITIONING ***********************************************************************************************************************************************
+\section{Block}
+\par This family of functions is responsible for the calculating new block position values. The functions in this family are:
+\begin{itemize}
+	\item hasPorts
+	\item getPortlessBlocks
+	\item getPortlessInfo
+	\item getBlocksInfo
+\end{itemize}
+
+\subsection{hasPorts}
+\paragraph{Prototype:} hasPorts = hasPorts(block)
+\paragraph{Functionality:} Check if a block has any ports.
+\paragraph{Code Description:}
+
+\subsection{getPortlessBlocks}
+\paragraph{Prototype:} portlessBlocks = getPortlessBlocks(blocks)
+\paragraph{Functionality:} Find blocks which have no ports from a list of blocks.
+\paragraph{Code Description:}
+
+\subsection{getPortlessInfo}
+\paragraph{Prototype:} [portlessInfo, smallOrLargeHalf] = getPortlessInfo(portless\_rule, systemBlocks, portlessBlocks)
+\paragraph{Functionality:} Get the names of the blocks which are portless and information about their final positioning in the layout.
+\paragraph{Code Description:}
+
+\subsection{getBlocksInfo}
+\paragraph{Prototype:} blocksInfo = getBlocksInfo(sys)
+\paragraph{Functionality:} Find the relative layout of the blocks in a subsystem.
+\paragraph{Code Description:}
+
+\subsection{getRelativeLayout}
+\paragraph{Prototype:} [layout] = getRelativeLayout(blocksInfo)
+\paragraph{Functionality:} Create an array of struct which contains a block's name and its current position.
+\paragraph{Code Description:}
+
+\subsection{rectCenter}
+\paragraph{Prototype:} [x,y] = rectCenter(positions)
+\paragraph{Functionality:} Find the coordinates of the center of a rectangle.
+\paragraph{Code Description:}
+
+\subsection{getBlockSidePositions}
+\paragraph{Prototype:} sidePositions = getBlockSidePositions(blocks, side)
+\paragraph{Functionality:} Find the positions all blocks in the layout.
+\paragraph{Code Description:}
+
+\subsection{sortRelativeLayout}
+\paragraph{Prototype:} grid = sortRelativeLayout(grid, colLengths)
+\paragraph{Functionality:} Sort the blocks in the columns of the grid by descending top positions (top block to lowest block).
+\paragraph{Code Description:}
+
+\subsection{repositionPortlessBlocks}
+\paragraph{Prototype:} portlessInfo = repositionPortlessBlocks(portlessInfo, layout, portlessRule, smallOrLargeHalf, sortPortless)
+\paragraph{Functionality:} Determine the new positions for the portless blocks in the layout to the side in the layout specified by the portless rule configuration setting.
+\paragraph{Code Description:}
+
+\subsection{sideExtremes}
+\paragraph{Prototype:} [leftBound, topBound, rightBound, botBound] = sideExtremes(layout, portlessInfo, ignorePortlessBlocks)
+\paragraph{Functionality:} Find the bounding positions of the layout.
+\paragraph{Code Description:}
+
+%ADJUSTMENTS ***********************************************************************************************************************************************
+\section{Adjustments}
+\par This family of functions is responsible for making adjustments to the layout. The functions in this family are:
+\begin{itemize}
+	\item makeSumsRectangular
+	\item getAutoLayoutConfig
+	\item updateLayout
+	\item redraw lines
+\end{itemize}
+
+\subsection{getAutoLayoutConfig}
+\paragraph{Prototype:} getAutoLayoutConfig(parameter, default)
+\paragraph{Functionality:} Get parameters from the tool configuration file to change the behaviour of the Auto Layout tool.
+\paragraph{Code Description:}
+
+\subsection{makeSumsRectangular}
+\paragraph{Prototype:} makeSumsRectangular(blocks)
+\paragraph{Functionality:} Change the shape of a sum block to rectangular.
+\paragraph{Code Description:}
+
+\subsection{updateLayout}
+\paragraph{Prototype:} updateLayout(address, layout)
+\paragraph{Functionality:} Updates the layout by moving blocks to their new calculated positions.
+\paragraph{Code Description:}
+
+\subsection{redraw\_lines}
+\paragraph{Prototype:} redraw\_lines(name, varargin)
+\paragraph{Functionality:} Updates the layout by moving blocks to their new calculated positions.
+\paragraph{Code Description:}
+
+\subsection{adjustForPorts}
+\paragraph{Prototype:} layout = adjustForPorts(layout)
+\paragraph{Functionality:} Adjust the top and bottom positions to resize blocks to accomodate their ports without disturbing the relative layout.
+\paragraph{Code Description:}
+
+\subsection{dimIncreaseForPorts}
+\paragraph{Prototype:} [pos, yIncrease] = dimIncreaseForPorts(block, pos, varargin)
+\paragraph{Functionality:} Determine the amount to increase the top and bottom positions of a block to accomodate its ports within it.
+\paragraph{Code Description:}
+
+\subsection{desiredHeightForPorts}
+\paragraph{Prototype:} desiredHeight = desiredHeightForPorts(block, varargin)
+\paragraph{Functionality:} Determine a new height for the block to accomodate for the ports within it.
+\paragraph{Code Description:}
+
+\subsection{fixSizeOfBlocks}
+\paragraph{Prototype:} layout = fixSizeOfBlocks(layout)
+\paragraph{Functionality:} Set the sizes of inports, outports, bus creators, bus selectors, mux and demux blocks to their default sizes.
+\paragraph{Code Description:}
+
+
+
+%TEXT/STRING ***********************************************************************************************************************************************
+\section{Text/String}
+\par This family of functions is responsible for calculating the required space for blocks based on the text inside the block. The functions in this family are:
+\begin{itemize}
+	\item resizeBlocks
+	\item adjustForText
+	\item dimIncreaseForText
+\end{itemize}
+
+\subsection{resizeBlocks}
+\paragraph{Prototype:} [layout, portlessInfo] = resizeBlocks(layout, portlessInfo)
+\paragraph{Functionality:} Calculate new block sizes based on the text inside the blocks.
+\paragraph{Code Description:}
+
+\subsection{adjustForText}
+\paragraph{Prototype:} layout = adjustForText(layout)
+\paragraph{Functionality:} Adjust blocks in a subsystem by increasing the width of the blocks to fit the text inside the blocks, while calculating new positions to avoid blocks overlapping each other.
+\paragraph{Code Description:}
+
+\subsection{dimIncreaseForText}
+\paragraph{Prototype:} [pos, xIncrease] = dimIncreaseForText(block, pos, varargin)
+\paragraph{Functionality:} Determine the amount to increase the right and left positions of a block in order to fit the entire text within the block.
+\paragraph{Code Description:}
+
+\subsection{getBlockTextWidth}
+\paragraph{Prototype:} neededWidth = getBlockTextWidth(block)
+\paragraph{Functionality:} Determine an appropriate block width in order to fit the text within it based on the type of block
+\paragraph{Code Description:}
+
+\subsection{blockStringDims}
+\paragraph{Prototype:} [height, width] = blockStringDims(block, string)
+\paragraph{Functionality:} Determine the height and width that a string would have within a block based on the font style and size.
+\paragraph{Code Description:}
+
+\subsection{getTextDims}
+\paragraph{Prototype:} dims = getTextDims(string, fontName, fontSize, varargin)
+\paragraph{Functionality:} Determine the height and width that a string would have within a block based on the font style and size.
+\paragraph{Code Description:}
+
+%\subsection{findGotoFromsInScope}
+%\paragraph{Prototype:}
+%\paragraph{Functionality:}
+%\paragraph{Code Description:}
+
+
+\end{document}
