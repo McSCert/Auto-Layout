@@ -5,14 +5,13 @@ function sels = gcls
 %       N/A
 %
 %   Outputs:
-%       sels   Cell array of line handles.
+%       sels   Numeric array of line handles.
 %
 %   Example:
 %       lines = gcls
-%
-% Monika Jaskolka
 
-    objs = find_system(gcs, 'LookUnderMasks', 'on', 'Findall', 'on', ...
-       'FollowLinks', 'on', 'Type', 'line', 'Selected', 'on');
-    sels = flipud(objs);    % Flip to put in correct order (top to bottom position in model)
+    sels = find_system(gcs, 'LookUnderMasks', 'on', 'Findall', 'on', ...
+        'FollowLinks', 'on', 'Type', 'line', 'Selected', 'on');
+    % Flip order. find_system returns in descending order.
+    sels = flipud(sels);
 end
