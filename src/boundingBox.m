@@ -2,6 +2,11 @@ function bounds = boundingBox(object)
 % BOUNDINGBOX Find the bounding box of a Simulink object. Supports blocks,
 %   lines, and annotations.
 %
+%   What is the bounding box?
+%   Blocks: The dimensions of the block
+%   Lines: The minimum dimensions of a box to surround the line
+%   Annotations: The dimensions of the text box
+%
 %   Inputs:
 %       object  The object itself (fullname or handle).
 %
