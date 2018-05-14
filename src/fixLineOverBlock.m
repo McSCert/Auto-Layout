@@ -16,7 +16,7 @@ function fixLineOverBlock(allLines, allBlocks)
             numPoints = length(points);
             for k = 1:2
                 for l = 1:numPoints - 1
-                    a = [position(1), position(k*2); position(3), position(k*2)];
+                     a = [position(1), position(k*2); position(3), position(k*2)];
                     b = [points(l), points(l+numPoints); points(l+1), points(l+numPoints+1)];
                     if doLinesIntersect(a, b)
                         src = get_param(allLines(j), 'SrcBlockHandle');

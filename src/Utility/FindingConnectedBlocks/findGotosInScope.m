@@ -5,7 +5,7 @@ function goto = findGotosInScope(block)
 %       block   From block path name.
 %
 %   Outputs:
-%       froms   Goto block path name.
+%       goto   Goto block path name.
 
     if isempty(block)
         goto = {};

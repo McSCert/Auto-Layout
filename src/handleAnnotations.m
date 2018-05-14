@@ -34,7 +34,8 @@ function handleAnnotations(layout, portlessInfo, annotations, note_rule)
 
             % Get current position
             pos = get_param(annotations(i),'Position');
-
+            % pos and bounds contain the same values, so adjust values will
+            % always be 0
             adjustX = pos(1) - bounds(1);
             adjustY = pos(2) - bounds(2);
 

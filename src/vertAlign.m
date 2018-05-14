@@ -17,7 +17,7 @@ function layout = vertAlign(layout)
     for j = 1:size(layout.grid,2) % for each column
         for i = 1:layout.colLengths(j) % for each non empty row in column
 
-            block1 = layout.grid{i,j}.fullname; % block to consider aligning
+            block1 = layout.grid{i,j}.fullname % block to consider aligning
             ports1 = get_param(block1, 'Ports');
             portCon1 = get_param(block1, 'PortConnectivity');
 

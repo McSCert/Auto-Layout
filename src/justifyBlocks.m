@@ -1,8 +1,6 @@
 function layout = justifyBlocks(address, layout, blocks, justifyType)
-% JUSTIFYBLOCKS Align blocks to facilitate the use of straight lines in
-%   connections by repositioning blocks vertically.
-%   Currently only attempts to align blocks which connect to a single block
-%   through an in/outport.
+% JUSTIFYBLOCKS Align inports to the left edge of the layout if possible or
+% align outports to the right edge of the layout if possible.
 %
 %   Inputs:
 %       address         Simulink system name or path.

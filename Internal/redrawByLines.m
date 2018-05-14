@@ -17,6 +17,6 @@ function redrawByLines(name, autorouting)
         %dest = lines(n).DstBlock;
         destport = get_param(lines(n).Handle, 'DstPortHandle');
         delete_line(lines(n).Handle);
-        add_line(name, srcport, destport, 'autorouting', autorouting);
+        add_line(name, srcport, destport, 'autorouting', 'smart');
     end
 end

@@ -192,7 +192,7 @@ function AutoLayout(address)
     layout = vertAlign(layout);
     % % layout = easyAlign(layout); %old method, still relevant since it attempts to cover more cases
 
-    layout = layout2(address, layout, systemBlocks);
+    %layout = layout2(address, layout, systemBlocks); %call layout2 after
 
     % Align inport/outport blocks if set to do so by inport/outport rules
     if strcmp(INPORT_RULE, 'left_align')
