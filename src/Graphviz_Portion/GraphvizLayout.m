@@ -46,7 +46,7 @@ function GraphvizLayout(address)
 
     % 3) Use Tplainparser class to use Graphviz output to reposition Simulink (sub)system.
     % Do the initial layout
-    g = TplainParser(address, filename, containers.Map());
+    g = TplainParser(address, filename, map);
     g.plain_wrappers;
 
     % Delete unneeded files
