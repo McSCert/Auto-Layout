@@ -23,16 +23,6 @@ function AutoLayout(address)
     SORT_PORTLESS = getAutoLayoutConfig('sort_portless', 'blocktype'); %Indicates how to group portless blocks
     NOTE_RULE = getAutoLayoutConfig('note_rule', 'on-right'); %Indicates what to do with annotations
 
-    function ErrorInvalidConfig(config)
-        % Call this if a config setting was given an invalid value
-        %
-        % config is the name of the config, not value.
-
-        error(['Error using ' mfilename ':' char(10) ...
-            ' Invalid config parameter: ' config '.' char(10) ...
-            ' Please fix in the config.txt.'])
-    end
-
     %%
     % Check number of arguments
     try
@@ -57,6 +47,15 @@ function AutoLayout(address)
         if strcmp(ME.identifier, 'MATLAB:assert:failed') || ...
                 strcmp(ME.identifier, 'MATLAB:assertion:failed')
             error('File is locked');
+        end
+    end
+    
+    % 3) If address has a LinkStatus, then it is 'none' or 'inactive'
+    try
+        assert(any(strcmp(get_param(gcs, 'LinkStatus'), {'none','inactive'})), 'LinkStatus must be ''none'' or ''inactive''.')
+    catch ME
+        if ~strcmp(ME.identifier,'Simulink:Commands:ParamUnknown')
+            rethrow(ME)
         end
     end
 
