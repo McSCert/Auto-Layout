@@ -19,9 +19,9 @@ function grid = sortRelativeLayout(grid, colLengths)
 end
 
 function sortedMat1D = sortByTopPos(mat1d)
-% SORTBYTOPPOS Takes an unsorted matrix of blocks (format is important if some
-%   spaces are empty) and returns a matrix of blocks sorted in the order they
-%   appear in the block diagram.
+% SORTBYTOPPOS Takes an unsorted matrix (cell array) of blocks (format is
+%   important if some spaces are empty) and returns a matrix of blocks
+%   sorted in the order they appear in the block diagram.
 
     tops = [];
     len = 0;   % len represents the number of non-empty values in mat1d
