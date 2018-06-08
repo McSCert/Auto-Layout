@@ -44,11 +44,13 @@ function redraw_lines(sys, varargin)
         lineHdls = get_param([sys, '/', allBlocks{n}], 'LineHandles');
         if ~isempty(lineHdls.Inport)
             for m = 1:length(lineHdls.Inport)
-                srcport = get_param(lineHdls.Inport(m), 'SrcPortHandle');
-                dstport = get_param(lineHdls.Inport(m), 'DstPortHandle');
-                % Delete and re-add
-                delete_line(lineHdls.Inport(m))
-                add_line(sys, srcport, dstport, 'autorouting', autorouting);
+                if lineHdls.Inport(m) ~= -1
+                    srcport = get_param(lineHdls.Inport(m), 'SrcPortHandle');
+                    dstport = get_param(lineHdls.Inport(m), 'DstPortHandle');
+                    % Delete and re-add
+                    delete_line(lineHdls.Inport(m))
+                    add_line(sys, srcport, dstport, 'autorouting', autorouting);
+                end
             end
         end
     end
