@@ -1,0 +1,39 @@
+.../tools/Simulink/Tools/Utility/
+	FindingConnectedBlocks/
+		findDataStoreMemory.m
+		findFromsInScope.m
+		findGotoFromsInScope.m
+		findGotosInScope.m
+		findReadsInScope.m
+		findReadWritesInScope.m
+		findVisibilityTag.m
+		findWritesInScope.m
+
+	matlab-strsplit/
+		strsplit.m
+		
+	PositionUtil/
+		alignPorts.m
+		branchToPort.m
+		connectBlocks.m
+		connectPorts.m
+		copy_block.m
+		move_block.m
+		moveToPort.m
+		
+	TextDimensions/
+		blockStringDims.m
+		getBlockTextWidth.m
+		getTextDims.m
+
+	GetCurrentFunctions/
+		gcbs.m
+		gcls.m
+	
+	DataflowTracing/
+		getSrcPorts.m
+		
+	new_system_makenameunique.m
+	isBranching.m
+	AinB.m
+	setNamePlacements.m
