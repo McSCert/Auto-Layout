@@ -1,5 +1,5 @@
 function handleAnnotations(layout, portlessInfo, annotations, note_rule)
-% HANDLEANNOTATIONS Move portless blocks to the right side of the system.
+% HANDLEANNOTATIONS Move annotations to the right side of the system.
 %   The annotations should not extend too far below the bottom of the
 %   system.
 %

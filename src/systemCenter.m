@@ -12,11 +12,11 @@ function [x,y] = systemCenter(blocks)
     % Default extreme values for the bounds
     largestX = -32767; % right bound
     smallestX = 32767; % left bound
-    largestY = -32767; % top bound
-    smallestY = 32767; % bottom bound
+    largestY = -32767; % bottom bound
+    smallestY = 32767; % top bound
 
-    % For each block, compare its position to the current smallest bound and
-    % set it as the new smallest bounds if is smaller
+    % For each block, compare its position to the current smallest/largest
+    % bounds and update the bounds as appropriate
     for i = 1:length(blocks)
         leftPos = getBlockSidePositions(blocks(i), 1);
         topPos = getBlockSidePositions(blocks(i), 2);
