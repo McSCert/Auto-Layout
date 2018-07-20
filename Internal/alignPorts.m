@@ -1,74 +1,19 @@
-function alignPorts(layout, block, side)
-%ALIGNPORTS Resizes given block so that its input/output ports better line
-%   up with the source/destination of the input/output signal.
-%
-%   Inputs:
-%       block       String of the fullpath of a block.
-%       side        Indicating the side of the block to align.
-%%%%%%%             (what input means what)
-%%%%%%%       layout      As returned by getRelativeLayout.
-%
-%   Outputs:
-%%%%%%%       layout      With modified position information.
-%
-%FUNCTION IS IN PROGRESS
+function alignPorts(port1, port2)
+% ALIGNPORTS Move the second block veritcally so that the ports are aligned.
 
-%GARBAGE FUNCTION??
+    assert(strcmp(get_param(port1, 'Type'), 'port') && (strcmp(get_param(port2, 'Type'), 'port')), ...
+        'Inputs port1 and port2 must be ports.');
 
-    ports = get_param(block,'Ports');
-    numIn = ports(1);
-    numOut = ports(2);
+    port2Block = get_param(port2, 'Parent');
+    port2BlockPos = get_param(port2Block, 'Position');
     
-    allConnections = get_param(block,'PortConnectivity');
+    port1Pos = get_param(port1, 'Position');    % 1x2
+    port2Pos = get_param(port2, 'Position');    % 1x2
     
+    portDistanceY = port2Pos(2) - port1Pos(2);
+    port2BlockHeight = port2BlockPos(4) - port2BlockPos(2);    % 1x4
     
-    
-    % Find inputs in the previous column
-    leftConnections = ;
-    
-    % Find connections in next column over (to the left)
-    rightConnections = ;
-    
-    x = get_param(block,'PortConnectivity');
-    y = get_param(x(numIn).SrcBlock,'PortConnectivity');
-    z = get_param(x(1).SrcBlock,'PortConnectivity');
-    
-    set_param(block,'Position',...
-        [pos(1), z(x(1).SrcPort+1).Position(2) - topbuffer, ...
-        pos(3), y(x(numIn).SrcPort+1).Position(2) + botbuffer])
-    
-    if strcmp(side,'left')
-        %if side is left/input:
-        ports=get_param(block,'Ports')
-        numIn = ports(1)
-        x=get_param(block,'PortConnectivity')
-        y=get_param(x(numIn).SrcBlock,'PortConnectivity')
-        z=get_param(x(1).SrcBlock,'PortConnectivity')
-
-        pos=get_param(block,'Position')
-        topbuffer = x(1).Position(2) - pos(2)
-        botbuffer = pos(4) - x(numIn).Position(2)
-
-        set_param(block,'Position',...
-            [pos(1), z(x(1).SrcPort+1).Position(2) - topbuffer, ...
-            pos(3), y(x(numIn).SrcPort+1).Position(2) + botbuffer])
-
-    elseif strcmp(side,'right')
-
-        %if side is right/output:
-        ports=get_param(block,'Ports')
-        numIn = ports(1)
-        numOut = ports(2)
-        x=get_param(block,'PortConnectivity')
-        y=get_param(x(numIn+numOut).DstBlock,'PortConnectivity')
-        z=get_param(x(numIn+1).DstBlock,'PortConnectivity')
-
-        pos=get_param(block,'Position')
-        topbuffer = x(numIn+1).Position(2) - pos(2)
-        botbuffer = pos(4) - x(numIn+numOut).Position(2)
-
-        set_param(block,'Position',...
-            [pos(1), z(x(numIn+1).DstPort+1).Position(2) - topbuffer, ...
-            pos(3), y(x(numIn+numOut).DstPort+1).Position(2) + botbuffer])
-    end
+    newTop = port2BlockPos(2) - portDistanceY;
+    newBottom = port2BlockPos(2) + port2BlockHeight - portDistanceY;
+    set_param(port2Block, 'Position', [port2BlockPos(1), newTop, port2BlockPos(3), newBottom]);
 end
