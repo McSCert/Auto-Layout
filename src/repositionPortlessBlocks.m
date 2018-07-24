@@ -1,52 +1,59 @@
-function portlessInfo = repositionPortlessBlocks(portlessInfo, layout, portless_rule, smallOrLargeHalf, sort_portless)
+function portlessInfo = repositionPortlessBlocks(portlessInfo, layout, smallOrLargeHalf)
 % REPOSITIONPORTLESSBLOCKS Reposition portless blocks to a side of the system.
 %   Organize portless blocks into groups on the designated sides.
 %
 %   Inputs:
 %       portlessInfo        As returned by getPortlessInfo.
 %       layout              As returned by getRelativeLayout.
-%       portless_rule       Rule by which portless blocks should be
-%                           positioned. See PORTLESS_RULE in config.txt.
 %       smallOrLargeHalf    Map relating blocks with the side of the system
 %                           they should be placed on.
-%       sort_portless       Determines how to sort the portless blocks
-%                           after the side is determined. See SORT_PORTLESS
-%                           in config.txt.
 %
 %   Outputs:
 %       portlessInfo        Updated portlessInfo with new positions.
 
+    %%
+    % See PORTLESS_RULE and SORT_PORTLESS in config.txt.
+    SORT_PORTLESS = getAutoLayoutConfig('sort_portless', 'blocktype'); %Indicates how to group portless blocks
+    PORTLESS_RULE = getAutoLayoutConfig('portless_rule', 'top'); %Indicates how to place portless blocks
+    
+    % Check that sort_portless is set properly
+    SORT_PORTLESS = getAutoLayoutConfig('sort_portless', 'blocktype'); %Indicates how to group portless blocks
+    if ~AinB(SORT_PORTLESS, {'blocktype', 'masktype_blocktype', 'none'})
+        ErrorInvalidConfig('sort_portless')
+    end
+    
+    %%
     ignorePortlessBlocks = true;
     [leftBound,topBound,rightBound,botBound] = sideExtremes(layout, portlessInfo, ignorePortlessBlocks);
 
     vertSpace = 20; % Space to leave between blocks vertically
     horzSpace = 20; % Space to leave between blocks horizontally
 
-    if ~strcmp(sort_portless, 'none')
-        portlessInfo = sortPortlessInfo(portlessInfo, sort_portless);
+    if ~strcmp(SORT_PORTLESS, 'none')
+        portlessInfo = sortPortlessInfo(portlessInfo, SORT_PORTLESS);
     end
 
-    switch portless_rule
+    switch PORTLESS_RULE
         case 'left'
             %         doCheck = false;
-            portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'left');
+            portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,SORT_PORTLESS,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'left');
         case 'top'
             %         doCheck = false;1
-            portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'top');
+            portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,SORT_PORTLESS,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'top');
         case 'right'
             %         doCheck = false;
-            portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'right');
+            portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,SORT_PORTLESS,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'right');
         case 'bottom'
             %         doCheck = false;
-            portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'bottom');
+            portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,SORT_PORTLESS,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'bottom');
         case 'same_half_vertical'
             %         doCheck = true;
-            portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'top');
-            portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'bottom');
+            portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,SORT_PORTLESS,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'top');
+            portlessInfo = vertReposPortless(portlessInfo,smallOrLargeHalf,SORT_PORTLESS,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'bottom');
         case 'same_half_horizontal'
             %         doCheck = true;
-            portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'left');
-            portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,sort_portless,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'right');
+            portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,SORT_PORTLESS,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'left');
+            portlessInfo = horzReposPortless(portlessInfo,smallOrLargeHalf,SORT_PORTLESS,leftBound,topBound,rightBound,botBound,vertSpace,horzSpace,'right');
         otherwise
             % Invalid portless_rule
             error(['portless_rule must be in the following ' ...

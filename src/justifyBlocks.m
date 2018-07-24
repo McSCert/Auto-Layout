@@ -22,7 +22,8 @@ function layout = justifyBlocks(address, layout, blocks, justifyType)
     for i = 1:length(blocks)
         [row,col] = findInLayout(layout, blocks(i));
         if ~alreadyFullyJustified(layout, col, justifyType)
-            if ~blocksInTheWay(layout, row, col, justifyType) && ~linesInTheWay(address, layout, row, col, justifyType)
+            if ~blocksInTheWay(layout, row, col, justifyType) ...
+                    && ~linesInTheWay(address, layout, row, col, justifyType)
                 % Nothing in the way of justifying blocks(i)
 
                 if justifyType == 1 % (justify left)

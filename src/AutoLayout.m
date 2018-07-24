@@ -13,16 +13,6 @@ function AutoLayout(address)
     %           Modifies the AutoLayoutDemo system with one that performs the same
     %           functionally, but is laid out to be more readable.
     
-    %% Constants:
-    % Getting parameters for the tool to determine its behaviour
-    GRAPHING_METHOD = getAutoLayoutConfig('graphing_method', 'auto'); %Indicates which graphing method to use
-    SHOW_NAMES = getAutoLayoutConfig('show_names', 'no-change'); %Indicates which block names to show
-    PORTLESS_RULE = getAutoLayoutConfig('portless_rule', 'top'); %Indicates how to place portless blocks
-    INPORT_RULE = getAutoLayoutConfig('inport_rule', 'none'); %Indicates how to place inports
-    OUTPORT_RULE = getAutoLayoutConfig('outport_rule', 'none'); %Indicates how to place outports
-    SORT_PORTLESS = getAutoLayoutConfig('sort_portless', 'blocktype'); %Indicates how to group portless blocks
-    NOTE_RULE = getAutoLayoutConfig('note_rule', 'on-right'); %Indicates what to do with annotations
-    
     %%
     % Check number of arguments
     try
@@ -52,7 +42,7 @@ function AutoLayout(address)
     
     % 3) If address has a LinkStatus, then it is 'none' or 'inactive'
     try
-        assert(any(strcmp(get_param(gcs, 'LinkStatus'), {'none','inactive'})), 'LinkStatus must be ''none'' or ''inactive''.')
+        assert(any(strcmp(get_param(address, 'LinkStatus'), {'none','inactive'})), 'LinkStatus must be ''none'' or ''inactive''.')
     catch ME
         if ~strcmp(ME.identifier,'Simulink:Commands:ParamUnknown')
             rethrow(ME)
@@ -70,46 +60,18 @@ function AutoLayout(address)
     % Find which blocks have no ports
     portlessBlocks = getPortlessBlocks(systemBlocks);
     
-    % Check that portless_rule is set properly
-    if ~AinB(PORTLESS_RULE, {'top', 'left', 'bottom', 'right', 'same_half_vertical', 'same_half_horizontal'})
-        ErrorInvalidConfig('portless_rule')
-    end
-    
     % Find where to place portless blocks in the final layout
-    [portlessInfo, smallOrLargeHalf] = getPortlessInfo(PORTLESS_RULE, systemBlocks, portlessBlocks);
+    [portlessInfo, smallOrLargeHalf] = getPortlessInfo(systemBlocks, portlessBlocks);
     
     %%
     % 1) For each block, show or do not show its name depending on the SHOW_NAMES
     % parameter.
     % 2) Create a map that contains the info about whether the block should show its
     % name
-    nameShowing = getShowNameParams(SHOW_NAMES, systemBlocks);
+    nameShowing = getShowNameParams(systemBlocks);
     
     %% Determine which initial layout graphing method to use
-    % Determine which external software to use:
-    %   1) MATLAB's GraphPlot objects; or
-    %   2) Graphviz (requires separate install)
-    % based on the configuration parameters and current version of MATLAB
-    if strcmp(GRAPHING_METHOD, 'auto')
-        % Check if MATLAB version is R2015b or newer (i.e. greater-or-equal to 2015b)
-        ver = version('-release');
-        ge2015b = str2num(ver(1:4)) > 2015 || strcmp(ver(1:5),'2015b');
-        if ge2015b
-            % Graphplot
-            initLayout = @GraphPlotLayout;
-        else
-            % Graphviz
-            initLayout = @GraphvizLayout;
-        end
-    elseif strcmp(GRAPHING_METHOD, 'graphplot')
-        % Graphplot
-        initLayout = @GraphPlotLayout;
-    elseif strcmp(GRAPHING_METHOD, 'graphviz')
-        % Graphviz
-        initLayout = @GraphvizLayout;
-    else
-        ErrorInvalidConfig('graphing_method')
-    end
+    initLayout = selectGraphingFunction();
     
     %% Get the intial layout using a graphing algorithm
     initLayout(address);
@@ -121,7 +83,7 @@ function AutoLayout(address)
     blocksInfo = getBlocksInfo(address);
     
     %% Show/hide block names (initLayout may inadvertently set it off)
-    setShowNameParams(SHOW_NAMES, systemBlocks, nameShowing)
+    setShowNameParams(systemBlocks, nameShowing)
     
     %%
     % 1) Remove portless blocks from blocksInfo (they will be handled separately)
@@ -161,6 +123,7 @@ function AutoLayout(address)
     %layout = layout2(address, layout, systemBlocks); %call layout2 after
     
     % Align inport/outport blocks if set to do so by inport/outport rules
+    INPORT_RULE = getAutoLayoutConfig('inport_rule', 'none'); %Indicates how to place inports
     if strcmp(INPORT_RULE, 'left_align')
         % Left align the inports
         inports = find_system(address,'SearchDepth',1,'BlockType','Inport');
@@ -169,6 +132,7 @@ function AutoLayout(address)
         ErrorInvalidConfig('inport_rule')
     end
     
+    OUTPORT_RULE = getAutoLayoutConfig('outport_rule', 'none'); %Indicates how to place outports
     if strcmp(OUTPORT_RULE, 'right_align')
         % Right align the outports
         outports = find_system(address,'SearchDepth',1,'BlockType','Outport');
@@ -181,15 +145,10 @@ function AutoLayout(address)
     updateLayout(address, layout);
     
     %%
-    % Check that sort_portless is set properly
-    if ~AinB(SORT_PORTLESS, {'blocktype', 'masktype_blocktype', 'none'})
-        ErrorInvalidConfig('sort_portless')
-    end
-    
     % Place blocks that have no ports in a line along the top/bottom or left/right
     % horizontally, depending on where they were initially in the system and the
     % PORTLESS_RULE.
-    portlessInfo = repositionPortlessBlocks(portlessInfo, layout, PORTLESS_RULE, smallOrLargeHalf, SORT_PORTLESS);
+    portlessInfo = repositionPortlessBlocks(portlessInfo, layout, smallOrLargeHalf);
     
     % Update block positions according to portlessInfo
     updatePortless(address, portlessInfo);
@@ -198,6 +157,7 @@ function AutoLayout(address)
     % Get all the annotations
     annotations = find_system(address,'FindAll','on','SearchDepth',1,'Type','annotation');
     % Move all annotations to the right of the system, if necessary
+    NOTE_RULE = getAutoLayoutConfig('note_rule', 'on-right'); %Indicates what to do with annotations
     if ~(strcmp(NOTE_RULE, 'none') || strcmp(NOTE_RULE, 'on-right'))
         ErrorInvalidConfig('note_rule')
     else
@@ -213,45 +173,4 @@ function AutoLayout(address)
     % Zoom on system (if it ends up zoomed out that means there is
     % something near the borders)
     set_param(address, 'Zoomfactor', 'Fit to view');
-end
-
-function nameShowing = getShowNameParams(SHOW_NAMES, systemBlocks)
-    nameShowing = containers.Map();
-    if strcmp(SHOW_NAMES, 'no-change')
-        % Find which block names are showing at the start
-        for i = 1:length(systemBlocks)
-            if strcmp(get_param(systemBlocks(i), 'ShowName'), 'on')
-                nameShowing(getfullname(systemBlocks{i})) = 'on';
-                set_param(systemBlocks{i}, 'ShowName', 'off')
-            elseif strcmp(get_param(systemBlocks(i), 'ShowName'), 'off')
-                nameShowing(getfullname(systemBlocks{i})) = 'off';
-            end
-        end
-    end
-end
-
-function setShowNameParams(SHOW_NAMES, systemBlocks, nameShowing)
-    if strcmp(SHOW_NAMES, 'no-change')
-        % Return block names to be showing or hidden, as they were initially
-        for i = 1:length(systemBlocks)
-            if strcmp(nameShowing(getfullname(systemBlocks{i})), 'on')
-                set_param(systemBlocks{i}, 'ShowName', 'on')
-            else
-                % This should be redundant with the implementation, but is in place as a fail-safe
-                set_param(systemBlocks{i}, 'ShowName', 'off')
-            end
-        end
-    elseif strcmp(SHOW_NAMES, 'all')
-        % Show all block names
-        for i = 1:length(systemBlocks)
-            set_param(systemBlocks{i}, 'ShowName', 'on')
-        end
-    elseif strcmp(SHOW_NAMES, 'none')
-        % Show no block names
-        for i = 1:length(systemBlocks)
-            set_param(systemBlocks{i}, 'ShowName', 'off')
-        end
-    else
-        ErrorInvalidConfig('show_names')
-    end
 end
