@@ -21,7 +21,7 @@ function dg  = blocksToDigraph(blocks)
     
     %%
     % Get nodes
-    nodes = inputToCell(blocks);
+    nodes = inputToCell(blocks)';
     numNodes = length(nodes);
     nodes = nodes(length(nodes):-1:1); % Reversing the block order appears to help in practice
     
