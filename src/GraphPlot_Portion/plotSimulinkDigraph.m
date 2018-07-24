@@ -45,6 +45,8 @@ function h = plotSimulinkDigraph(blocks, dg)
     for i = 1:length(snks)
         snks_cell{end+1} = applyNamingConvention(snks(i));
     end
+    srcs_cell = srcs_cell';
+    snks_cell = snks_cell';
     
     %%
     % Use Simulink-like plot options

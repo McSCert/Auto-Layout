@@ -21,13 +21,11 @@ function [fullname, replacementMap] = dotfile_creator(blocks)
     % Check first input
     assert(isa(blocks, 'double'), 'Blocks must be given as a vector of handles.')
     
+    blocks = inputToCell(blocks);
+    
     if ~isempty(blocks)
-        sys = get_param(blocks(1), 'Parent');
-        for i = 2:length(blocks)
-            assert(sys == get_param(blocks(i), 'Parent'), 'Each block must be directly within the same subsystem. I.e. blocks must share a parent.')
-        end
-        
-        assert(bdIsLoaded(bdroot(sys)), 'Simulink system provided is invalid or not loaded.')
+        sys = getCommonParent(blocks);
+        assert(bdIsLoaded(getfullname(bdroot(sys))), 'Simulink system provided is invalid or not loaded.')
     end
     
     function string = subwidth(number)
@@ -63,10 +61,10 @@ function [fullname, replacementMap] = dotfile_creator(blocks)
         % strings and update the replaceMap which defines the replacements
         replacePattern = '[^\w]|^[0-9]';
         items2Replace = regexp(blockname, replacePattern, 'match');
-        for i = 1:length(items2Replace)
-            replaceStr = ['badcharacterreplacement' dec2bin(items2Replace{i}, 8)];
-            blockname = strrep(blockname, items2Replace{i}, replaceStr);
-            replaceMap(replaceStr) = items2Replace{i};
+        for j = 1:length(items2Replace)
+            replaceStr = ['badcharacterreplacement' dec2bin(items2Replace{j}, 8)];
+            blockname = strrep(blockname, items2Replace{j}, replaceStr);
+            replaceMap(replaceStr) = items2Replace{j};
         end
         newblockname = blockname;
     end
@@ -343,13 +341,13 @@ function [fullname, replacementMap] = dotfile_creator(blocks)
     GotosLength = length(Gotos);
     % When a local goto is found then assume the Goto and From is connected
     for w = 1:GotosLength
-        GotoTag = get_param(Gotos{w}, 'Gototag');
+        GotoTag = get_param(Gotos(w), 'Gototag');
         Froms = find_in_blocks(blocks, 'BlockType', 'From', 'Gototag', GotoTag);
-        GotoName = get_param(Gotos{w}, 'Name');
+        GotoName = get_param(Gotos(w), 'Name');
         [GotoName, replacementMap] = replaceItems(GotoName, replacementMap);
         Fromslength = length(Froms);
         for h = 1:Fromslength
-            FromName = get_param(Froms{h}, 'Name');
+            FromName = get_param(Froms(h), 'Name');
             [FromName, replacementMap] = replaceItems(FromName, replacementMap);
             dotfile = [dotfile GotoName '->' FromName sprintf('\n') ];
         end
@@ -359,20 +357,20 @@ function [fullname, replacementMap] = dotfile_creator(blocks)
     Writes = find_in_blocks(blocks, 'BlockType', 'DataStoreWrite');
     WritesLength = length(Writes);
     for w = 1:WritesLength
-        DataStoreName = get_param(Writes{w}, 'DataStoreName');
+        DataStoreName = get_param(Writes(w), 'DataStoreName');
         Reads = find_in_blocks(blocks, 'BlockType', 'DataStoreRead', 'DataStoreName', DataStoreName);
-        WriteName = get_param(Writes{w}, 'Name');
+        WriteName = get_param(Writes(w), 'Name');
         [WriteName, replacementMap] = replaceItems(WriteName, replacementMap);
         Readslength = length(Reads);
         for h = 1:Readslength
-            ReadName = get_param(Reads{h}, 'Name');
+            ReadName = get_param(Reads(h), 'Name');
             [ReadName, replacementMap] = replaceItems(ReadName, replacementMap);
             dotfile = [dotfile WriteName '->' ReadName sprintf('\n') ];
         end
     end
     
     dotfile = [dotfile '}'];
-    fullname = sys;
+    fullname = getfullname(sys);
     pattern = '[^\w]|^[0-9]';
     itemsToReplace = regexp(fullname, pattern, 'match');
     for item = 1:length(itemsToReplace)

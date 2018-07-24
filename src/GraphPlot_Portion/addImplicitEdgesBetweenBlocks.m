@@ -17,6 +17,8 @@ function dgNew = addImplicitEdgesBetweenBlocks(blocks, dg)
     if ~isempty(blocks)
         sys = getCommonParent(blocks);
         assert(bdIsLoaded(getfullname(bdroot(sys))), 'Simulink system provided is invalid or not loaded.')
+    else
+        dgNew = dg;
     end
     
     % Check second input
@@ -26,8 +28,7 @@ function dgNew = addImplicitEdgesBetweenBlocks(blocks, dg)
     % Duplicate dg
     dgNew = dg;
     
-    %%
-    % Add Goto/Froms as edges
+    %% Add Goto/Froms as edges
     gotos = zeros(1,length(blocks));
     froms = zeros(1,length(blocks));
     for i = 1:length(blocks)
@@ -41,7 +42,7 @@ function dgNew = addImplicitEdgesBetweenBlocks(blocks, dg)
     gotos = inputToCell(gotos(find(gotos)));
     froms = inputToCell(froms(find(froms)));
     
-    % For each Goto tags, find the corresponding From tags
+    % For each Goto tag, find the corresponding From tags
     for i = 1:length(gotos)
         subFroms = findFromsInScope(gotos{i});
         for j = 1:length(subFroms)
@@ -74,8 +75,7 @@ function dgNew = addImplicitEdgesBetweenBlocks(blocks, dg)
         end
     end
     
-    %%
-    % Add Data Store Read/Writes as edges
+    %% Add Data Store Read/Writes as edges
     writes = zeros(1,length(blocks));
     reads = zeros(1,length(blocks));
     for i = 1:length(blocks)
@@ -131,7 +131,7 @@ function dgNew = addImplicitEdgesBetweenBlocks(blocks, dg)
         % The point is to find which block to create an edge with when the
         % data flow implicitly goes into a subsystem.
         p = get_param(blk, 'Parent');
-        if strcmp(p, sys)
+        if strcmp(p, getfullname(sys))
             root = blk;
         elseif(isempty(p))
             root = '';

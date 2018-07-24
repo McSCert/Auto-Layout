@@ -20,7 +20,8 @@ function GraphPlotLayout(blocks)
     p = plotSimulinkDigraph(blocks, dg2);
     set(0,'DefaultFigureVisible', defaultFigureVisible);
     
-    % blocks = p.NodeLabel';
+    assert(length(blocks) == length(p.NodeLabel))
+    blocks = p.NodeLabel'; % Update blocks to ensure the order corresponds with position data
     xs = p.XData;
     ys = p.YData;
     
@@ -34,7 +35,7 @@ function GraphPlotLayout(blocks)
     % % xs(toss) = [];
     % % ys(toss) = [];
     
-    % blocks = cellfun(@(x) x(1:end-2), blocks, 'UniformOutput', false);
+    blocks = cellfun(@(x) x(1:end-2), blocks, 'UniformOutput', false);
     
     % Set semi-arbitrary scaling factors to determine starting positions
     scale = 90; % Pixels per unit increase in x or y in the plot
@@ -53,29 +54,29 @@ function GraphPlotLayout(blocks)
         bottom  = round(blocky + blockheight/2);
         
         pos = [left top right bottom];
-        setPositionAL(blocks(i), pos);
+        setPositionAL(blocks{i}, pos);
     end
     
     % Try to fix knots caused by the arbitrary ordering of out/inputs to a node
     for i = 1:length(blocks)
-        ph = get_param(blocks(i), 'PortHandles');
+        ph = get_param(blocks{i}, 'PortHandles');
         out = ph.Outport;
         if length(out) > 1
-            [snks, snkPositions, ~] = arrangeSinks(blocks(i), false);
+            [snks, snkPositions, ~] = arrangeSinks(blocks{i}, false);
             for j = 1:length(snks)
-                if any(get_param(snks{j}, 'Handle') == blocks)
+                if any(get_param(snks{j}, 'Handle') == inputToNumeric(blocks))
                     set_param(snks{j}, 'Position', snkPositions(j, :))
                 end
             end
         end
     end
     for i = 1:length(blocks)
-        ph = get_param(blocks(i), 'PortHandles');
+        ph = get_param(blocks{i}, 'PortHandles');
         in = ph.Inport;
         if length(in) > 1
-            [srcs, srcPositions, ~] = arrangeSources(blocks(i), false);
+            [srcs, srcPositions, ~] = arrangeSources(blocks{i}, false);
             for j = 1:length(srcs)
-                if any(get_param(srcs{j}, 'Handle') == blocks)
+                if any(get_param(srcs{j}, 'Handle') == inputToNumeric(blocks))
                     set_param(srcs{j}, 'Position', srcPositions(j, :))
                 end
             end
