@@ -1,23 +1,35 @@
-function [fullname, replacementMap] = dotfile_creator(name)
-% DOTFILE_CREATOR Parses a system and creates a Graphviz dotfile.
-%
-%   Inputs:
-%       name            Name of the Simulink file to be processed.
-%
-%   Outputs:
-%       fullname        Name of the dotfile, as well as the resulting
-%                       Graphviz output.
-%       replacementMap  A containers.Map. Characters in block names that
-%                       aren't supported in the dotfile (values in the map)
-%                       will be replaced by another string (keys in the
-%                       map), later block names will need to be restored by
-%                       replacing the keys with the values in block names.
-%
-%   Example:
-%       filename = dotfile_creator('testModel');
-
-    %redraw_lines(name)
-    %redraw_lines(name,autorouting,off)
+function [fullname, replacementMap] = dotfile_creator(blocks)
+    % DOTFILE_CREATOR Parses a system and creates a Graphviz dotfile.
+    %
+    % Inputs:
+    %   blocks  Vector of block handles in which each block is at the
+    %           top level of the same system.
+    %
+    % Outputs:
+    %   fullname        Name of the dotfile, as well as the resulting
+    %                   Graphviz output.
+    %   replacementMap  A containers.Map. Characters in block names that
+    %                   aren't supported in the dotfile (values in the map)
+    %                   will be replaced by another string (keys in the
+    %                   map), later block names will need to be restored by
+    %                   replacing the keys with the values in block names.
+    %
+    % Example:
+    %   filename = dotfile_creator('testModel');
+    
+    %%
+    % Check first input
+    assert(isa(blocks, 'double'), 'Blocks must be given as a vector of handles.')
+    
+    if ~isempty(blocks)
+        sys = get_param(blocks(1), 'Parent');
+        for i = 2:length(blocks)
+            assert(sys == get_param(blocks(i), 'Parent'), 'Each block must be directly within the same subsystem. I.e. blocks must share a parent.')
+        end
+        
+        assert(bdIsLoaded(bdroot(sys)), 'Simulink system provided is invalid or not loaded.')
+    end
+    
     function string = subwidth(number)
         % Get dimensions for a SubSystem for the dotfile graph
         if number > 3
@@ -27,7 +39,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
         end
         string = ['width="40.0", height="' num2str(height) '", fixedsize=true];\n'];
     end
-
+    
     function string = blockwidth(number, blocktype)
         % Get dimensions for an arbitrary block for the dotfile graph
         if number > 2
@@ -36,16 +48,16 @@ function [fullname, replacementMap] = dotfile_creator(name)
             height = 31;
         end
         if strcmp(blocktype, 'Bus Creator') ...
-            || strcmp(blocktype, 'Bus Selector') ...
-            ||strcmp(blocktype, 'Mux') ...
-            || strcmp(blocktype, 'Demux')
+                || strcmp(blocktype, 'Bus Selector') ...
+                ||strcmp(blocktype, 'Mux') ...
+                || strcmp(blocktype, 'Demux')
             width = 9.0;
         else
             width = 30.0;
         end
         string = ['width="' num2str(width) '", height="' num2str(height) '", fixedsize=true];\n'];
     end
-
+    
     function [newblockname, replaceMap] = replaceItems(blockname, replaceMap)
         % Get new blocknames by replacing unsupported characters with other
         % strings and update the replaceMap which defines the replacements
@@ -58,27 +70,25 @@ function [fullname, replacementMap] = dotfile_creator(name)
         end
         newblockname = blockname;
     end
-
+    
     portwidth = 'width="30.0", height="14.0", fixedsize=true];\n';
     dotfile = 'digraph {\n\tgraph [rankdir=LR, ranksep="100.0", nodesep="40.0"];\n';
     dotfile = [dotfile '\tnode [shape=record];\n'];
     replacementMap = containers.Map();
-    Blocks = find_system(name, 'SearchDepth',1);
-    Blocks = setdiff(Blocks, name);
-
+    
     % Iterate through blocks in address
-    for n = 1:length(Blocks)
-        BlockType = get_param(Blocks{n}, 'BlockType');
-        Ports = get_param(Blocks{n}, 'Ports');
-
+    for n = 1:length(blocks)
+        BlockType = get_param(blocks{n}, 'BlockType');
+        Ports = get_param(blocks{n}, 'Ports');
+        
         % dotfile notations for different block types
         switch BlockType
-
+            
             case 'SubSystem'
                 % dotfile notation for subsystem by finding number of inputs and outputs
                 inputnum = Ports(1) + Ports(3) + Ports(4) + Ports(8);
                 outputnum = Ports(2);
-                blockname = get_param(Blocks{n}, 'Name');
+                blockname = get_param(blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
                 itemsToReplace = regexp(blockname, pattern, 'match');
                 for item = 1:length(itemsToReplace)
@@ -104,10 +114,10 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 end
                 c = max([inputnum outputnum]) ;
                 dotfile = [dotfile '}}", ' subwidth(c)];
-
+                
             case 'Inport'
                 % Add text to the dotfile to represent the block
-                blockname = get_param(Blocks{n}, 'Name');
+                blockname = get_param(blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
                 itemsToReplace = regexp(blockname, pattern, 'match');
                 for item = 1:length(itemsToReplace)
@@ -117,10 +127,10 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 end
                 dotfile = [dotfile blockname];
                 dotfile = [dotfile ' [label="{{<i1>1}|' blockname '|{<o1>1}}", ' portwidth];
-
+                
             case 'Outport'
                 % Add text to the dotfile to represent the block
-                blockname = get_param(Blocks{n}, 'Name');
+                blockname = get_param(blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
                 itemsToReplace = regexp(blockname, pattern, 'match');
                 for item = 1:length(itemsToReplace)
@@ -130,12 +140,12 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 end
                 dotfile = [dotfile blockname];
                 dotfile = [dotfile ' [label="{{<i1>1}|' blockname '|{<o1>1}}", ' portwidth];
-
+                
             otherwise
                 % Add text to the dotfile to represent the block along
                 % with its ports and the relative positions of the ports so
                 % this information can be used
-                blockname = get_param(Blocks{n}, 'Name');
+                blockname = get_param(blocks{n}, 'Name');
                 pattern = '[^\w]|^[0-9]';
                 itemsToReplace = regexp(blockname, pattern, 'match');
                 for item = 1:length(itemsToReplace)
@@ -149,7 +159,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 if inputnum ~= 0
                     dotfile = [dotfile '{'];
                     for x = 1:inputnum
-                         if x == inputnum
+                        if x == inputnum
                             dotfile = [dotfile '<i' num2str(x) '>' num2str(x)];
                         else
                             dotfile = [dotfile '<i' num2str(x) '>' num2str(x) '|'];
@@ -169,19 +179,19 @@ function [fullname, replacementMap] = dotfile_creator(name)
                     end
                     dotfile = [dotfile '}'];
                 end
-                blocktype = get_param(Blocks{n}, 'BlockType');
+                blocktype = get_param(blocks{n}, 'BlockType');
                 c = max([inputnum outputnum]) ;
                 dotfile = [dotfile '}", ' blockwidth(c, blocktype)];
-
+                
         end
     end
-
+    
     % dotfile notations for connections
-    for n = 1:length(Blocks)
-        linesH = get_param(Blocks{n}, 'LineHandles');
+    for n = 1:length(blocks)
+        linesH = get_param(blocks{n}, 'LineHandles');
         if ~isempty(linesH.Inport)
             for m = 1:length(linesH.Inport)
-            % Find source port number and source block name
+                % Find source port number and source block name
                 src = get_param(linesH.Inport(m), 'SrcBlockHandle');
                 srcName = get_param(src, 'Name');
                 pattern = '[^\w]|^[0-9]';
@@ -231,7 +241,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 destinputnum = destPortinfo(1);
                 destoutputnum = destPortinfo(2);
                 if srcoutputnum ~= 0
-
+                    
                     dotfile = [dotfile srcName ':o' num2str(srcport)];
                     if destinputnum ~= 0
                         dotfile = [dotfile ' -> ' destName ':i' num2str(destport) sprintf('\n')];
@@ -256,7 +266,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 else
                     ifactionLine = linesH.Ifaction(m);
                 end
-
+                
                 % Find source port number and source block name
                 src = get_param(ifactionLine, 'SrcBlockHandle');
                 srcName = get_param(src, 'Name');
@@ -282,7 +292,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 srcPortinfo = get_param(src, 'Ports');
                 srcinputnum = srcPortinfo(1);
                 srcoutputnum = srcPortinfo(2);
-
+                
                 % Find destination block and port
                 dest = get_param(ifactionLine, 'DstBlockHandle');
                 destName = get_param(dest, 'Name');
@@ -308,7 +318,7 @@ function [fullname, replacementMap] = dotfile_creator(name)
                 destinputnum = destPortinfo(1);
                 destoutputnum = destPortinfo(2);
                 if srcoutputnum ~= 0
-
+                    
                     dotfile = [dotfile srcName ':o' num2str(srcport)];
                     if destinputnum ~= 0
                         dotfile = [dotfile ' -> ' destName ':i' num2str(destport) sprintf('\n')];
@@ -326,15 +336,15 @@ function [fullname, replacementMap] = dotfile_creator(name)
             end
         end
     end
-
+    
     % Create edges between gotos and froms so the final graph will place
     % them closer to each other
-    Gotos = find_system(name, 'SearchDepth', 1, 'BlockType', 'Goto');%, 'TagVisibility', 'local');
+    Gotos = find_in_blocks(blocks, 'BlockType', 'Goto');
     GotosLength = length(Gotos);
     % When a local goto is found then assume the Goto and From is connected
     for w = 1:GotosLength
         GotoTag = get_param(Gotos{w}, 'Gototag');
-        Froms = find_system(name, 'BlockType', 'From', 'Gototag', GotoTag);
+        Froms = find_in_blocks(blocks, 'BlockType', 'From', 'Gototag', GotoTag);
         GotoName = get_param(Gotos{w}, 'Name');
         [GotoName, replacementMap] = replaceItems(GotoName, replacementMap);
         Fromslength = length(Froms);
@@ -344,13 +354,13 @@ function [fullname, replacementMap] = dotfile_creator(name)
             dotfile = [dotfile GotoName '->' FromName sprintf('\n') ];
         end
     end
-
+    
     % Same as above, but for Data Stores
-    Writes = find_system(name, 'SearchDepth', 1, 'BlockType', 'DataStoreWrite');
+    Writes = find_in_blocks(blocks, 'BlockType', 'DataStoreWrite');
     WritesLength = length(Writes);
     for w = 1:WritesLength
         DataStoreName = get_param(Writes{w}, 'DataStoreName');
-        Reads = find_system(name, 'BlockType', 'DataStoreRead', 'DataStoreName', DataStoreName);
+        Reads = find_in_blocks(blocks, 'BlockType', 'DataStoreRead', 'DataStoreName', DataStoreName);
         WriteName = get_param(Writes{w}, 'Name');
         [WriteName, replacementMap] = replaceItems(WriteName, replacementMap);
         Readslength = length(Reads);
@@ -360,9 +370,9 @@ function [fullname, replacementMap] = dotfile_creator(name)
             dotfile = [dotfile WriteName '->' ReadName sprintf('\n') ];
         end
     end
-
+    
     dotfile = [dotfile '}'];
-    fullname = name;
+    fullname = sys;
     pattern = '[^\w]|^[0-9]';
     itemsToReplace = regexp(fullname, pattern, 'match');
     for item = 1:length(itemsToReplace)

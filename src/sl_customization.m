@@ -20,6 +20,10 @@ function AutoLayoutToolCallback(callbackInfo)
     if strcmp(get_param(bdroot, 'Dirty'), 'on')
         AutoLayoutGUI;
     else
-        AutoLayout(gcs);
+        if isempty(gcos)
+            AutoLayoutSys(gcs);
+        else
+            AutoLayout(gcos);
+        end
     end
 end

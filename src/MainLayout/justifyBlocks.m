@@ -20,7 +20,7 @@ function layout = justifyBlocks(address, layout, blocks, justifyType)
 
 
     for i = 1:length(blocks)
-        [row,col] = findInLayout(layout, blocks(i));
+        [row,col] = findInLayout(layout, getfullname(blocks(i)));
         if ~alreadyFullyJustified(layout, col, justifyType)
             if ~blocksInTheWay(layout, row, col, justifyType) ...
                     && ~linesInTheWay(address, layout, row, col, justifyType)

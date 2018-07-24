@@ -1,12 +1,12 @@
-function updateLayout(address, layout)
-% UPDATELAYOUT Move blocks to their new positions designated by layout.
-%
-%   Inputs:
-%       address         Simulink system name or path.
-%       layout          As returned by getRelativeLayout.
-%
-%   Outputs:
-%       N/A
+function updateLayout(layout)
+    % UPDATELAYOUT Move blocks to their new positions designated by layout.
+    %
+    %   Inputs:
+    %       blocks  Cell array of Simulink blocks.
+    %       layout  As returned by getRelativeLayout.
+    %
+    %   Outputs:
+    %       N/A
 
     % Get blocknames and desired positions
     fullnames = {}; positions = {};
@@ -18,5 +18,5 @@ function updateLayout(address, layout)
     end
 
     % Move blocks to the desired positions
-    moveBlocks(address, fullnames, positions);
+    moveBlocks(fullnames, positions);
 end

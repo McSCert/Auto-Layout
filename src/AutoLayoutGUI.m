@@ -79,10 +79,13 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 address=bdroot;
-addressToLayout=gcs;
 save_system(address);
 close(handles.autoLayoutGUI)
-AutoLayout(addressToLayout);
+if isempty(gcos)
+    AutoLayoutSys(gcs);
+else
+    AutoLayout(gcos);
+end
 
 
 % --- Executes on button press in pushbutton2.
@@ -92,7 +95,11 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 close(handles.autoLayoutGUI)
-AutoLayout(gcs);
+if isempty(gcos)
+    AutoLayoutSys(gcs);
+else
+    AutoLayout(gcos);
+end
 
 
 % --- Executes on button press in pushbutton3.
