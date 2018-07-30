@@ -11,6 +11,8 @@ function parent = getParentSystem(object)
     switch type
         case 'port'
             tmp_object = get_param(object, 'Parent');
+        case 'block_diagram'
+            error('Error: Block diagram has no parent.')
         otherwise
             tmp_object = object;
     end
