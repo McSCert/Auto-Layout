@@ -47,6 +47,8 @@
 	DataflowTracing/
 		getSrcPorts.m
 		
+	getCommonParent.m
+	getParentSystem.m
 	new_system_makenameunique.m
 	isBranching.m
 	AinB.m
