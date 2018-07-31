@@ -76,8 +76,7 @@ function AutoLayout(objects)
     
     %%
     % Separate objects into the different types
-    [blocks, lines, annotations, ports] = separate_objects_by_type(objects);
-    assert(isempty(ports))
+    [blocks, lines, annotations, ~] = separate_objects_by_type(objects);
     
     %%
     % FUTURE WORK:
@@ -85,6 +84,10 @@ function AutoLayout(objects)
     % Use input parameter to automatically add certain lines to the set of
     % objects depending on the blocks in objects 
     % Update set of objects as needed
+    %
+    % For now objects are just the blocks and annotations, lines may be
+    % redrawn though.
+    objects = [blocks, annotations];
     
     %%
     % Get bounds of objects
@@ -92,6 +95,7 @@ function AutoLayout(objects)
     
     %%
     % Layout selected objects ignoring others
+    % Lines are deleted and redrawn
     IsoLayout(blocks, annotations, '3rdparty'); % Automatic Isolated Layout
     
     %%
@@ -109,7 +113,7 @@ function AutoLayout(objects)
     % Get offset between new and original center
     center_offset = orig_center - new_center;
     % Shift objects by the offset
-    shift_sim_objects(blocks, lines, annotations, center_offset);
+    shift_sim_objects(blocks, {}, annotations, center_offset);
     new_bounds = bounds_of_sim_objects(objects); % Update new bounds. Can't simply add the offset since shifting isn't always precise
     
     %%
@@ -120,10 +124,10 @@ function AutoLayout(objects)
     % Get the objects that need to be shifted
     system_blocks = find_blocks_in_system(system);
     system_annotations = find_annotations_in_system(system);
-    system_lines = find_lines_in_system(system);
+%     system_lines = find_lines_in_system(system);
     non_layout_blocks = vectorToCell(setdiff(system_blocks, cellToVector(blocks)'));
     non_layout_annotations = vectorToCell(setdiff(system_annotations, cellToVector(annotations)'));
-    non_layout_lines = vectorToCell(setdiff(system_lines, cellToVector(lines)'));
+%     non_layout_lines = vectorToCell(setdiff(system_lines, cellToVector(lines)'));
     
     % Figure out how to shift blocks and annotations
     bound_shift = new_bounds - orig_bounds;
@@ -132,7 +136,8 @@ function AutoLayout(objects)
     
     % TODO - depending on input parameters redraw lines affected by
     % previous shifting
-    redraw_lines(getfullname(system), 'autorouting', 'on')
+    redraw_block_lines(blocks, 'autorouting', 'on')
+%     redraw_lines(getfullname(system), 'autorouting', 'on')
 end
 
 function shift_sim_objects(blocks, lines, annotations, offset)
