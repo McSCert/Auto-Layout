@@ -19,4 +19,5 @@ function AutoLayoutSys(systems)
 end
 function objects = find_objects_in_system(system)
     objects = find_system(system, 'SearchDepth', 1, 'FindAll', 'on');
+    objects = objects(objects ~= system);
 end
