@@ -1,15 +1,27 @@
-function AutoLayout(objects)
+function AutoLayout(objects, varargin)
     % AUTOLAYOUT Make a system more readable by automatically laying out
     % the given Simulink objects (blocks, lines, annotations) with respect
     % to each other. Other objects in the system are shifted to prevent
     % overlapping with the laid out objects.
     %
     % Inputs:
-    %   blocks      List (vector or cell array) of Simulink objects
+    %   objects     List (vector or cell array) of Simulink objects
     %               (fullnames or handles).
-    %   varargin    TODO - allow parameter to determine whether or not
-    %               to shift other blocks in the system other than
-    %               those selected.
+    %   varargin	Parameter-Value pairs as detailed below.
+    %
+    % Parameter-Value pairs:
+    %   Parameter: 'LayoutStartBounds'
+    %   Value: Vector given like a block's position parameter as 
+    %       [left top right bot] specifying the bounds of the positions of
+    %       the given objects. Default: [] indicating that this should be
+    %       determined by the object positions when this function is
+    %       called.
+	%	Parameter: 'ShiftAll'
+    %   Value:  'on' - (Default) All objects in the same system as a
+    %               given object may be shifted to prevent overlaps.
+    %           'off' - Only objects given as input may be shifted.
+    %   Parameter: 'Param3'
+	%	Value:  Some cell array. Default: {1, 'default'}.
     %
     % Outputs:
     %   N/A
@@ -21,12 +33,34 @@ function AutoLayout(objects)
     %   Result: Modifies the AutoLayoutDemo system with one that performs
     %   the same functionally, but is laid out to be more readable.
 
+    % Handle parameter-value pairs
+    LayoutStartBounds = [];
+    ShiftAll = 'on';
+    assert(mod(length(varargin),2) == 0, 'Even number of varargin arguments expected.')
+    for i = 1:2:length(varargin)
+        param = lower(varargin{i});
+        value = lower(varargin{i+1});
+        
+        switch param
+            case lower('LayoutStartBounds')
+                assert(isa(value, 'double') && any(length(value) == [4 0]), ...
+                    ['Unexpected value for ' param ' parameter.'])
+                LayoutStartBounds = value;
+            case lower('ShiftAll')
+                assert(any(strcmpi(value, {'on','off'})), ...
+                    ['Unexpected value for ' param ' parameter.'])
+                ShiftAll = value;
+            otherwise
+                error('Invalid parameter.')
+        end
+    end
+    
     %%
     % Check number of arguments
     try
-        assert(nargin == 1)
+        assert(nargin - length(varargin) == 1)
     catch
-        error(' Wrong number of arguments.');
+        error(' Expected 1 argument before optional parameters.');
     end
     
     % Convert first argument to cell array of handles
@@ -90,8 +124,13 @@ function AutoLayout(objects)
     objects = [blocks, annotations];
     
     %%
-    % Get bounds of objects
-    orig_bounds = bounds_of_sim_objects(objects);
+    if isempty(LayoutStartBounds)
+        % Get current bounds of objects
+        orig_bounds = bounds_of_sim_objects(objects);
+    else
+        % Use given bounds
+        orig_bounds = LayoutStartBounds;
+    end
     
     %%
     % Layout selected objects ignoring others
@@ -117,27 +156,33 @@ function AutoLayout(objects)
     new_bounds = bounds_of_sim_objects(objects); % Update new bounds. Can't simply add the offset since shifting isn't always precise
     
     %%
-    % Push remaining blocks and annotations in the system away from the new
-    % bounds (if the bounds have expanded) or pull them toward the new
-    % bounds (otherwise)
-    
-    % Get the objects that need to be shifted
-    system_blocks = find_blocks_in_system(system);
-    system_annotations = find_annotations_in_system(system);
-%     system_lines = find_lines_in_system(system);
-    non_layout_blocks = vectorToCell(setdiff(system_blocks, cellToVector(blocks)'));
-    non_layout_annotations = vectorToCell(setdiff(system_annotations, cellToVector(annotations)'));
-%     non_layout_lines = vectorToCell(setdiff(system_lines, cellToVector(lines)'));
-    
-    % Figure out how to shift blocks and annotations
-    bound_shift = new_bounds - orig_bounds;
-    adjustObjectsAroundLayout(non_layout_blocks, orig_bounds, bound_shift, 'block');
-    adjustObjectsAroundLayout(non_layout_annotations, orig_bounds, bound_shift, 'annotation');
-    
-    % TODO - depending on input parameters redraw lines affected by
-    % previous shifting
-    redraw_block_lines(blocks, 'autorouting', 'on')
-%     redraw_lines(getfullname(system), 'autorouting', 'on')
+    switch ShiftAll
+        case lower('on')
+            % Push remaining blocks and annotations in the system away from
+            % the new bounds (if the bounds have expanded) or pull them
+            % toward the new bounds (otherwise)
+            
+            % Get the objects that need to be shifted
+            system_blocks = find_blocks_in_system(system);
+            system_annotations = find_annotations_in_system(system);
+%             system_lines = find_lines_in_system(system);
+            non_layout_blocks = vectorToCell(setdiff(system_blocks, cellToVector(blocks)'));
+            non_layout_annotations = vectorToCell(setdiff(system_annotations, cellToVector(annotations)'));
+%             non_layout_lines = vectorToCell(setdiff(system_lines, cellToVector(lines)'));
+            
+            % Figure out how to shift blocks and annotations
+            bound_shift = new_bounds - orig_bounds;
+            adjustObjectsAroundLayout(non_layout_blocks, orig_bounds, bound_shift, 'block');
+            adjustObjectsAroundLayout(non_layout_annotations, orig_bounds, bound_shift, 'annotation');
+            % TODO - depending on input parameters redraw lines affected by
+            % previous shifting
+            redraw_block_lines(blocks, 'autorouting', 'on')
+%             redraw_lines(getfullname(system), 'autorouting', 'on')
+        case lower('off')
+            % Shifting already done.
+        otherwise
+            error('Unexpected parameter value.')
+    end
 end
 
 function shift_sim_objects(blocks, lines, annotations, offset)
