@@ -147,8 +147,9 @@ function columnBasedLayout(blocks, varargin)
     % Place names on bottom of blocks
     setNamePlacements(blocks)
     
-    % Determine which columns to use automatically
+    % Determine which columns to use
     if ~isempty(Columns) && all(Columns(1) == -1)
+        % Determine which columns to use automatically
         cols = getImpactDepths(blocks);
     else
         cols = Columns;
@@ -199,6 +200,7 @@ function columnBasedLayout(blocks, varargin)
         otherwise
             error('Unexpected paramter.')
     end
+    % set positions based on widths found above
     count = 0;
     for i = 1:length(blx_by_col)
         for j = 1:length(blx_by_col{i})
@@ -327,8 +329,8 @@ function columnBasedLayout(blocks, varargin)
     
     % Redraw lines
     if ~isempty(blocks)
-        sys = get_param(blocks{1}, 'Parent');
-        redraw_lines(sys, 'autorouting', 'on');
+%         sys = get_param(blocks{1}, 'Parent');
+        redraw_block_lines(blocks, 'autorouting', 'on');
     end
     
     % TODO Do something with annotations
