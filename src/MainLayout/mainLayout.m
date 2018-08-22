@@ -69,7 +69,7 @@ function mainLayout(blocks, annotations)
             end
         end
     end
-    % Replace above with the following when to deal with blocks directly
+    % Replace above with the following to deal with blocks directly
     % instead of with blocksInfo
     %[orig_blocks, blocks] = remove_portless_from_blocks(blocks, portlessBlocks)
     

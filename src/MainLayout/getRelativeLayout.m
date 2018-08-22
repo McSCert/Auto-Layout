@@ -1,58 +1,53 @@
-function [layout] = getRelativeLayout(blocksInfo)
-% GETRELATIVELAYOUT Find the relative layout of the blocks within a grid.
-%
-%   Inputs:
-%       blocksInfo  As returned by getLayout.
-%
-%   Outputs:
-%       layout      Struct describing the layout of blocks in blocks info.
-%                   layout.grid is organized such that all blocks with the
-%                   same j in layout.grid{i,j} have the same x coordinate at
-%                   their centre, and such that the top position decreases with
-%                   increase in i.
-%                   layout.colLengths is created such that
-%                   layout.colLengths{j} is the number of blocks in the
-%                   grid with that j value (i.e. number of blocks in that
-%                   column).
-%                   The maximum j for layout.grid{i,j} is size(layout.grid,2).
-%                   If (i <= colLengths(j)) then a block will be returned.
-%                   If (colLengths(j) < i <= size(layout.grid,1)) then [] will be returned.
-
-    % Ordering is based on the horizontal midpoints of blocks. The justification
-    % of justifyBlocks assumes this and needs to be updated if it changes.
-    [midXPositions, ~] = rectCenter({blocksInfo.position});
-    midXPositions = sort(unique(midXPositions));
-
-    % Get column lengths and make an unsorted blocksMatrix
-    colLengths = zeros(1,length(midXPositions));
-    for i = 1:length(blocksInfo)
-        [midXPos, ~] = rectCenter({blocksInfo(i).position});
-        col = isWhere(midXPos, midXPositions);
-        colLengths(col) = colLengths(col) + 1;
-        grid{colLengths(col), col} = blocksInfo(i);
+function layout = getRelativeLayout(blocks)
+    % GETRELATIVELAYOUT Sort a set of blocks into columns and order within
+    % columns by their height.
+    %
+    % Inputs:
+    %   blocks  List (cell array or vector) of blocks (fullnames or
+    %           handles).
+    %
+    % Outputs:
+    %   layout  Cell array where each element represents a column of blocks
+    %           (blocks centered on the same x coordinate). The column is
+    %           represented by a cell array of block handles ordered such
+    %           that the first element has the least top position and
+    %           following elements have increasing top positions.
+    
+    blocks = inputToNumeric(blocks);
+    
+    centers = position_center(get_param(blocks, 'Position'));
+    x_centers = centers(:, 1);
+    
+    [x_centers_sorted, I] = sort(x_centers);
+    blocks_sorted = blocks(I);
+    column_centers = unique(x_centers_sorted);
+    
+    layout = cell(1, length(unique(x_centers))); % An element for each unique x that a block is centered on
+    for i = 1:length(layout)
+        % Initialize elements to empty cell arrays
+        layout{i} = {};
     end
-
-    % Sort grid
-    grid = sortRelativeLayout(grid, colLengths);
-
-    layout = struct('grid', {grid}, 'colLengths', {colLengths});
-end
-
-function i = isWhere(val, mat1d)
-% ISWHERE Return position of a value in a 1-D matrix, mat1d.
-%
-%   Inputs:
-%       val     Value to find.
-%       mat1d   Matrix.
-%
-%   Outputs:
-%       i       Position of the value, otherwise 0 if it is not found.
-
-% Return 0 if val not found in mat1d.
-    for i = 1:length(mat1d)
-        if val == mat1d(i)
-            return
+    col = 1;
+    for i = 1:length(blocks_sorted)
+        
+        % Update column
+        if column_centers(col) ~= x_centers_sorted(i)
+            assert(column_centers(col+1) == x_centers_sorted(i))
+            col = col + 1;
         end
+        
+        % Insert current block into column.
+        % Preserve sorting of ascending top positions.
+        pos_i = get_param(blocks_sorted(i), 'Position');
+        col_length_before = length(layout{col}); % Column length before adding the current block
+        layout{col} = [layout{col} {blocks_sorted(i)}]; % Add block to the end as default
+        for j = 1:col_length_before
+            pos_j = get_param(layout{col}{j}, 'Position');
+            if pos_i(2) < pos_j(2)
+                layout{col} = [layout{col}(1:j-1) {blocks_sorted(i)} layout{col}(j:end-1)]; % Move block before the jth block in the column
+                break
+            end
+        end
+        assert(col_length_before + 1 == length(layout{col}), 'Something went wrong. Column length did not go up by 1 when adding a block to it.')
     end
-    i = 0;
 end

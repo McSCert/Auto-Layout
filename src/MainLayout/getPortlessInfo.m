@@ -64,6 +64,16 @@ function [portlessInfo, smallOrLargeHalf] = getPortlessInfo(blocks, portlessBloc
                 portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
                     'position', []);
             end
+        case 'bottom'
+            portlessInfo = struct('fullname', {}, ...
+                'position', {});
+            smallOrLargeHalf = containers.Map();
+            
+            for i = 1:length(portlessBlocks)
+                smallOrLargeHalf(portlessBlocks{i}) = 'bottom';
+                portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
+                    'position', []);
+            end
         case 'same_half_vertical'
             [~,center] = systemCenter(blocks);
             
@@ -98,20 +108,10 @@ function [portlessInfo, smallOrLargeHalf] = getPortlessInfo(blocks, portlessBloc
                 portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
                     'position', []);
             end
-        case 'bottom'
-            portlessInfo = struct('fullname', {}, ...
-                'position', {});
-            smallOrLargeHalf = containers.Map();
-            
-            for i = 1:length(portlessBlocks)
-                smallOrLargeHalf(portlessBlocks{i}) = 'bottom';
-                portlessInfo{end+1} = struct('fullname', portlessBlocks{i}, ...
-                    'position', []);
-            end
         otherwise
             % Invalid portless_rule
             error(['portless_rule must be in the following ' ...
-                '{''top'', ''left'', ''bot'', ''right'', ' ...
+                '{''top'', ''left'', ''bottom'', ''right'', ' ...
                 '''same_half_vertical'', ''same_half_horizontal''}']);
     end
 end

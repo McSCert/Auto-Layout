@@ -19,6 +19,7 @@ function [pos, yIncrease] = dimIncreaseForPorts(block, pos, varargin)
 %
 %       varargin{3} Desired space above/below the top/bottom ports of a block.
 %                   Default is either 5 or 30, depending on the block.
+%                   
 %                   NOTE: varargin{2},{3} are just used to determine a net
 %                   height. The actual spacing between ports cannot be
 %                   controlled.

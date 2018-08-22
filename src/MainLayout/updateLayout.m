@@ -1,22 +1,17 @@
-function updateLayout(layout)
-    % UPDATELAYOUT Move blocks to their new positions designated by layout.
+function layout = updateLayout(layout)
+    % UPDATELAYOUT Updates layout given potentially new positions.
     %
     %   Inputs:
-    %       blocks  Cell array of Simulink blocks.
-    %       layout  As returned by getRelativeLayout.
+    %       layout  Same form as returned by getRelativeLayout.
     %
     %   Outputs:
-    %       N/A
+    %       layout  As returned by getRelativeLayout.
 
-    % Get blocknames and desired positions
-    fullnames = {}; positions = {};
-    for j = 1:size(layout.grid,2)
-        for i = 1:layout.colLengths(j)
-            fullnames{end+1} = layout.grid{i,j}.fullname;
-            positions{end+1} = layout.grid{i,j}.position;
+    blocksInLayout = {};
+    for i = 1:length(layout)
+        for j = 1:length(layout{i})
+            blocksInLayout{end+1} = layout{i}{j};
         end
     end
-
-    % Move blocks to the desired positions
-    moveBlocks(fullnames, positions);
+    layout = getRelativeLayout(blocksInLayout);
 end
