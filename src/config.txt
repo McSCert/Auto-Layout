@@ -54,22 +54,22 @@ sort_portless: blocktype
 # INPORT_RULE How inport blocks will be placed in the layout.
 #
 # Acceptable parameter values are:
-#    left_align    inports are aligned along the left, unless there are obstructions
+#    left-align    inports are aligned along the left, unless there are obstructions
 #    none          no special rule is used
 #
-# Default is left_align.
+# Default is left-align.
 #
-inport_rule: left_align
+inport_rule: left-align
 
 # OUTPORT_RULE How outport blocks will be placed in the layout.
 #
 # Acceptable parameter values are:
-#    right_align    outports are aligned along the right, unless there are obstructions
+#    right-align    outports are aligned along the right, unless there are obstructions
 #    none           no special rule is used
 #
-# Default is right_align.
+# Default is right-align.
 #
-outport_rule: right_align
+outport_rule: right-align
 
 # NOTE_RULE How annotations will be placed in the the layout. Annotations are
 #    not associated with any particular block(s), so it is not possible to

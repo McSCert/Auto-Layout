@@ -134,7 +134,7 @@ function putBlocksOnSide(cat_blocks, sides_map, bounds, vertSpace, horzSpace, si
     leftBound = bounds(1);
     topBound = bounds(2);
     rightBound = bounds(3);
-    botBound = bounds(4);
+    bottomBound = bounds(4);
     
     % Blocks are placed from rowStart toward rowEnd
     % First row is placed parallel with boundFront
@@ -144,7 +144,7 @@ function putBlocksOnSide(cat_blocks, sides_map, bounds, vertSpace, horzSpace, si
     switch side
         case {'left', 'right'}
             rowStart = topBound;
-            rowEnd = botBound;
+            rowEnd = bottomBound;
             switch side
                 case 'left'
                     boundFront = leftBound;

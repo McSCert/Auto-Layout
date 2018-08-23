@@ -20,7 +20,7 @@ function sides_map = quadrants_map2sides_map(quadrants_map, axis)
     %                   'top', 'bottom'}.
     %
     
-    sides_map = containers.Map();
+    sides_map = containers.Map('KeyType', 'double', 'ValueType', 'any');
     keys = quadrants_map.keys;
     for i = 1:length(keys)
         quad = quadrants_map(keys{i});

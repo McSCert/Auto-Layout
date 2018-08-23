@@ -151,6 +151,6 @@ function [row,col] = findInLayout(layout, block)
 end
 
 function alreadyFullyJustified = alreadyFullyJustified(layout, col, jT)
-    alreadyFullyJustified = (jT == 1 && col == 1) ...
-        || (jT == 3 && col == size(layout.grid, 2));
+    alreadyFullyJustified = (jT == 1 && col == 1) || ...
+                            (jT == 3 && col == length(layout));
 end

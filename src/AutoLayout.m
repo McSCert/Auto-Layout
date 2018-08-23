@@ -104,7 +104,7 @@ function AutoLayout(selected_objects, varargin)
     %       'PerformOperation').
     %   Parameter: 'VertSpacing' - Refers to space between blocks within a
     %       column (essentially this is used where alignment fails).
-    %   Value:  Any double. Default: 30.
+    %   Value:  Any double. Default: 10.
     %   Parameter: 'AlignmentType'
     %   Value:  'Source' - (Default) Try to align a blocks with a source.
     %           'Dest' - Try to align a blocks with a destination.
@@ -149,7 +149,7 @@ function AutoLayout(selected_objects, varargin)
     % Handle parameter-value pairs
     LayoutStartBounds = [];
     ShiftAll = 'on';
-    LayoutType = 'Default';
+    LayoutType = default_layout_type();
     Columns = containers.Map(); % indicates to find columns automatically
     ColumnWidthMode = lower('MaxColBlock');
     ColumnAlignment = 'left';
@@ -157,7 +157,7 @@ function AutoLayout(selected_objects, varargin)
     AdjustWidthParams = {};
     WidthMode = lower('AsIs');
     AdjustHeightParams = {};
-    VertSpacing = 30;
+    VertSpacing = 10;
     AlignmentType = lower('Source');
     PortlessRule = 'top';
     PortlessSortRule = 'blocktype';
@@ -181,14 +181,7 @@ function AutoLayout(selected_objects, varargin)
                 ShiftAll = value;
             case lower('LayoutType')
                 if strcmpi(value, 'Default')
-                    % Check if MATLAB version is R2015b or newer (i.e. greater-or-equal to 2015b)
-                    ver = version('-release');
-                    ge2015b = str2num(ver(1:4)) > 2015 || strcmp(ver(1:5),'2015b'); % true if version is 2015b or later
-                    if ge2015b
-                        tmp_value = 'GraphPlot';
-                    else
-                        tmp_value = 'Graphviz';
-                    end
+                    tmp_value = default_layout_type();
                 else
                     tmp_value = value;
                 end
@@ -199,21 +192,23 @@ function AutoLayout(selected_objects, varargin)
                 assert(isa(map, 'containers.Map'), ...
                     ['Unexpected value for ' param ' parameter.'])
                 Columns = value;
-            case 'ColumnWidthMode'
+            case lower('ColumnWidthMode')
                 assert(any(strcmpi(value,{'MaxBlock','MaxColBlock'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 ColumnWidthMode = value;
-            case 'ColumnAlignment'
+            case lower('ColumnAlignment')
                 assert(any(strcmpi(value,{'left','right','center'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 ColumnAlignment = value;
-            case 'HorizSpacing'
+            case lower('HorizSpacing')
+                assert(isnumeric(value), ...
+                    ['Unexpected value for ' param ' parameter.'])
                 HorizSpacing = value;
             case lower('AdjustWidthParams')
                 assert(iscell(value), ...
                     ['Unexpected value for ' param ' parameter.'])
                 AdjustWidthParams = value;
-            case 'WidthMode'
+            case lower('WidthMode')
                 assert(any(strcmpi(value,{'AsIs','MaxBlock','MaxColBlock'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 WidthMode = value;
@@ -221,34 +216,36 @@ function AutoLayout(selected_objects, varargin)
                 assert(iscell(value), ...
                     ['Unexpected value for ' param ' parameter.'])
                 AdjustHeightParams = value;
-            case 'VertSpacing'
+            case lower('VertSpacing')
+                assert(isnumeric(value), ...
+                    ['Unexpected value for ' param ' parameter.'])
                 VertSpacing = value;
-            case 'AlignmentType'
+            case lower('AlignmentType')
                 assert(any(strcmpi(value,{'Source','Dest'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 AlignmentType = value;
-            case 'PortlessRule'
+            case lower('PortlessRule')
                 assert(any(strcmpi(value, ...
                     {'left', 'top', 'right', 'bottom', 'same_half_vertical', 'same_half_horizontal'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 PortlessRule = value;
-            case 'PortlessSortRule'
+            case lower('PortlessSortRule')
                 assert(any(strcmpi(value, {'blocktype', 'masktype_blocktype', 'none'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 PortlessSortRule = value;
-            case 'InportRule'
+            case lower('InportRule')
                 assert(any(strcmpi(value, {'left-align', 'none'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 InportRule = value;
-            case 'OutportRule'
+            case lower('OutportRule')
                 assert(any(strcmpi(value, {'right-align', 'none'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 OutportRule = value;
-            case 'NoteRule'
+            case lower('NoteRule')
                 assert(any(strcmpi(value, {'on-right', 'none'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 NoteRule = value;
-            case 'ShowNames'
+            case lower('ShowNames')
                 assert(any(strcmpi(value, {'no-change', 'all', 'none'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 ShowNames = value;
@@ -355,7 +352,7 @@ function AutoLayout(selected_objects, varargin)
             quads = [-1 0; 0 1; 1 0; 0 -1]; % Value for quadrants map corresponding with different PortlessRule values. 0 means doesn't matter. Values are points on a cartesian map.
             quadrant = quads(strcmp(PortlessRule, sides), :);
             
-            quadrants_map = containers.Map();
+            quadrants_map = containers.Map('KeyType', 'double', 'ValueType', 'any');
             for i = 1:length(blocks)
                 quadrants_map(blocks(i)) = quadrant;
             end
@@ -432,7 +429,7 @@ function AutoLayout(selected_objects, varargin)
                 if isempty(blx_by_col{d})
                     blx_by_col{d} = cell(1,length(blocks));
                 end
-                blx_by_col{d}{i} = blocks{i};
+                blx_by_col{d}{i} = blocks(i);
             end
             blx_by_col(cellfun('isempty',blx_by_col)) = [];
             for i = 1:length(blx_by_col)
@@ -447,7 +444,8 @@ function AutoLayout(selected_objects, varargin)
     %% Set blocks to desired base widths
     % Actual position horizontally doesn't matter yet
     for i = 1:length(selected_blocks)
-        adjustWidth(selected_blocks(i), 'PerformOperation', 'off', AdjustWidthParams{:});
+        [~, pos] = adjustWidth(selected_blocks(i), 'PerformOperation', 'off', AdjustWidthParams{:});
+        set_param(selected_blocks(i), 'Position', pos);
     end
     
     %% Place blocks in their columns and adjust widths based on columns
@@ -570,13 +568,11 @@ function AutoLayout(selected_objects, varargin)
             firstPass = true;
             setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass); % First pass to set to base heights using Compact Method
             firstPass = false;
-            switch MethodForDesiredHeight
-                case 'Compact'
-                    % Do nothing
-                otherwise
-                    % Second pass to determine new heights based on previous Compact ones
-                    setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass);
-            end
+            % Second pass to determine new heights based on previous Compact
+            % ones -- this is redundant if the method for getting heights is the
+            % same as is used for the first pass
+            setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass);
+            
             %Old grid approach - TODO remove this in future commit
             %             for i = 1:length(layoutRepresentation)
             %                 for j = 1:length(layoutRepresentation{i})
@@ -590,7 +586,7 @@ function AutoLayout(selected_objects, varargin)
             
             % Move blocks with single inport/outport so their port is in line with
             % the source/destination port
-            layout = vertAlign(layout);
+            layoutRepresentation = vertAlign(layoutRepresentation);
             % % layout = easyAlign(layout); %old method, still may be relevant since it attempts to cover more cases
             %layout = layout2(address, layout, systemBlocks); %call layout2 after
         case lower('DepthBased')
@@ -613,13 +609,10 @@ function AutoLayout(selected_objects, varargin)
             firstPass = true;
             setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass); % First pass to set to base heights using Compact Method
             firstPass = false;
-            switch MethodForDesiredHeight
-                case 'Compact'
-                    % Do nothing
-                otherwise
-                    % Second pass to determine new heights based on previous Compact ones
-                    setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass);
-            end
+            % Second pass to determine new heights based on previous Compact
+            % ones -- this is redundant if the method for getting heights is the
+            % same as is used for the first pass
+            setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass);
             
             %% Align and spread vertically
             % Vertical position matters now.
@@ -633,10 +626,10 @@ function AutoLayout(selected_objects, varargin)
                 % Get a desired ordering for which blocks are higher
                 % First sort by port heights
                 [orderedPorts, ~] = sortPortsByTop(ports);
-                orderedParents = get_param(orderedPorts, 'Parent');
+                orderedParents = inputToNumeric(get_param(orderedPorts, 'Parent'));
                 % But not all blocks will have a port, so add the blocks that
                 % aren't accounted for
-                orderedColumn = [orderedParents; setdiff(layoutRepresentation{i}, orderedParents)']; %
+                orderedColumn = [orderedParents; setdiff(inputToNumeric(layoutRepresentation{i}), orderedParents)'];
                 
                 % Alternate ordering approach
                 %orderedColumn = sortBlocksByTop(layoutRepresentation{i});
@@ -645,7 +638,7 @@ function AutoLayout(selected_objects, varargin)
                 for j = 1:length(orderedColumn)
                     %
                     
-                    b = orderedColumn{j};
+                    b = orderedColumn(j);
                     
                     % Detect any remaining blocks in current column overlapping
                     % current block
@@ -659,7 +652,7 @@ function AutoLayout(selected_objects, varargin)
                         % whether or not to increase the buffer based on parameters
                         % of b showing below b
                         buffer = VertSpacing;
-                        moveBelow(b,over{1},buffer);
+                        moveBelow(b,over,buffer);
                     end
                 end
             end
@@ -669,7 +662,7 @@ function AutoLayout(selected_objects, varargin)
     
     %% Handle Inports specially?
     switch InportRule
-        case 'left_align'
+        case 'left-align'
             % Inports go on the left of the selected_blocks
             inports = find_in_blocks(blocks, 'BlockType', 'Inport');
             layoutRepresentation = justifyBlocks(system, layoutRepresentation, inports, 1);
@@ -681,7 +674,7 @@ function AutoLayout(selected_objects, varargin)
     
     %% Handle Outports specially?
     switch OutportRule
-        case 'right_align'
+        case 'right-align'
             % Outports go on the left of the selected_blocks
             outports = find_in_blocks(blocks, 'BlockType', 'Outport');
             layoutRepresentation = justifyBlocks(system, layoutRepresentation, outports, 3);
@@ -761,11 +754,11 @@ function AutoLayout(selected_objects, varargin)
             % toward the new bounds (otherwise)
             
             % Get the objects that need to be shifted
-            system_blocks = find_blocks_in_system(system);
-            system_annotations = find_annotations_in_system(system);
+            system_blocks = find_blocks_in_system(system)';
+            system_annotations = find_annotations_in_system(system)';
             %             system_lines = find_lines_in_system(system);
-            non_layout_blocks = vectorToCell(setdiff(system_blocks, cellToVector(blocks)'));
-            non_layout_annotations = vectorToCell(setdiff(system_annotations, cellToVector(annotations)'));
+            non_layout_blocks = setdiff(system_blocks, blocks);
+            non_layout_annotations = setdiff(system_annotations, annotations);
             %             non_layout_lines = vectorToCell(setdiff(system_lines, cellToVector(lines)'));
             
             % Figure out how to shift blocks and annotations
@@ -785,9 +778,8 @@ function AutoLayout(selected_objects, varargin)
     %% Zoom on system
     % If it ends up zoomed out that means there is something near the
     % borders.
-    if ~isempty(blocks)
-        sys = get_param(blocks{1}, 'Parent');
-        set_param(sys, 'Zoomfactor', 'Fit to view');
+    if exist('system', 'var') == 1
+        set_param(system, 'Zoomfactor', 'Fit to view');
     end
 end
 
@@ -973,7 +965,7 @@ function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType
             
             desiredHeight = adj_position(4) - adj_position(2);
             
-            set_param(b, 'Position', [pos(1), pos(2), pos(3), pos(2)+desiredHeight]);
+            set_param(b, 'Position', pos + [0, 0, 0, -pos(4)+pos(2)+desiredHeight]);
         end
     end
 end
@@ -996,4 +988,18 @@ function vertMoveColumn(layout, row, col, y)
         pos = get_param(layout{col}{i}, 'Position');
         set_param(layout{col}{i}, 'Position', pos + [0 y 0 y]);
     end
+end
+
+function type = default_layout_type()
+    %
+    
+    % Check if MATLAB version is R2015b or newer (i.e. greater-or-equal to 2015b)
+    ver = version('-release');
+    ge2015b = str2num(ver(1:4)) > 2015 || strcmp(ver(1:5),'2015b'); % true if version is 2015b or later
+    if ge2015b
+        type = 'GraphPlot';
+    else
+        type = 'Graphviz';
+    end
+    type = lower(type);
 end
