@@ -192,9 +192,13 @@ function AutoLayout(selected_objects, varargin)
                     ['Unexpected value for ' param ' parameter.'])
                 LayoutType = tmp_value;
             case lower('Columns')
-                assert(isa(map, 'containers.Map'), ...
+                assert(isa(value, 'containers.Map'), ...
                     ['Unexpected value for ' param ' parameter.'])
-                Columns = value;
+                if strcmp(value.KeyType, 'char')
+                    Columns = fullname_map2handle_map(Columns);
+                else
+                    Columns = value;
+                end
             case lower('ColumnWidthMode')
                 assert(any(strcmpi(value,{'MaxBlock','MaxColBlock'})), ...
                     ['Unexpected value for ' param ' parameter.'])
