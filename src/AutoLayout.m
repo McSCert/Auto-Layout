@@ -168,7 +168,10 @@ function AutoLayout(selected_objects, varargin)
     assert(mod(length(varargin),2) == 0, 'Even number of varargin arguments expected.')
     for i = 1:2:length(varargin)
         param = lower(varargin{i});
-        value = lower(varargin{i+1});
+        value = varargin{i+1};
+        if ischar(value) || (iscell(value) && all(cellfun(@(a) ischar(a), value)))
+            value = lower(value);
+        end
         
         switch param
             case lower('LayoutStartBounds')
