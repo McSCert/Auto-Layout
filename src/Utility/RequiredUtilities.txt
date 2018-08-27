@@ -54,9 +54,11 @@
 		getTextDims.m
 		
 	AinB.m
+	detectOverlaps.m
 	getCommonParent.m
 	getParentSystem.m
 	isBranching.m
+	isRangeOverlap.m
 	new_system_makenameunique.m
 	setNamePlacements.m
 	sortPortsByTop.m
