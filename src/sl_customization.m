@@ -17,13 +17,18 @@ function schema = getAutoLayoutTool(callbackinfo)
 end
 
 function AutoLayoutToolCallback(callbackInfo)
-    if strcmp(get_param(bdroot, 'Dirty'), 'on')
-        AutoLayoutGUI;
-    else
-        if isempty(gcos)
-            AutoLayoutSys(gcs);
+    try
+        if strcmp(get_param(bdroot, 'Dirty'), 'on')
+            AutoLayoutGUI;
         else
-            AutoLayout(gcos);
+            if isempty(gcos)
+                AutoLayoutSys(gcs);
+            else
+                AutoLayout(gcos);
+            end
         end
+    catch ME
+        getReport(ME)
+        rethrow(ME)
     end
 end
