@@ -4,7 +4,7 @@ function bounds = getPositionWithName(block)
 %   parameters that might be showing.
 %
 %   Inputs:
-%       block   SSimulink block name or handle.
+%       block   Simulink block name or handle.
 %
 %   Outputs:
 %       bounds  Bounding box of the block. Returned in the format
