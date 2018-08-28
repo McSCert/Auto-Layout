@@ -319,6 +319,15 @@ function AutoLayout(selected_objects, varargin)
     %% Rotate given blocks to a right orientation (for left-to-right dataflow)
     setOrientations(selected_blocks);
     
+    %%
+    %TODO make parameter for this
+    if false
+        makeSumsRectangular(selected_blocks);
+    end
+    
+    %%
+    nameShowing = getShowNameParams(selected_blocks);
+    
     %% Determine which blocks should be laid out separate to the rest
     % This refers primarily to laying out blocks with no ports as the
     % layout approaches will generally use ports and connections through
@@ -703,6 +712,13 @@ function AutoLayout(selected_objects, varargin)
             error('Unexpected parameter value.')
     end
     
+    %% Show/hide block names 
+    %(the initial layout may have inadvertently set it off)
+    %TODO make this unnecessary (or if still using the config option then make
+    %it so that the names don't need to be found earlier on at least - i.e. so
+    %this can be done whenever)
+    setShowNameParams(blocks, nameShowing)
+    
     % Get map from sides to list of block handles
     sides_map = quadrants_map2sides_map(quadrants_map, axis);
     
@@ -858,21 +874,6 @@ function lines = find_lines_in_system(system)
     lines = find_system(system, 'SearchDepth', 1, 'FindAll', 'on', 'Type', 'line');
 end
 
-function IsoLayout(blocks, annotations, mode)
-    % Isolated layout of only the blocks and annotations given (relevant
-    % lines will also be laid out, but otherwise nothing else in the system
-    % is touched)
-    
-    if strcmp(mode, 'columnbased')
-        columnBasedLayout(blocks, 'WidthMode', 'MaxColBlock', 'MethodForDesiredHeight', 'Compact', 'AlignmentType', 'Dest');
-    elseif strcmp(mode, '3rdparty')
-        mainLayout(blocks, annotations);
-    else
-        error('Unexpected mode.')
-    end
-    
-end
-
 function maxWidth = getMaxWidth(blocks)
     % blocks - cell array of blocks
     
@@ -966,26 +967,6 @@ function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType
             
             set_param(b, 'Position', pos + [0, 0, 0, -pos(4)+pos(2)+desiredHeight]);
         end
-    end
-end
-
-function vertMoveColumn(layout, row, col, y)
-    % VERTMOVECOLUMN Vertically move blocks in col and below row in
-    %   layout downward by y.
-    %
-    %   Inputs:
-    %       layout      Cell array of columns. Columns are cell arrays of
-    %                   blocks.
-    %       row         Row number, below which blocks will be moved.
-    %       col         Column number, in whihch blocks will be moved.
-    %       y           Number of pixels to move blocks down.
-    %
-    %   Outputs:
-    %       layout      With modified position information.
-    
-    for i = row + 1:length(layout{col})
-        pos = get_param(layout{col}{i}, 'Position');
-        set_param(layout{col}{i}, 'Position', pos + [0 y 0 y]);
     end
 end
 
