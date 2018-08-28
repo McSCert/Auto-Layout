@@ -109,6 +109,12 @@ function AutoLayout(selected_objects, varargin)
     %   Value:  'Source' - (Default) Try to align a blocks with a source.
     %           'Dest' - Try to align a blocks with a destination.
     %
+    %   Miscellaneous:
+    %   Parameter: 'DesiredSumShape'
+    %   Value:  'rectangular' - Changes the shapes of Sum blocks to be
+    %               rectangular.
+    %           'round' - Changes the shapes of Sum blocks to be round.
+    %           'any' - (Default) Does not change the shapes of Sum blocks.
     %   Parameter: 'PortlessRule'
     %   Value:  'left'
     %           'top'
@@ -159,6 +165,7 @@ function AutoLayout(selected_objects, varargin)
     AdjustHeightParams = {};
     VertSpacing = 10;
     AlignmentType = lower('Source');
+    DesiredSumShape = 'any';
     PortlessRule = 'top';
     PortlessSortRule = 'blocktype';
     InportRule = 'left-align';
@@ -236,6 +243,10 @@ function AutoLayout(selected_objects, varargin)
                     {'left', 'top', 'right', 'bottom', 'same_half_vertical', 'same_half_horizontal'})), ...
                     ['Unexpected value for ' param ' parameter.'])
                 PortlessRule = value;
+            case lower('DesiredSumShape')
+                assert(any(strcmpi(value, {'rectangular', 'round', 'any'})), ...
+                    ['Unexpected value for ' param ' parameter.'])
+                DesiredSumShape = value;
             case lower('PortlessSortRule')
                 assert(any(strcmpi(value, {'blocktype', 'masktype_blocktype', 'none'})), ...
                     ['Unexpected value for ' param ' parameter.'])
@@ -320,9 +331,15 @@ function AutoLayout(selected_objects, varargin)
     setOrientations(selected_blocks);
     
     %%
-    %TODO make parameter for this
-    if false
-        makeSumsRectangular(selected_blocks);
+    switch DesiredSumShape
+        case 'round'
+            change_sum_shape(selected_blocks, 'rectangular');
+        case 'rectangular'
+            change_sum_shape(selected_blocks, 'round');
+        case 'any'
+            % Skip, leave the sums alone
+        otherwise
+            error('Unexpected parameter value. Parameter: DesiredSumShape')
     end
     
     %%
@@ -426,7 +443,7 @@ function AutoLayout(selected_objects, varargin)
                 for i = 1:length(blocks)
                     tmp_blocks = [];
                     if ~Columns.isKey(blocks(i))
-                        tmp_blocks = [tmp_blocks blocks(i)];
+                        tmp_blocks(end+1) = blocks(i);
                     end
                 end
                 tmp_cols = getImpactDepths(tmp_blocks);
@@ -584,7 +601,6 @@ function AutoLayout(selected_objects, varargin)
         case lower({'GraphPlot','Graphviz'})
             %% Set blocks to desired heights
             % Actual position vertically doesn't matter yet.
-            pType = 'Inport';
             notPType = 'Outport';
             colOrder = 1:length(layoutRepresentation);
             firstPass = true;
@@ -870,9 +886,6 @@ end
 function annotations = find_annotations_in_system(system)
     annotations = find_system(system, 'SearchDepth', 1, 'FindAll', 'on', 'Type', 'annotation');
 end
-function lines = find_lines_in_system(system)
-    lines = find_system(system, 'SearchDepth', 1, 'FindAll', 'on', 'Type', 'line');
-end
 
 function maxWidth = getMaxWidth(blocks)
     % blocks - cell array of blocks
@@ -889,11 +902,6 @@ end
 function [width, pos] = getBlockWidth(block)
     pos = get_param(block, 'Position');
     width = pos(3)-pos(1);
-end
-
-function [height, pos] = getBlockHeight(block)
-    pos = get_param(block, 'Position');
-    height = pos(4)-pos(2);
 end
 
 function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType, firstPass)
