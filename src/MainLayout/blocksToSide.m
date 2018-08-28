@@ -107,9 +107,10 @@ function [categorizedBlocks, categories] = categorizeBlocks(blocks, categorize_r
         if isempty(cat_idx) 
             % the block's value for sort_rule is new to categories
             
-            % Record category
+            % Record category.
             categories{end+1} = cat;
-            categorizedBlocks{end+1}(end+1) = blocks(i);
+            % Add first block to category.
+            categorizedBlocks{end+1} = blocks(i);
         else
             categorizedBlocks{cat_idx}(end+1) = blocks(i);
         end
@@ -276,9 +277,9 @@ function putBlocksOnSide(cat_blocks, sides_map, bounds, vertSpace, horzSpace, si
                 
                 switch side
                     case {'left','top'} % additional rows placed further negative in Simulink coordinate system
-                        nextRowFront = min(newRowFront, rowBack + spaceBetweenRows);
+                        nextRowFront = min(nextRowFront, rowBack + spaceBetweenRows);
                     case {'right','bottom'}
-                        nextRowFront = max(newRowFront, rowBack + spaceBetweenRows);
+                        nextRowFront = max(nextRowFront, rowBack + spaceBetweenRows);
                     otherwise
                         error('Unexpected argument value.')
                 end
