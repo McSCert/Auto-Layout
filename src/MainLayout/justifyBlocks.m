@@ -4,7 +4,7 @@ function layout = justifyBlocks(address, layout, blocks, justifyType)
     %
     %   Inputs:
     %       address         Simulink system name or path.
-    %       layout          As returned by getRelativeLayout.
+    %       layout          As returned by find_relative_layout.
     %       blocks          List of blocks to be affected by the justification.
     %       justifyType     How the blocks will be aligned: left justified (1) or
     %                       right justified (3) (The numbers correspond with
@@ -29,7 +29,7 @@ function layout = justifyBlocks(address, layout, blocks, justifyType)
                 if justifyType == 1 % (justify left)
                     newCol = 1;
                 elseif justifyType == 3 % (justify right)
-                    newCol = size(layout.grid,2);
+                    newCol = length(layout);
                 end
                 layout = changeBlockColumn(layout, row, col, newCol);
             end
@@ -72,9 +72,9 @@ function linesInTheWay = linesInTheWay(address, layout, row, col, jT)
             
             if point1(1) == point2(1) || point1(2) == point2(2)
                 % if vertical segment or horizontal segment
-                if isRangeOverlap(point1(2), point2(2), pos(4), pos(2))
+                if is_range_overlap_wrapper(point1(2), point2(2), pos(4), pos(2))
                     % vertical components overlap
-                    if isRangeOverlap(point1(1), point2(1), pos(jT), pos(jT) + x)
+                    if is_range_overlap_wrapper(point1(1), point2(1), pos(jT), pos(jT) + x)
                         % horizontal components overlap and is left justify
                         linesInTheWay = true;
                         return
@@ -85,9 +85,9 @@ function linesInTheWay = linesInTheWay(address, layout, row, col, jT)
                 % uses same method as above,
                 % if this returns true it will not always mean there would be a crossing
                 % if it returns false then there cannot be a crossing
-                if isRangeOverlap(point1(2), point2(2), pos(4), pos(2))
+                if is_range_overlap_wrapper(point1(2), point2(2), pos(4), pos(2))
                     % vertical components overlap
-                    if isRangeOverlap(point1(1), point2(1), pos(jT), pos(jT) + x)
+                    if is_range_overlap_wrapper(point1(1), point2(1), pos(jT), pos(jT) + x)
                         % horizontal components overlap and is left justify
                         linesInTheWay = true;
                         return
@@ -99,8 +99,9 @@ function linesInTheWay = linesInTheWay(address, layout, row, col, jT)
     end
 end
 
-function isRangeOverlap = isRangeOverlap(range1Val1, range1Val2, range2Val1, range2Val2)
-    % ISRANGEOVERLAP Returns whether or not the union of the two ranges have any intersection.
+function isRangeOverlap = is_range_overlap_wrapper(range1Val1, range1Val2, range2Val1, range2Val2)
+    % IS_RANGE_OVERLAP_wrapper Detect whether or not the union of the two ranges
+    % have any intersection. Acts as a wrapper for a similar external function.
     %
     % The 1st two arguments form the 1st range, while the 2nd two form the 2nd range.
     
@@ -108,7 +109,8 @@ function isRangeOverlap = isRangeOverlap(range1Val1, range1Val2, range2Val1, ran
     min1 = min(range1Val1, range1Val2);
     max2 = max(range2Val1, range2Val2);
     min2 = min(range2Val1, range2Val2);
-    isRangeOverlap = (min2 <= max1 && max1 <= max2) || (min1 <= max2 && max2 <= max1);
+    
+    isRangeOverlap = isRangeOverlap([min1, max1], [min2, max2]);
 end
 
 function blocksInTheWay = blocksInTheWay(layout, row, col, jT)
@@ -129,7 +131,7 @@ function blocksInTheWay = blocksInTheWay(layout, row, col, jT)
     for j = columns % for each column on the side of justification col
         for i = 1:length(layout{j}) % for each non empty row in a given column
             pos2 = get_param(layout{j}{i}, 'Position');
-            if isRangeOverlap(pos1(4), pos1(2), pos2(4), pos2(2))
+            if is_range_overlap_wrapper(pos1(4), pos1(2), pos2(4), pos2(2))
                 blocksInTheWay = true;
                 return
             end

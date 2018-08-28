@@ -2,10 +2,10 @@ function layout = updateLayout(layout)
     % UPDATELAYOUT Updates layout given potentially new positions.
     %
     %   Inputs:
-    %       layout  Same form as returned by getRelativeLayout.
+    %       layout  Same form as returned by find_relative_layout.
     %
     %   Outputs:
-    %       layout  As returned by getRelativeLayout.
+    %       layout  As returned by find_relative_layout now.
 
     blocksInLayout = {};
     for i = 1:length(layout)
@@ -13,5 +13,5 @@ function layout = updateLayout(layout)
             blocksInLayout{end+1} = layout{i}{j};
         end
     end
-    layout = getRelativeLayout(blocksInLayout);
+    layout = find_relative_layout(blocksInLayout);
 end

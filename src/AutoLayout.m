@@ -257,7 +257,7 @@ function AutoLayout(selected_objects, varargin)
                     ['Unexpected value for ' param ' parameter.'])
                 ShowNames = value;
             otherwise
-                error('Invalid parameter.')
+                error(['Invalid parameter. Parameter: ' param])
         end
     end
     
@@ -282,6 +282,7 @@ function AutoLayout(selected_objects, varargin)
     % 'inactive'
     if isempty(selected_objects)
         disp('Nothing to simplify.')
+        return
     else
         % 1), 2)
         system = getCommonParent(selected_objects);
@@ -348,6 +349,11 @@ function AutoLayout(selected_objects, varargin)
     objects = [blocks, annotations];
     
     %% Determine how to lay out blocks that should be laid out separately
+    
+    % Get just blocks:
+    [blocksToIsolate, ~, ~, ~] = separate_objects_by_type(objectsToIsolate);
+    
+    %
     switch PortlessRule
         case {'left', 'top', 'right', 'bottom'}
             % Give all blocks a corresponding 'quadrant' value indicating
@@ -360,12 +366,12 @@ function AutoLayout(selected_objects, varargin)
             quadrant = quads(strcmp(PortlessRule, sides), :);
             
             quadrants_map = containers.Map('KeyType', 'double', 'ValueType', 'any');
-            for i = 1:length(blocks)
-                quadrants_map(blocks(i)) = quadrant;
+            for i = 1:length(blocksToIsolate)
+                quadrants_map(blocksToIsolate(i)) = quadrant;
             end
         case {'same_half_vertical', 'same_half_horizontal'}
-            center_of_blocks = position_center(bounds_of_sim_objects(blocks));
-            quadrants_map = getWhichQuadrantBlocksAreIn(center_of_blocks, blocks);
+            center_of_blocks = position_center(bounds_of_sim_objects(blocksToIsolate));
+            quadrants_map = getWhichQuadrantBlocksAreIn(center_of_blocks, blocksToIsolate);
         otherwise
             error('Unexpected parameter value.')
     end
@@ -395,15 +401,15 @@ function AutoLayout(selected_objects, varargin)
                 case lower('Graphviz')
                     GraphvizLayout(blocks);
                 otherwise
-                    error('Unexpected parameter value.');
+                    error(['Unexpected value, ' LayoutType ', to parameter, LayoutType.');
             end
             
-            layoutRepresentation = getRelativeLayout(blocks);
+            layoutRepresentation = find_relative_layout(blocks);
         case lower('DepthBased')
             % Get a list of columns corresponding to the blocks list
             if isempty(Columns)
                 % Use default function
-                cols = getImpactDepths(blocks);
+                cols = choose_impact_depths(blocks);
             else
                 % Use given map
                 % For blocks not in the given map arbitrarily use the
@@ -580,17 +586,6 @@ function AutoLayout(selected_objects, varargin)
             % same as is used for the first pass
             setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass);
             
-            %Old grid approach - TODO remove this in future commit
-            %             for i = 1:length(layoutRepresentation)
-            %                 for j = 1:length(layoutRepresentation{i})
-            %                     block = layoutRepresentation{i}{j};
-            %                     pos = get_param(block, 'Position');
-            %                     [pos, yDisplace] = dimIncreaseForPorts(block, pos, 'bot');
-            %                     set_param(block, 'Position', pos);
-            %                     vertMoveColumn(layout, i, j, yDisplace);
-            %                 end
-            %             end
-            
             % Move blocks with single inport/outport so their port is in line with
             % the source/destination port
             layoutRepresentation = vertAlign(layoutRepresentation);
@@ -694,9 +689,6 @@ function AutoLayout(selected_objects, varargin)
     %% Reposition portless blocks
     % Place blocks that have no ports in a line along a side of the system
     % determined by quadrants_map.
-    
-    % Get just blocks:
-    [blocksToIsolate, ~, ~, ~] = separate_objects_by_type(objectsToIsolate);
     
     % Get bounds to place blocks around
     bounds = bounds_of_sim_objects(objects);
@@ -828,7 +820,7 @@ function adjustObjectsAroundLayout(objects, orig_bounds, bound_shift, type)
     end
     
     for i = 1:length(objects)
-        object = objects{i};
+        object = objects(i);
         
         % Get bounds of the block
         my_bounds = getBounds(object);

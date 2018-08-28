@@ -1,5 +1,5 @@
-function layout = getRelativeLayout(blocks)
-    % GETRELATIVELAYOUT Sort a set of blocks into columns and order within
+function layout = find_relative_layout(blocks)
+    % FIND_RELATIVE_LAYOUT Sort a set of blocks into columns and order within
     % columns by their height.
     %
     % Inputs:
