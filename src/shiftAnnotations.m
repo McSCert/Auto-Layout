@@ -1,12 +1,20 @@
 function shiftAnnotations(annotations, shift)
+    % SHIFTANNOTATIONS Reposition Simulink annotations with respect to their
+    % current positions by adding a shift amount to their position values.
     %
-    % annotations - Cell array of annotations
-    % shift - 1x4 vector to add to position value of annotations (in older
-    % versions of MATLAB there are only 2 position values so the extra 2
-    % values will be ignored)
+    % Inputs:
+    %   annotations     List (cell array or vector) of Simulink annotations.
+    %   shift           1x4 vector to add to position value of annotations (in
+    %                   older versions of MATLAB there are only 2 position
+    %                   values so the extra 2 values will be ignored and don't
+    %                   need to be given).
     
+    %
+    annotations = inputToNumeric(annotations);
+    
+    %
     for i = 1:length(annotations)
-        a = annotations{i};
+        a = annotations(i);
         pos = get_param(a, 'Position');
         
         switch length(pos)
