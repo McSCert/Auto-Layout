@@ -401,7 +401,7 @@ function AutoLayout(selected_objects, varargin)
                 case lower('Graphviz')
                     GraphvizLayout(blocks);
                 otherwise
-                    error(['Unexpected value, ' LayoutType ', to parameter, LayoutType.');
+                    error(['Unexpected value, ' LayoutType ', to parameter, LayoutType.']);
             end
             
             layoutRepresentation = find_relative_layout(blocks);
