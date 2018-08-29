@@ -1,46 +1,42 @@
-# GRAPHING_METHOD The method to use for generating an initial layout.
-#   The method looks at blocks as nodes and signals as edges to build a layered
-#   (hierarchical) graph which is then used to initially place the blocks.
+# LAYOUT_TYPE The method to use for generating an initial layout.
+#   The general approach looks at blocks as nodes and signals as edges to build
+#   a layered (hierarchical) graph which is then used to initially place the 
+#   blocks.
 #
 # Acceptable parameter values are:
-#    graphplot    use built-in MATLAB functions (compatible with R2015b and up)
-#    graphviz     use Graphviz graphing algorithm (requires separate download)
-#    auto         use graphplot if the MATLAB version is R2015b or above, else Graphviz
+#    graphplot    use built-in MATLAB functions (compatible with R2015b and up).
+#    graphviz     use Graphviz graphing algorithm (requires Graphviz 
+#                 installation).
+#    depthbased   use in-house algorithm placing blocks in columns based on 
+#                 when they are reached.
+#    default      use graphplot if the MATLAB version is R2015b or above, else 
+#                 depthbased.
 #
-# Default is auto.
+# Default is default.
 #
-graphing_method: auto
-
-# SHOW_NAMES Whether or not block names are shown.
-#
-# Acceptable parameter values are:
-#    no-change    blocks names will remain shown/hidden without change
-#    all          all blocks will show their name
-#    none         no blocks will show their name
-#
-# Default is no-change.
-#
-show_names: no-change
+layout_type: default
 
 # PORTLESS_RULE How blocks with no ports will be placed in the layout, with
-#    respect to the rest of the blocks in the system.
+#    respect to the rest of the selected blocks. These blocks are placed 
+#    somewhere around the bounds of the other blocks once they have already 
+#    been laid out.
 #
 # Acceptable parameter values are:
-#    bottom    blocks are placed along the bottom of the system
-#    top       blocks are placed along the top of the system
-#    left      blocks are placed along the left side of the system
-#    right     blocks are placed along the right side of the system
+#    bottom    blocks are placed along the bottom of the bounds.
+#    top       blocks are placed along the top of the bounds.
+#    left      blocks are placed along the left side of the bounds.
+#    right     blocks are placed along the right side of the bounds.
 #    same_half_vertical    blocks will be placed along the bottom/top of the
-#                          system according to which half they started in
+#                          bounds according to which half they started in.
 #    same_half_horizontal  blocks will be placed along the left/right side of
-#                          the system according to which half they started in
+#                          the system according to which half they started in.
 #
 # Default is top.
 #
 portless_rule: top
 
 # SORT_PORTLESS How blocks with no ports will be grouped, within the placement
-#    described by PORTLESS_RULE.
+#   described by PORTLESS_RULE.
 #
 # Acceptable parameter values are:
 #    blocktype             blocks will be grouped by their BlockType parameter
@@ -83,3 +79,15 @@ outport_rule: right-align
 # Default is on-right.
 #
 note_rule: on-right
+
+# SHOW_NAMES Whether or not block names are shown.
+#
+# Acceptable parameter values are:
+#    no-change    blocks names will remain shown/hidden without change
+#    all          all blocks will show their name
+#    none         no blocks will show their name
+#
+# Default is no-change.
+#
+show_names: no-change
+

@@ -11,7 +11,12 @@ function AutoLayout(selected_objects, varargin)
     %                       lines and ports associated with a given block
     %                       are laid out along with the corresponding
     %                       block.
-    %   varargin            Parameter-Value pairs as detailed below.
+    %   varargin            Parameter-Value pairs as detailed below. Some of the
+    %                       options are also found in config.txt of the same
+    %                       directory as AutoLayout.m, if not specified via
+    %                       direct input, the default value of these parameters
+    %                       will be picked up from that file (these defaults are
+    %                       marked with "config.txt").
     %
     % Parameter-Value pairs:
     %   Parameters related to moving unselected objects in the system
@@ -45,8 +50,7 @@ function AutoLayout(selected_objects, varargin)
     %               A connects to block B, then block B will have a depth
     %               equal to the depth of A + 1 and depth directly
     %               determines the column.
-    %           'Default' - Chooses 'GraphPlot' if MATLAB version is 2015b
-    %               or newer else chooses 'Graphviz'.
+    %           From config.txt - (Default)
     %   Parameter: 'Columns' - Only available if LayoutType parameter is
     %       'DepthBased'.
     %   Value:  A containers.Map() variable mapping from block handles to
@@ -115,30 +119,51 @@ function AutoLayout(selected_objects, varargin)
     %               rectangular.
     %           'round' - Changes the shapes of Sum blocks to be round.
     %           'any' - (Default) Does not change the shapes of Sum blocks.
-    %   Parameter: 'PortlessRule'
-    %   Value:  'left'
-    %           'top'
-    %           'right'
-    %           'bottom'
-    %           'same_half_vertical'
-    %           'same_half_horizontal'
-    %   Parameter: 'PortlessSortRule'
-    %   Value:  'blocktype'
-    %           'masktype_blocktype'
-    %           'none'
-    %   Parameter: 'InportRule'
-    %   Value:  'left-align'
-    %           'none'
-    %   Parameter: 'OutportRule'
-    %   Value:  'right-align'
-    %           'none'
-    %   Parameter: 'NoteRule'
-    %   Value:  'on-right'
-    %           'none'
-    %   Parameter: 'ShowNames'
-    %   Value:  'no-change'
-    %           'all'
-    %           'none'
+    %   Parameter: 'PortlessRule' - Determines where blocks with no ports should
+    %       be placed in the layout with respect to the bounds of the rest of
+    %       the selected objects after they have been laid out.
+    %   Value:  'left' - Portless blocks placed left of the bounds.
+    %           'top' - Portless blocks placed above the bounds.
+    %           'right' - Portless blocks placed right of the bounds.
+    %           'bottom' - Portless blocks placed below the bounds.
+    %           'same_half_vertical' - Portless blocks placed above if they
+    %               began in the top-half of the starting bounds, below
+    %               otherwise.
+    %           'same_half_horizontal' - Portless blocks placed on the left if
+    %               they began in the top-half of the starting bounds, on the
+    %               right otherwise.
+    %           From config.txt - (Default)
+    %   Parameter: 'PortlessSortRule' - Determines the way blocks with no ports
+    %       will be grouped with their placements defined by PortlessRule.
+    %   Value:  'blocktype' - Portless blocks will be grouped by their BlockType
+    %               parameter.
+    %           'masktype_blocktype' - Portless blocks will be grouped into
+    %           unique MaskType-BlockType pairs.
+    %           'none' - No grouping is done.
+    %           From config.txt - (Default) See the sort_portless config
+    %   Parameter: 'InportRule' - Determines how to layout inport blocks.
+    %   Value:  'left-align' - Inports are aligned on the far left of the layout
+    %               bounds unless there are obstructions.
+    %           'none' - Inports are treated the same as other blocks in the
+    %               layout.
+    %           From config.txt - (Default)
+    %   Parameter: 'OutportRule' - Determines how to layout outport blocks.
+    %   Value:  'right-align' - Outports are aligned on the far right of the
+    %               layout bounds unless there are obstructions.
+    %           'none' - Outports are treated the same as other blocks in the
+    %               layout.
+    %           From config.txt - (Default)
+    %   Parameter: 'NoteRule' - Determines how to layout annotations.
+    %   Value:  'on-right' - Selected annotations are moved to the right side of
+    %               the system so they can be found easily.
+    %           'none' - Annotations are not moved at all.
+    %           From config.txt - (Default)
+    %   Parameter: 'ShowNames' - Determines whether or not to show block names.
+    %   Value:  'no-change' - Block names will remain showing/hidden without
+    %               change.
+    %           'all' - All blocks will show their name.
+    %           'none' - No blocks will show their name.
+    %           From config.txt - (Default)
     %
     % Outputs:
     %   N/A
@@ -166,12 +191,12 @@ function AutoLayout(selected_objects, varargin)
     VertSpacing = 10;
     AlignmentType = lower('Source');
     DesiredSumShape = 'any';
-    PortlessRule = 'top';
-    PortlessSortRule = 'blocktype';
-    InportRule = 'left-align';
-    OutportRule = 'right-align';
-    NoteRule = 'on-right';
-    ShowNames = 'no-change';
+    PortlessRule = getAutoLayoutConfig('portless_rule', 'top');
+    PortlessSortRule = getAutoLayoutConfig('sort_portless', 'blocktype');
+    InportRule = getAutoLayoutConfig('inport_rule', 'left-align');
+    OutportRule = getAutoLayoutConfig('outport_rule', 'right-align');
+    NoteRule = getAutoLayoutConfig('note_rule', 'on-right');
+    ShowNames = getAutoLayoutConfig('show_rule', 'no-change');
     assert(mod(length(varargin),2) == 0, 'Even number of varargin arguments expected.')
     for i = 1:2:length(varargin)
         param = lower(varargin{i});
@@ -343,7 +368,7 @@ function AutoLayout(selected_objects, varargin)
     end
     
     %%
-    nameShowing = getShowNameParams(selected_blocks);
+    showingNamesMap = get_showname_map(selected_blocks, ShowNames);
     
     %% Determine which blocks should be laid out separate to the rest
     % This refers primarily to laying out blocks with no ports as the
@@ -716,7 +741,7 @@ function AutoLayout(selected_objects, varargin)
     % determined by quadrants_map.
     
     % Get bounds to place blocks around
-    bounds = bounds_of_sim_objects(objects);
+    bounds = bounds_of_sim_objects(blocks);
     
     % Get axis to be used when deciding which side to place blocks on
     switch PortlessRule
@@ -730,10 +755,9 @@ function AutoLayout(selected_objects, varargin)
     
     %% Show/hide block names 
     %(the initial layout may have inadvertently set it off)
-    %TODO make this unnecessary (or if still using the config option then make
-    %it so that the names don't need to be found earlier on at least - i.e. so
-    %this can be done whenever)
-    setShowNameParams(blocks, nameShowing)
+    %TODO make it so that the names don't need to be found earlier on at least -
+    %i.e. so this can be done whenever)
+    set_shownames(showingNamesMap)
     
     % Get map from sides to list of block handles
     sides_map = quadrants_map2sides_map(quadrants_map, axis);
@@ -964,7 +988,7 @@ function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType
                 AdjustHeightParams{:});
             
             % TODO use the following parameter in the call above:
-            %   'ConnectedBlocks', connBlocks, ...
+            %   'ConnectedBlocks', connBlocks,
             % connBlocks should be either the blocks that connect
             % to the current block and are 1 column right or left
             % depending on AlignmentType
@@ -981,13 +1005,18 @@ end
 function type = default_layout_type()
     %
     
-    % Check if MATLAB version is R2015b or newer (i.e. greater-or-equal to 2015b)
-    ver = version('-release');
-    ge2015b = str2num(ver(1:4)) > 2015 || strcmp(ver(1:5),'2015b'); % true if version is 2015b or later
-    if ge2015b
-        type = 'GraphPlot';
-    else
-        type = 'Graphviz';
-    end
-    type = lower(type);
+    type = getAutoLayoutConfig('layout_type', 'default');
+    
+    if strcmp(type, 'default')
+        
+        % Check if MATLAB version is R2015b or newer (i.e. greater-or-equal to 2015b)
+        ver = version('-release');
+        ge2015b = str2num(ver(1:4)) > 2015 || strcmp(ver(1:5),'2015b'); % true if version is 2015b or later
+        if ge2015b
+            type = 'GraphPlot';
+        else
+            type = 'DepthBased';
+        end
+        type = lower(type);
+    end % else type is already decided
 end
