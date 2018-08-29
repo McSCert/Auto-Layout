@@ -27,8 +27,9 @@ function AutoLayout(selected_objects, varargin)
     %       determined by the object positions when this function is
     %       called.
     %	Parameter: 'ShiftAll'
-    %   Value:  'on' - (Default) All objects in the same system as a
-    %               given object may be shifted to prevent overlaps.
+    %   Value:  'on' - (Default) All objects in the same system as the selected
+    %               objects may be shifted to prevent overlaps. I.e. unselected
+    %               objects are just shifted out of the way.
     %           'off' - Only objects given as input may be shifted.
     %
     %   Parameters related to initial layout:
