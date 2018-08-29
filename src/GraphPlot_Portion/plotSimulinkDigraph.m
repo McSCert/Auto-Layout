@@ -60,5 +60,6 @@ function h = plotSimulinkDigraph(blocks, dg)
     end
     
     % Plot
+    figure % New figure
     h = plot(dg, ops{:});
 end
