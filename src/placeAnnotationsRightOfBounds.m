@@ -85,7 +85,7 @@ function placeAnnotationsRightOfBounds(bounds, annotations, varargin)
         
         if top + height > bounds(4) % New annotation column to avoid extending too far down
             left = left + widest + HorizontalSpacing;
-            top = topBound;
+            top = bounds(2);
             widest = 0;
         else
             top = top + height + VerticalSpacing;

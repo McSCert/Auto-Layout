@@ -273,7 +273,7 @@ function putBlocksOnSide(cat_blocks, sides_map, bounds, vertSpace, horzSpace, si
                 
                 % Update next block start point and next row front (if
                 % changed)
-                nextBlockStart = nextBlockStart + spaceBetweenBlocks;
+                nextBlockStart = nextBlockStart + width + spaceBetweenBlocks;
                 
                 switch side
                     case {'left','top'} % additional rows placed further negative in Simulink coordinate system
