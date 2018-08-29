@@ -810,11 +810,10 @@ function AutoLayout(selected_objects, varargin)
             
             % Get the objects that need to be shifted
             system_blocks = find_blocks_in_system(system)';
+            non_layout_blocks = setdiff(system_blocks, selected_blocks);
+            
             system_annotations = find_annotations_in_system(system)';
-            %             system_lines = find_lines_in_system(system);
-            non_layout_blocks = setdiff(system_blocks, blocks);
-            non_layout_annotations = setdiff(system_annotations, annotations);
-            %             non_layout_lines = vectorToCell(setdiff(system_lines, cellToVector(lines)'));
+            non_layout_annotations = setdiff(system_annotations, selected_annotations);
             
             % Figure out how to shift blocks and annotations
             bound_shift = new_bounds - orig_bounds;
