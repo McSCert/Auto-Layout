@@ -294,7 +294,7 @@ function AutoLayout(selected_objects, varargin)
                     ['Unexpected value for ' param ' parameter.'])
                 ShowNames = value;
             otherwise
-                error(['Invalid parameter. Parameter: ' param])
+                error(['Invalid parameter: ' param '.'])
         end
     end
     
