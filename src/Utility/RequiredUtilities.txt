@@ -5,6 +5,7 @@
 		bounds_of_sim_objects.m
 		lineBounds.m
 		portBounds.m
+		separate_objects_by_type.m
 	
 	DataflowTracing/
 		getDstPorts.m
