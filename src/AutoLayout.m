@@ -44,7 +44,7 @@ function AutoLayout(selected_objects, varargin)
     %               function with a layered layout.
     %           'Graphviz' - Uses Graphviz (a 3rd-party tool) which must be
     %               installed to generate an initial layout in a similar
-    %               fashion to GraphPlot (however GraphPlot is generally
+    %               fashion to GraphPlot (however Graphviz is generally
     %               able to provide a somewhat improved initial layout).
     %           'DepthBased' - Assigns initial columns to place blocks in
     %               based on when a block is reached. Essentially, if block
@@ -318,7 +318,7 @@ function AutoLayout(selected_objects, varargin)
     % 4) If address has a LinkStatus, then check that it is 'none' or
     % 'inactive'
     if isempty(selected_objects)
-        disp('Nothing to simplify.')
+        disp('Nothing selected to lay out.')
         return
     else
         % 1), 2)
@@ -754,12 +754,6 @@ function AutoLayout(selected_objects, varargin)
             error('Unexpected parameter value.')
     end
     
-    %% Show/hide block names 
-    %(the initial layout may have inadvertently set it off)
-    %TODO make it so that the names don't need to be found earlier on at least -
-    %i.e. so this can be done whenever)
-    set_shownames(showingNamesMap)
-    
     % Get map from sides to list of block handles
     sides_map = quadrants_map2sides_map(quadrants_map, axis);
     
@@ -780,6 +774,12 @@ function AutoLayout(selected_objects, varargin)
         otherwise
             error('Unexpected parameter value.')
     end
+    
+    %% Show/hide block names 
+    %(the initial layout may have inadvertently set it off)
+    %TODO make it so that the names don't need to be found earlier on at least -
+    %i.e. so this can be done whenever)
+    set_shownames(showingNamesMap)
     
     %% Redraw lines
     if ~isempty(blocks)
@@ -958,20 +958,18 @@ function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType
             
             connTypeIdx = find(strcmpi('ConnectionType', portParamsVal));
             if isempty(connTypeIdx)
-                % Add 'ConnectionType' with default value
+                % Add 'ConnectionType' with given value
                 portParamsVal{end+1} = 'ConnectionType';
                 portParamsVal{end+1} = connType;
             else
                 % Do nothing, if a user explicitly chose a ConnectionType
             end
             
-            if defaultMethod
-                % Skip. Default method will be used by default...
-            else
+            if ~defaultMethod
                 % Overwrite the method that was set
                 methodIdx = find(strcmpi('Method', portParamsVal));
-                if isempty(connTypeIdx)
-                    % Add 'ConnectionType' with default value
+                if isempty(methodIdx)
+                    % Add 'Method' with given value
                     portParamsVal{end+1} = 'Method';
                     portParamsVal{end+1} = Method;
                 else
@@ -980,7 +978,7 @@ function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType
                     % Method selected by the user.
                     portParamsVal{methodIdx(1)+1} = Method;
                 end
-            end
+            end % else: Skip. Default method will be used by default.
             
             AdjustHeightParams{portParamsIdx(1)+1} = portParamsVal;
             
