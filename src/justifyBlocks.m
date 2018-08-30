@@ -99,8 +99,8 @@ function linesInTheWay = linesInTheWay(address, layout, row, col, jT)
     end
 end
 
-function isRangeOverlap = is_range_overlap_wrapper(range1Val1, range1Val2, range2Val1, range2Val2)
-    % IS_RANGE_OVERLAP_wrapper Detect whether or not the union of the two ranges
+function bool = is_range_overlap_wrapper(range1Val1, range1Val2, range2Val1, range2Val2)
+    % IS_RANGE_OVERLAP_WRAPPER Detect whether or not the union of the two ranges
     % have any intersection. Acts as a wrapper for a similar external function.
     %
     % The 1st two arguments form the 1st range, while the 2nd two form the 2nd range.
@@ -110,7 +110,7 @@ function isRangeOverlap = is_range_overlap_wrapper(range1Val1, range1Val2, range
     max2 = max(range2Val1, range2Val2);
     min2 = min(range2Val1, range2Val2);
     
-    isRangeOverlap = isRangeOverlap([min1, max1], [min2, max2]);
+    bool = isRangeOverlap([min1, max1], [min2, max2]);
 end
 
 function blocksInTheWay = blocksInTheWay(layout, row, col, jT)

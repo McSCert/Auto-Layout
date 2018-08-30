@@ -40,7 +40,7 @@ function depths = choose_impact_depths(blocks)
             srcs = getSrcs(block, 'IncludeImplicit', 'on', ...
                 'ExitSubsystems', 'off', 'EnterSubsystems', 'off', ...
                 'Method', 'RecurseUntilTypes', 'RecurseUntilTypes', {'block'});
-            srcs = remove_if_not_key(srcs,block2struct);
+            srcs = remove_if_not_key(srcs, block2struct);
             
             impactStruct{i} =  struct('block', block, 'dstblocks', dsts, 'srcblocks', srcs);
         end
@@ -49,6 +49,19 @@ function depths = choose_impact_depths(blocks)
         for i = 1:length(impactStruct)
             if isempty(impactStruct{i}.srcblocks)
                 first_sources = [first_sources, impactStruct{i}.block];
+            else
+                % Assert all sources of the current block list the current
+                % block as a destination.
+                % If this fails it is likely an error in symmetry of
+                % getDsts and getSrcs above.
+                for j = 1:length(impactStruct{i}.srcblocks)
+                    src = impactStruct{i}.srcblocks(j);
+                    for k = 1:length(impactStruct)
+                        if any(src == impactStruct{k}.block)
+                            assert(any(impactStruct{k}.dstblocks == impactStruct{i}.block))
+                        end
+                    end
+                end
             end
         end
         
@@ -57,6 +70,19 @@ function depths = choose_impact_depths(blocks)
             for i = 1:length(impactStruct)
                 if isempty(impactStruct{i}.dstblocks)
                     first_dests = [first_dests, impactStruct{i}.block];
+                else
+                    % Assert all destinations of the current block list the
+                    % current block as a source.
+                    % If this fails it is likely an error in symmetry of
+                    % getDsts and getSrcs above.
+                    for j = 1:length(impactStruct{i}.dstblocks)
+                        dst = impactStruct{i}.dstblocks(j);
+                        for k = 1:length(impactStruct)
+                            if any(dst == impactStruct{k}.block)
+                                assert(any(impactStruct{k}.srcblocks == impactStruct{i}.block))
+                            end
+                        end
+                    end
                 end
             end
             if isempty(first_dests)
