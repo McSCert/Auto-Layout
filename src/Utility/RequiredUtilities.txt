@@ -62,6 +62,7 @@
 		
 	detectOverlaps.m
 	getCommonParent.m
+	getDepthFromSys.m
 	getParentSystem.m
 	isBranching.m
 	isRangeOverlap.m
