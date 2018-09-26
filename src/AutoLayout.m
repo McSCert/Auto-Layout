@@ -551,7 +551,7 @@ function AutoLayout(selected_objects, varargin)
                     blockWidths(i) = width;
                 end
             otherwise
-                error('Unexpected paramter.')
+                error('Unexpected parameter.')
         end
         % set positions based on widths found above
         count = 0;
@@ -578,7 +578,7 @@ function AutoLayout(selected_objects, varargin)
                     colWidths(i) = width;
                 end
             otherwise
-                error('Unexpected paramter value.')
+                error('Unexpected parameter value.')
         end
         
         %% Place blocks in their respective columns
@@ -604,7 +604,7 @@ function AutoLayout(selected_objects, varargin)
                     case 'center'
                         shift = [columnLeft+(colWidth-bwidth)/2 0 columnLeft+(colWidth+bwidth)/2 0];
                     otherwise
-                        error('Unexpected paramter value.')
+                        error('Unexpected parameter value.')
                 end
                 set_param(b, 'Position', [0 pos(2) 0 pos(4)] + shift);
                 
@@ -654,7 +654,7 @@ function AutoLayout(selected_objects, varargin)
                     pType = 'Outport';
                     notPType = 'Inport';
                 otherwise
-                    error('Unexpected paramter.')
+                    error('Unexpected parameter.')
             end
             
             %% Set blocks to desired heights
@@ -792,7 +792,7 @@ function AutoLayout(selected_objects, varargin)
     
     % Get new bounds of objects
     new_bounds = bounds_of_sim_objects(selected_objects);
-    % Get center of orginal bounds
+    % Get center of original bounds
     orig_center = position_center(orig_bounds);
     % Get center of new bounds
     new_center = position_center(new_bounds);
