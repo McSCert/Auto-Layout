@@ -586,29 +586,10 @@ function AutoLayout(selected_objects, varargin)
         columnLeft = 100; % Left-most point in the current column. Arbitrarily 100 for first column.
         for i = 1:length(layoutRepresentation)
             % For each column:
+            
             colWidth = colWidths(i); % Get width of current column
-            for j = 1:length(layoutRepresentation{i})
-                % Place each block
-                
-                b = layoutRepresentation{i}{j}; % Get current block
-                
-                % TODO use input parameter to get raw width or width including
-                % width of text beneath the block
-                [bwidth, pos] = getBlockWidth(b);
-                
-                switch ColumnAlignment
-                    case 'left'
-                        shift = [columnLeft 0 columnLeft+bwidth 0];
-                    case 'right'
-                        shift = [columnLeft+colWidth-bwidth 0 columnLeft+colWidth 0];
-                    case 'center'
-                        shift = [columnLeft+(colWidth-bwidth)/2 0 columnLeft+(colWidth+bwidth)/2 0];
-                    otherwise
-                        error('Unexpected parameter value.')
-                end
-                set_param(b, 'Position', [0 pos(2) 0 pos(4)] + shift);
-                
-            end
+
+            alignBlocksInColumn(layoutRepresentation{i}, ColumnAlignment, columnLeft, columnWidth)
             
             % Advance column
             columnLeft = columnLeft + colWidth + HorizSpacing;
@@ -909,23 +890,6 @@ function blocks = find_blocks_in_system(system)
 end
 function annotations = find_annotations_in_system(system)
     annotations = find_system(system, 'SearchDepth', 1, 'FindAll', 'on', 'Type', 'annotation');
-end
-
-function maxWidth = getMaxWidth(blocks)
-    % blocks - cell array of blocks
-    
-    maxWidth = 0;
-    for i = 1:length(blocks)
-        bwidth = getBlockWidth(blocks{i});
-        if bwidth > maxWidth
-            maxWidth = bwidth;
-        end
-    end
-end
-
-function [width, pos] = getBlockWidth(block)
-    pos = get_param(block, 'Position');
-    width = pos(3)-pos(1);
 end
 
 function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType, firstPass)

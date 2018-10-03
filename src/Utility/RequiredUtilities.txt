@@ -47,6 +47,9 @@
 		adjustHeight.m
 		adjustHeightForConnectedBlocks.m
 		adjustWidth.m
+		alignBlocksInColumn.m
+		getBlockWidth.m
+		getMaxWidth.m
 		moveBelow.m
 		shiftBlocks.m
 		Alignment/
