@@ -587,12 +587,12 @@ function AutoLayout(selected_objects, varargin)
         for i = 1:length(layoutRepresentation)
             % For each column:
             
-            colWidth = colWidths(i); % Get width of current column
+            columnWidth = colWidths(i); % Get width of current column
 
             alignBlocksInColumn(layoutRepresentation{i}, ColumnAlignment, columnLeft, columnWidth)
             
             % Advance column
-            columnLeft = columnLeft + colWidth + HorizSpacing;
+            columnLeft = columnLeft + columnWidth + HorizSpacing;
         end
     else
         % Currently all layouts use columns so this shouldn't happen
