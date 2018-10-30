@@ -28,34 +28,40 @@ function [srcs, srcPositions, didMove] = arrangeSources(blk, doMove)
     % Find desired order
     ph = get_param(blk, 'PortHandles');
     in = ph.Inport;
-    len = length(in);
-    orderedSrcs = cell(1, len);
-    positions = zeros(len,4);
-    tops = zeros(len,1);
+    %orderedSrcs = cell(1, length(in));
+    %positions = zeros(length(in),4);
+    %tops = zeros(length(in),1);
+    orderedSrcs = {};
+    positions = [];
+    tops = [];
     for i = 1:length(in)
         lh = get_param(in(i), 'Line');
-        src = get_param(lh, 'SrcPortHandle');
-        orderedSrcs{i} = get_param(src, 'Parent');
-        
-        srcph = get_param(orderedSrcs{i}, 'PortHandles');
-        srcout = srcph.Outport;
-        if isBranching(lh)
-            doMove = false;
+        if lh ~= -1
+            src = get_param(lh, 'SrcPortHandle');
+            if src ~= -1
+                orderedSrcs{end+1} = get_param(src, 'Parent');
+                
+                srcph = get_param(orderedSrcs{end}, 'PortHandles');
+                srcout = srcph.Outport;
+                if isBranching(lh)
+                    doMove = false;
+                end
+                if length(srcout) > 1
+                    doMove = false;
+                end
+                
+                positions(end+1,:) = get_param(orderedSrcs{end}, 'Position');
+                tops(end+1) = positions(end, 2);
+            end
         end
-        if length(srcout) > 1
-            doMove = false;
-        end
-        
-        positions(i,:) = get_param(orderedSrcs{i}, 'Position');
-        tops(i) = positions(i, 2);
     end
     
     % Get old order
     newTops = sort(tops);
     
     % Use old order to swap top positions to place in the desired order
-    newPositions = zeros(len,4);
-    for j = 1:len %length(newTops)
+    newPositions = zeros(length(newTops),4);
+    for j = 1:length(newTops)
         newTop = newTops(j);
         newBot = newTops(j) + positions(j,4) - positions(j,2);
         newPositions(j,:) = [positions(j,1), newTop, positions(j,3), newBot];
@@ -66,7 +72,7 @@ function [srcs, srcPositions, didMove] = arrangeSources(blk, doMove)
     
     if doMove
         % Set positions
-        for j = 1:len %length(srcs)
+        for j = 1:length(srcs)
             set_param(srcs{j}, 'Position', srcPositions(j, :))
         end
         didMove = true;
