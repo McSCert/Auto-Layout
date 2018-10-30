@@ -197,7 +197,7 @@ function AutoLayout(selected_objects, varargin)
     InportRule = getAutoLayoutConfig('inport_rule', 'left-align');
     OutportRule = getAutoLayoutConfig('outport_rule', 'right-align');
     NoteRule = getAutoLayoutConfig('note_rule', 'on-right');
-    ShowNames = getAutoLayoutConfig('show_rule', 'no-change');
+    ShowNames = getAutoLayoutConfig('show_names', 'no-change');
     assert(mod(length(varargin),2) == 0, 'Even number of varargin arguments expected.')
     for i = 1:2:length(varargin)
         param = lower(varargin{i});
@@ -841,6 +841,9 @@ function adjustObjectsAroundLayout(objects, orig_bounds, bound_shift, type)
     % direction to shift the objects that were within the original bounds
     % and to do so as well as potentially increase the overall shift amount
     % in that direction accordingly.
+    %
+    % Update: negative bound_shifts will be ignored. Better to leave free
+    % space than to disturb the other blocks.
     
     switch type
         case 'block'
@@ -865,19 +868,19 @@ function adjustObjectsAroundLayout(objects, orig_bounds, bound_shift, type)
         my_shift = [0 0 0 0];
         
         idx = 1; % Left
-        if my_bounds(idx) < orig_bounds(idx)
+        if my_bounds(idx) < orig_bounds(idx) && bound_shift(idx) > 0
             my_shift = my_shift + [bound_shift(idx) 0 bound_shift(idx) 0];
         end
         idx = 2; % Top
-        if my_bounds(idx) < orig_bounds(idx)
+        if my_bounds(idx) < orig_bounds(idx) && bound_shift(idx) > 0
             my_shift = my_shift + [0 bound_shift(idx) 0 bound_shift(idx)];
         end
         idx = 3; % Right
-        if my_bounds(idx) > orig_bounds(idx)
+        if my_bounds(idx) > orig_bounds(idx) && bound_shift(idx) > 0
             my_shift = my_shift + [bound_shift(idx) 0 bound_shift(idx) 0];
         end
         idx = 4; % Bottom
-        if my_bounds(idx) > orig_bounds(idx)
+        if my_bounds(idx) > orig_bounds(idx) && bound_shift(idx) > 0
             my_shift = my_shift + [0 bound_shift(idx) 0 bound_shift(idx)];
         end
         
