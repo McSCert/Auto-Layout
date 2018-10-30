@@ -24,7 +24,9 @@ function AutoLayoutToolCallback(callbackInfo)
             if isempty(gcos)
                 AutoLayoutSys(gcs);
             else
-                AutoLayout(gcos);
+                objs = gcos;
+                objs = objs(strcmp(get_param(objs, 'Parent'), gcs)); % Filter out selected objects not in the current system
+                AutoLayout(objs);
             end
         end
     catch ME
