@@ -400,6 +400,14 @@ function AutoLayout(selected_objects, varargin)
     % Update objects to blocks and annotations
     objects = [blocks, annotations];
     
+    % Get just lines associated with the blocks
+    % TODO - involve the selected lines at least as an option
+    if ~isempty(blocks)
+        lines = get_block_lines(blocks);
+    else
+        lines = [];
+    end
+    
     %% Determine how to lay out blocks that should be laid out separately
     
     % Get just blocks:
@@ -763,9 +771,7 @@ function AutoLayout(selected_objects, varargin)
     set_shownames(showingNamesMap)
     
     %% Redraw lines
-    if ~isempty(blocks)
-        redraw_block_lines(blocks, 'autorouting', 'on');
-    end
+    autolayout_lines(lines);
     
     %% Center objects on the original center
     % I.e. Shift selected_objects so that the center of their bounds is in
@@ -803,6 +809,7 @@ function AutoLayout(selected_objects, varargin)
             adjustObjectsAroundLayout(non_layout_annotations, orig_bounds, bound_shift, 'annotation');
             % TODO - depending on input parameters redraw lines affected by
             % previous shifting
+            % TODO - actually shift lines instead of redrawing
             redraw_block_lines(blocks, 'autorouting', 'on')
             %             redraw_lines(getfullname(system), 'autorouting', 'on')
         case lower('off')
