@@ -19,13 +19,6 @@ function autolayout_lines(lines)
     % Find vertical line segments, make them not overlap (unless it means
     % overlapping a block)
     remove_vertical_line_overlap(lines)
-    
-    lines
-    XXX    colDims = getColumnDimensions(layout);
-    vSegs = getVSegs(lines);
-    
-    % Reorganize the placements of vertical line segments in the system
-    spaceVSegs(vSegs, colDims);
 end
 
 function redraw_line(line, autorouting)
