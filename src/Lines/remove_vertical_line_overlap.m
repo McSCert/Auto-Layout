@@ -1,4 +1,12 @@
 function remove_vertical_line_overlap(lines)
+    % REMOVE_VERTICAL_LINE_OVERLAP Offset vertical line segments to prevent them
+    % from overlapping with each other.
+    % 
+    % Inputs:
+    %   lines   Vector of Simulink lines.
+    %
+    % Outputs:
+    %   N/A
     %
     
     % TODO - Currently expect issues if flow is from right to left (text and
@@ -146,7 +154,7 @@ function vSegs = find_vertical_line_segments(lines)
     %       pointIndex2 - point2's index in line
     
     vSegs = {};
-    linePoints = getAllLinePoints(lines);
+        linePoints = getAllLinePoints(lines);
     for i = 1:length(linePoints) % For all lines
         for j = 2:size(linePoints{i}, 1) % For all points after first in line
             points = linePoints{i};

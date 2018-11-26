@@ -8,10 +8,16 @@ function autolayout_lines(lines)
     %   N/A
     %
     
+    % Remove lines where a parent (or other ancestor) is already in the list.
+    % Otherwise redraw_line could  error later.
+    lines = remove_child_lines(lines, 'All');
+    
     % Get a base line layout using MATLABs autorouting
+    tmpLines = [];
     for i = 1:length(lines)
-        redraw_line(lines(i), 'on');
+        tmpLines = [redraw_line(lines(i), 'on'), tmpLines];
     end
+    lines = tmpLines; % Update handles
     
     % Find diagonal line segments, make them run vertical and horizontal
     % TODO
@@ -21,7 +27,7 @@ function autolayout_lines(lines)
     remove_vertical_line_overlap(lines)
 end
 
-function redraw_line(line, autorouting)
+function newLines = redraw_line(line, autorouting)
     % Redraw line.
     
     sys = get_param(line, 'Parent');
@@ -30,8 +36,9 @@ function redraw_line(line, autorouting)
     dstports = get_param(line, 'DstPortHandle');
     % Delete and re-add.
     delete_line(line)
+    newLines = zeros(1,length(dstports));
     for k = 1:length(dstports)
         dstport = dstports(k);
-        add_line(sys, srcport, dstport, 'autorouting', autorouting);
+        newLines(k) = add_line(sys, srcport, dstport, 'autorouting', autorouting);
     end
 end

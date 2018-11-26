@@ -771,7 +771,8 @@ function AutoLayout(selected_objects, varargin)
     set_shownames(showingNamesMap)
     
     %% Redraw lines
-    autolayout_lines(lines);
+    blockLines = get_block_lines(blocks);
+    autolayout_lines(blockLines);
     
     %% Center objects on the original center
     % I.e. Shift selected_objects so that the center of their bounds is in
@@ -807,10 +808,11 @@ function AutoLayout(selected_objects, varargin)
             bound_shift = new_bounds - orig_bounds;
             adjustObjectsAroundLayout(non_layout_blocks, orig_bounds, bound_shift, 'block');
             adjustObjectsAroundLayout(non_layout_annotations, orig_bounds, bound_shift, 'annotation');
-            % TODO - depending on input parameters redraw lines affected by
-            % previous shifting
-            % TODO - actually shift lines instead of redrawing
-            redraw_block_lines(blocks, 'autorouting', 'on')
+            % TODO - depending on input parameters redraw/shift/etc lines
+            % affected by previous shifting
+            non_layout_lines = get_block_lines(non_layout_blocks);
+            adjustObjectsAroundLayout(non_layout_lines, orig_bounds, bound_shift, 'line');
+            %             redraw_block_lines(blocks, 'autorouting', 'on')
             %             redraw_lines(getfullname(system), 'autorouting', 'on')
         case lower('off')
             % Shifting already done.
@@ -991,4 +993,20 @@ function type = default_layout_type()
         end
         type = lower(type);
     end % else type is already decided
+end
+
+function lines = get_block_lines(blocks)
+    lines = [];
+    for k = 1:length(blocks)
+        b = blocks(k);
+        phs = getPorts(b,'All');
+        for i = 1:length(phs)
+            lh = get_param(phs(i), 'Line');
+            if lh ~= -1
+                lines(end+1) = lh;
+            end
+        end
+    end
+    
+    lines = unique(lines); % No repeats
 end

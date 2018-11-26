@@ -70,6 +70,7 @@
 	isBranching.m
 	isRangeOverlap.m
 	new_system_makenameunique.m
+	remove_child_lines.m
 	setNamePlacements.m
 	setOrientations.m
 	sortPortsByTop.m
