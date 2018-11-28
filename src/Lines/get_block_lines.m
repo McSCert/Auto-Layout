@@ -11,7 +11,7 @@ function lines = get_block_lines(blocks)
     lines = [];
     for n = 1:length(blocks)
         block = blocks(n);
-        sys = getParentSystem(block);
+        sys = get_param(block, 'Parent');
         
         % Get the block's lines.
         lineHdls = get_param(block, 'LineHandles');
