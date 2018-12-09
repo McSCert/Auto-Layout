@@ -4,7 +4,8 @@ function shiftLines(lines, shift)
     %
     % Inputs:
     %   lines   List (cell array or vector) of Simulink lines.
-    %   shift   1x2 vector to add to each point of each line.
+    %   shift   1x2 vector to add to each point of each line. Disregards
+    %           elements beyond the first 2.
     %
     
     lines = inputToNumeric(lines);
@@ -14,7 +15,7 @@ function shiftLines(lines, shift)
         points = get_param(l, 'Points');
         
         for j = 1:length(points)
-            points(j) = points(j) + shift;
+            points(j,:) = points(j,:) + shift(1:2);
         end
         set_param(l, 'Points', points);
     end
