@@ -1,11 +1,12 @@
-function autolayout_lines(lines)
+function lines = autolayout_lines(lines)
     % AUTOLAYOUT_LINES Automatically lays out lines.
     %
     % Input:
     %   lines   Vector of Simulink line handles.
     %
     % Output:
-    %   N/A
+    %   lines   Updated line handles (lines will have been deleted and re-added
+    %           with new handles).
     %
     
     % Remove lines where a parent (or other ancestor) is already in the list.
@@ -24,7 +25,7 @@ function autolayout_lines(lines)
     
     % Find vertical line segments, make them not overlap (unless it means
     % overlapping a block)
-    remove_vertical_line_overlap(lines)
+    remove_vertical_line_overlap(lines);
 end
 
 function newLines = redraw_line(line, autorouting)
