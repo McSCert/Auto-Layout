@@ -1,22 +1,175 @@
-function remove_vertical_line_overlap(lines)
+function remove_vertical_line_overlap(lines, varargin)
     % REMOVE_VERTICAL_LINE_OVERLAP Offset vertical line segments to prevent them
     % from overlapping with each other.
     % 
     % Inputs:
-    %   lines   Vector of Simulink lines.
+    %   lines       Vector of Simulink lines.
+    %   varargin    Parameter-Value pairs as detailed below.
     %
     % Outputs:
     %   N/A
     %
+    % Parameter-Value pairs:
+    %   Parameter: 'ShiftAmount' - Amount to shift vertical segments by.
+    %   Value: Positive integer. Default: 3.
+    %   Parameter: 'Mode' - Affects the approach used to determine how lines
+    %       need to be moved with respect to each other.
+    %   Value:  'PairByPair' - Handles one pair of lines at a time.
+    %           'AllOverlappingTogether' - (Default) Handles all overlapping
+    %               lines together.
+    %
     
-    % TODO - Currently expect issues if flow is from right to left (text and
+    % TODO - Param-Val pairs to add support for in the future
+    %   Parameter: 'ShiftBounds' - Left and right bounds for where lines can be
+    %       shifted to.
+    %   Value: 1x2 array with left bound given first. Default: No bounds used.
+    %   Parameter: 'ShiftType'
+    %   Value:  'Even' - Shift evenly between the ShiftBounds (requires ShiftBounds
+    %               to be given first).
+    %           'Left' - (Default) Shift lines left.
+    %           'Right' - Shift lines right.
+    %   Parameter: 'OverlapDefn' - Used to determine what is considered an
+    %       overlap.
+    %   Value:  'Literal' - (Default) Lines must be directly overlapping.
+    %           'Close' - If ShiftAmount pixels or less off of a direct overlap.
+    
+    % TODO - Currently expect issues if flow is from right to left (test and
     % fix).
     
+    % Input Handling
+    ShiftAmount = getInput('ShiftAmount', varargin, 3);
+    assert(isnumeric(ShiftAmount))
+    Mode = lower(getInput('Mode', varargin, 'AllOverlappingTogether'));
+    assert(any(strcmpi(Mode, {'PairByPair', 'AllOverlappingTogether'})))
+    
+    switch Mode
+        case lower('AllOverlappingTogether')
+            remove_vertical_line_overlap_all_overlapping_together(lines, ShiftAmount)
+        case lower('PairByPair')
+            remove_vertical_line_overlap_pair_by_pair(lines, ShiftAmount);
+        otherwise
+            error('Error: Unexpected parameter value.')
+    end
+end
+
+function remove_vertical_line_overlap_all_overlapping_together(lines, ShiftAmount)
+    %
     vertSegsList = find_vertical_line_segments(lines);
     vertSegs = sort_vert_segs(vertSegsList);
     
     % Reorganize the placements of vertical line segments in the system
-    shift_amount = 3;
+    while ~isempty(vertSegs)
+        % Until there are no groups of candidates to fix.
+        % Loop invariant: Each iteration removes at least one segment from
+        % vertSegs.
+        
+        numOfSegs = get_total_num_of_vertSegs(vertSegs);
+        
+        i = 1;
+        shiftList = zeros(1,length(vertSegs{i}));
+        dontCarePairs = []; % nx2 list of indices where 1 of the 2 should be moved
+        for j = 1:length(vertSegs{i}) - 1
+            if ~shiftList(j)
+                for k = j+1:length(vertSegs{i})
+                    % For each pair in vertSegs{i}
+                    if ~shiftList(k)
+                        
+                        instruction = get_vertical_line_overlap_fix_instruction( ...
+                            [vertSegs{i}{j}.point1; vertSegs{i}{j}.point2], ...
+                            [vertSegs{i}{k}.point1; vertSegs{i}{k}.point2]);
+                        
+                        switch instruction
+                            case '1stLineLeft'
+                                shiftList(j) = 1;
+                                break; % Advance to next j
+                            case '2ndLineLeft'
+                                shiftList(k) = 1;
+                            case 'EitherLineLeft'
+                                dontCarePairs(end+1,:) = [j k];
+                            case 'NoFix'
+                                % Continue
+                            otherwise
+                                error('Unexpected case.')
+                        end
+                    end
+                end
+            end
+        end
+        % Choose which segments in dontCarePairs to shift.
+        % TODO: Improve selection method to select the minimum necessary to
+        % move.
+        for m = 1:size(dontCarePairs, 1)
+            if shiftList(dontCarePairs(m,1)) || shiftList(dontCarePairs(m,2))
+                % Pair is already addressed
+            else
+                % Arbitrarily choose the first indexed to be shifted.
+                shiftList(dontCarePairs(m,1)) = 1;
+            end
+        end
+        %
+        if all(shiftList)
+            % Can't shift all because then nothing will change.
+            % Arbitrarily choose first to not shift.
+            shiftList(1) = 0;
+        end
+        
+        %
+        shiftList2 = zeros(1,length(shiftList)); % To be populated with things to try shifting on a second pass
+        insertIdxs = zeros(1,length(shiftList));
+        for j = find(shiftList)
+            [success, vertSegs{i}{j}] = move_segment_left(vertSegs{i}{j}, ShiftAmount);
+            if ~success
+                % Forget this line.
+                
+                %% Search dontCarePairs to see which need to be moved (in the 
+                % second pass) since this one didn't move.
+                
+                % Assume j is in the first column of dontCarePairs:
+                jIdxs1 = find(j == dontCarePairs(:,1)); % Indexes with j in the 1st column
+                pairVals1 = dontCarePairs(jIdxs1,2); % Values of numbers paired with j (given the assumption)
+                shiftList2(pairVals1) = 1;
+                
+                % Assume j is in the second fcolumn of dontCarePairs:
+                jIdxs2 = find(j == dontCarePairs(:,2)); % Indexes with j in the 2nd column
+                pairVals2 = dontCarePairs(jIdxs2,1); % Values of numbers paired with j (given the assumption);
+                shiftList2(pairVals2) = 1;
+            else
+                insertIdxs(j) = 1;
+            end
+        end
+        for j = find(shiftList2)
+            if shiftList(j)
+                % Already tried on first pass
+            else
+                [success, vertSegs{i}{j}] = move_segment_left(vertSegs{i}{j}, ShiftAmount);
+                if ~success
+                    % Forget this line.
+                else
+                    insertIdxs(j) = 1;
+                end
+            end
+        end
+        
+        % Remove unmoved segments and update vertSegs for the remaining
+        % segments.
+        tempVertSegs = vertSegs;
+        vertSegs = vertSegs(2:end); % Removes the first group of vertSegs
+        for j = find(insertIdxs)
+            tempVertSeg = tempVertSegs{i}{j};
+            [vertSegs, ~] = insert_segment(vertSegs, tempVertSeg);
+        end
+        
+        newNumOfSegs = get_total_num_of_vertSegs(vertSegs);
+        assert(newNumOfSegs < numOfSegs) % Asserting the loop invariant
+    end
+end
+
+function remove_vertical_line_overlap_pair_by_pair(lines, ShiftAmount)
+    %
+    vertSegsList = find_vertical_line_segments(lines);
+    vertSegs = sort_vert_segs(vertSegsList);
+    
+    % Reorganize the placements of vertical line segments in the system
     while ~isempty(vertSegs)
         % Until there are no groups of candidates to fix.
         % Loop invariant: Each iteration removes at least one segment from
@@ -59,7 +212,7 @@ function remove_vertical_line_overlap(lines)
                     [vertSegs{i}{k}.point1; vertSegs{i}{k}.point2]);
                 switch instruction
                     case '1stLineLeft'
-                        [success, vertSegs{i}{j}] = move_segment_left(vertSegs{i}{j}, shift_amount);
+                        [success, vertSegs{i}{j}] = move_segment_left(vertSegs{i}{j}, ShiftAmount);
                         if ~success
                             % Forget this line.
                             vertSegs = delete_segment(vertSegs, i, j); % Delete vertSegs{i}{j}
@@ -72,10 +225,10 @@ function remove_vertical_line_overlap(lines)
                         
                         flag_firstSegUpdated = true;
                     case 'EitherLineLeft'
-                        [success, vertSegs{i}{j}] = move_segment_left(vertSegs{i}{j}, shift_amount);
+                        [success, vertSegs{i}{j}] = move_segment_left(vertSegs{i}{j}, ShiftAmount);
                         if ~success
                             % Try 2nd line.
-                            [success2, vertSegs{i}{k}] = move_segment_left(vertSegs{i}{k}, shift_amount);
+                            [success2, vertSegs{i}{k}] = move_segment_left(vertSegs{i}{k}, ShiftAmount);
                             if ~success2
                                 % Forget this line.
                                 vertSegs = delete_segment(vertSegs, i, k); % Delete vertSegs{i}{k}
@@ -94,7 +247,7 @@ function remove_vertical_line_overlap(lines)
                             flag_firstSegUpdated = true;
                         end
                     case '2ndLineLeft'
-                        [success, vertSegs{i}{k}] = move_segment_left(vertSegs{i}{k}, shift_amount);
+                        [success, vertSegs{i}{k}] = move_segment_left(vertSegs{i}{k}, ShiftAmount);
                         if ~success
                             % Forget this line.
                             vertSegs = delete_segment(vertSegs, i, k); % Delete vertSegs{i}{k}
