@@ -78,7 +78,7 @@ function AutoLayout(selected_objects, varargin)
     %           'center' - All blocks in a column will be centered around
     %               the same point on the horizontal axis.
     %   Parameter: 'HorizSpacing' - Refers to space between columns.
-    %   Value:  Any double. Default: 100.
+    %   Value:  Any double. Default: 80.
     %
     %   Parameters related to block width:
     %   Parameter: 'AdjustWidthParams'
@@ -399,6 +399,8 @@ function AutoLayout(selected_objects, varargin)
     [blocks, ~, annotations, ~] = separate_objects_by_type(objects);
     % Update objects to blocks and annotations
     objects = [blocks, annotations];
+    
+    blockLines = get_block_lines(blocks); % Lines connected to the given blocks
     
     % Get just lines associated with the blocks
     % TODO - involve the selected lines at least as an option
@@ -771,8 +773,7 @@ function AutoLayout(selected_objects, varargin)
     set_shownames(showingNamesMap)
     
     %% Redraw lines
-    blockLines = get_block_lines(blocks);
-    autolayout_lines(blockLines);
+    blockLines = autolayout_lines(blockLines);
     
     %% Center objects on the original center
     % I.e. Shift selected_objects so that the center of their bounds is in
@@ -787,7 +788,7 @@ function AutoLayout(selected_objects, varargin)
     % Get offset between new and original center
     center_offset = orig_center - new_center;
     % Shift objects by the offset
-    shift_sim_objects(selected_blocks, {}, selected_annotations, center_offset);
+    shift_sim_objects(selected_blocks, [], selected_annotations, center_offset);
     new_bounds = bounds_of_sim_objects(selected_objects); % Update new bounds. Can't simply add the offset since shifting isn't always precise
     
     %% Shift unselected objects to avoid overlap
@@ -810,8 +811,8 @@ function AutoLayout(selected_objects, varargin)
             adjustObjectsAroundLayout(non_layout_annotations, orig_bounds, bound_shift, 'annotation');
             % TODO - depending on input parameters redraw/shift/etc lines
             % affected by previous shifting
-            non_layout_lines = get_block_lines(non_layout_blocks);
-            adjustObjectsAroundLayout(non_layout_lines, orig_bounds, bound_shift, 'line');
+            %             non_layout_lines = get_block_lines(non_layout_blocks);
+            %             adjustObjectsAroundLayout(non_layout_lines, orig_bounds, bound_shift, 'line');
             %             redraw_block_lines(blocks, 'autorouting', 'on')
             %             redraw_lines(getfullname(system), 'autorouting', 'on')
         case lower('off')
@@ -831,12 +832,14 @@ end
 function shift_sim_objects(blocks, lines, annotations, offset)
     %
     
+    % Note: Shifting blocks in Simulink also shifts the connected lines.
+    
     shiftBlocks(blocks, [offset, offset]); % Takes 1x4 vector
     shiftAnnotations(annotations, [offset, offset]); % Takes 1x4 vector
     shiftLines(lines, offset); % Takes 1x2 vector
 end
 
-function adjustObjectsAroundLayout(objects, orig_bounds, bound_shift, type)
+function adjustObjectsAroundLayout(objects, origBounds, boundShift, type)
     % objects are all of the given type
     %
     % Move objects with the shift in bounds between original and new
@@ -872,28 +875,28 @@ function adjustObjectsAroundLayout(objects, orig_bounds, bound_shift, type)
         object = objects(i);
         
         % Get bounds of the block
-        my_bounds = getBounds(object);
+        myBounds = getBounds(object);
         
-        my_shift = [0 0 0 0];
+        myShift = [0 0 0 0]; % Desired shift for current object
         
         idx = 1; % Left
-        if my_bounds(idx) < orig_bounds(idx) && bound_shift(idx) > 0
-            my_shift = my_shift + [bound_shift(idx) 0 bound_shift(idx) 0];
+        if myBounds(idx) < origBounds(idx) && boundShift(idx) > 0
+            myShift = myShift + [boundShift(idx) 0 boundShift(idx) 0];
         end
         idx = 2; % Top
-        if my_bounds(idx) < orig_bounds(idx) && bound_shift(idx) > 0
-            my_shift = my_shift + [0 bound_shift(idx) 0 bound_shift(idx)];
+        if myBounds(idx) < origBounds(idx) && boundShift(idx) > 0
+            myShift = myShift + [0 boundShift(idx) 0 boundShift(idx)];
         end
         idx = 3; % Right
-        if my_bounds(idx) > orig_bounds(idx) && bound_shift(idx) > 0
-            my_shift = my_shift + [bound_shift(idx) 0 bound_shift(idx) 0];
+        if myBounds(idx) > origBounds(idx) && boundShift(idx) > 0
+            myShift = myShift + [boundShift(idx) 0 boundShift(idx) 0];
         end
         idx = 4; % Bottom
-        if my_bounds(idx) > orig_bounds(idx) && bound_shift(idx) > 0
-            my_shift = my_shift + [0 bound_shift(idx) 0 bound_shift(idx)];
+        if myBounds(idx) > origBounds(idx) && boundShift(idx) > 0
+            myShift = myShift + [0 boundShift(idx) 0 boundShift(idx)];
         end
         
-        shiftObjects({object}, my_shift);
+        shiftObjects({object}, myShift);
     end
 end
 
