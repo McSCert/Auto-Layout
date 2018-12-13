@@ -617,20 +617,17 @@ function AutoLayout(selected_objects, varargin)
     switch LayoutType
         case lower({'GraphPlot','Graphviz'})
             %% Set blocks to desired heights
-            % Actual position vertically doesn't matter yet.
-            notPType = 'Outport';
             colOrder = 1:length(layoutRepresentation);
-            firstPass = true;
-            setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass); % First pass to set to base heights using Compact Method
-            firstPass = false;
-            % Second pass to determine new heights based on previous Compact
-            % ones -- this is redundant if the method for getting heights is the
-            % same as is used for the first pass
-            setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass);
+            pType = 'Inport';
+            notPType = 'Outport';
+            set_blocks_to_desired_heights(layoutRepresentation, colOrder, AdjustHeightParams, notPType);
             
+            %% Align and spread vertically
+            align_and_spread_vertically(layoutRepresentation, colOrder, pType, VertSpacing)
+            %%%Old approach
             % Move blocks with single inport/outport so their port is in line with
             % the source/destination port
-            layoutRepresentation = vertAlign(layoutRepresentation);
+            %layoutRepresentation = vertAlign(layoutRepresentation);
             % % layout = easyAlign(layout); %old method, still may be relevant since it attempts to cover more cases
             %layout = layout2(address, layout, systemBlocks); %call layout2 after
         case lower('DepthBased')
@@ -649,57 +646,10 @@ function AutoLayout(selected_objects, varargin)
             end
             
             %% Set blocks to desired heights
-            % Actual position vertically doesn't matter yet.
-            firstPass = true;
-            setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass); % First pass to set to base heights using Compact Method
-            firstPass = false;
-            % Second pass to determine new heights based on previous Compact
-            % ones -- this is redundant if the method for getting heights is the
-            % same as is used for the first pass
-            setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass);
+            set_blocks_to_desired_heights(layoutRepresentation, colOrder, AdjustHeightParams, notPType);
             
             %% Align and spread vertically
-            % Vertical position matters now.
-            for i = colOrder
-                % For each column:
-                
-                % Align blocks (make diagram cleaner and provides a means of
-                % ordering when determining heights)
-                [ports, ~] = alignBlocks(layoutRepresentation{i}, 'PortType', pType);
-                
-                % Get a desired ordering for which blocks are higher
-                % First sort by port heights
-                [orderedPorts, ~] = sortPortsByTop(ports);
-                orderedParents = inputToNumeric(get_param(orderedPorts, 'Parent'));
-                % But not all blocks will have a port, so add the blocks that
-                % aren't accounted for
-                orderedColumn = [orderedParents; setdiff(inputToNumeric(layoutRepresentation{i}), orderedParents)'];
-                
-                % Alternate ordering approach
-                %orderedColumn = sortBlocksByTop(layoutRepresentation{i});
-                
-                % Spread out blocks that overlap vertically
-                for j = 1:length(orderedColumn)
-                    %
-                    
-                    b = orderedColumn(j);
-                    
-                    % Detect any remaining blocks in current column overlapping
-                    % current block
-                    [~, overlaps] = detectOverlaps(b,orderedColumn(j+1:end), ...
-                        'OverlapType', 'Vertical', 'VirtualBounds', [0 0 0 VertSpacing]);
-                    
-                    % If there is any overlap, move all overlappings blocks below b
-                    for over = overlaps
-                        
-                        % TODO When setting buffer use an input option to determine
-                        % whether or not to increase the buffer based on parameters
-                        % of b showing below b
-                        buffer = VertSpacing;
-                        moveBelow(b,over,buffer);
-                    end
-                end
-            end
+            align_and_spread_vertically(layoutRepresentation, colOrder, pType, VertSpacing);
         otherwise
             error('Unexpected parameter value.')
     end
@@ -1012,4 +962,63 @@ function lines = get_block_lines(blocks)
     end
     
     lines = unique(lines); % No repeats
+end
+
+function set_blocks_to_desired_heights(layoutRepresentation, colOrder, AdjustHeightParams, notPType)
+    %
+    
+    % Actual position vertically doesn't matter yet.
+    firstPass = true;
+    setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass); % First pass to set to base heights using Compact Method
+    firstPass = false;
+    % Second pass to determine new heights based on previous Compact
+    % ones -- this is redundant if the method for getting heights is the
+    % same as is used for the first pass
+    setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass);
+end
+
+function align_and_spread_vertically(layoutRepresentation, colOrder, pType, VertSpacing)
+    %
+    
+    % Vertical position matters now.
+    for i = colOrder
+        % For each column:
+        
+        % Align blocks (make diagram cleaner and provides a means of
+        % ordering when determining heights)
+        [ports, ~] = alignBlocks(layoutRepresentation{i}, 'PortType', pType);
+        
+        % Get a desired ordering for which blocks are higher
+        % First sort by port heights
+        [orderedPorts, ~] = sortPortsByTop(ports);
+        orderedParents = inputToNumeric(get_param(orderedPorts, 'Parent'));
+        % But not all blocks will have a port, so add the blocks that
+        % aren't accounted for
+        orderedColumn = [orderedParents; setdiff(inputToNumeric(layoutRepresentation{i}), orderedParents)'];
+        
+        % Alternate ordering approach
+        %orderedColumn = sortBlocksByTop(layoutRepresentation{i});
+        
+        % Spread out blocks that overlap vertically
+        for j = 1:length(orderedColumn)
+            %
+            
+            b = orderedColumn(j);
+            
+            % Detect any remaining blocks in current column overlapping
+            % current block
+            [~, overlaps] = detectOverlaps(b,orderedColumn(j+1:end), ...
+                'OverlapType', 'Vertical', 'VirtualBounds', [0 0 0 VertSpacing]);
+            
+            % If there is any overlap, move all overlappings blocks below b
+            for over = overlaps
+                
+                % TODO When setting buffer use an input option to determine
+                % whether or not to increase the buffer based on parameters
+                % of b showing below b
+                buffer = VertSpacing;
+                moveBelow(b,over,buffer);
+            end
+        end
+    end
 end
