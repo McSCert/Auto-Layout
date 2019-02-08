@@ -771,6 +771,9 @@ function AutoLayout(selected_objects, varargin)
             error('Unexpected parameter value.')
     end
     
+    %% Redraw lines
+    blockLines = autolayout_lines(blockLines);
+    
     %% Zoom on system
     % If it ends up zoomed out that means there is something near the
     % borders.
@@ -782,9 +785,49 @@ end
 function shift_sim_objects(blocks, lines, annotations, offset)
     %
     
-    % Note: Shifting blocks in Simulink also shifts the connected lines.
+    % Note: Shifting blocks in Simulink also shifts the connected lines
+    % (though not always in the desired manner).
     
+    %%%The commented out approach fails if shift amount is rounded in
+    %%%different ways for different blocks e.g. if instead of being moved
+    %%%by 2.5, the source block of a line is moved by 0 and the dest block
+    %%%of the line is moved by 5 -- maybe just round the offset right away
+    %%%(add parameter to allow this rounding probably)
+%     lineShift = {};
+%     for i = 1:length(blocks)
+%         ports = get_param(blocks(i), 'PortHandles');
+%         oports = ports.Outport;
+%         for j = 1:length(oports)
+%             lh = get_param(oports(j), 'Line');
+%             dstBlocks = get_param(lh, 'DstBlockHandle');
+%             if all(ismember(dstBlocks, blocks))
+%                 % Sources and destinations of lh are in blocks - it will be
+%                 % appropriate to shift all points in lh by the same amount
+%                 % as the sources and destinations.
+%                 
+%                 % Record info related to this line to help shift it
+%                 % appropriately later.
+%                 points = get_param(lh, 'Points');
+%                 srcBlockPos = get_param(blocks(i), 'Position');
+%                 dstBlocksPos = get_param(dstBlocks, 'Position');
+%                 lineShift{end+1} = struct('line', lh, 'points', points, ...
+%                     'srcBlock', blocks(i), 'srcBlockPos', srcBlockPos, ...
+%                     'dstBlocks', dstBlocks, 'dstBlocksPos', dstBlocksPos);
+%             end
+%         end
+%     end
     shiftBlocks(blocks, [offset, offset]); % Takes 1x4 vector
+%     for i = 1:length(lineShift)
+%         % Shift lines with the blocks that shifted.
+%         realOffset = get_param(lineShift{i}.srcBlock, 'Position') - lineShift{i}.srcBlockPos;
+%         
+%         newPoints = lineShift{i}.points; % Initialize
+%         for j = 1:length(lineShift{i}.points)
+%             newPoints(j,:) = lineShift{i}.points(j,:) + realOffset(1:2);
+%         end
+%         set_param(lineShift{i}.line, 'Points', newPoints);
+%     end
+    
     shiftAnnotations(annotations, [offset, offset]); % Takes 1x4 vector
     shiftLines(lines, offset); % Takes 1x2 vector
 end
