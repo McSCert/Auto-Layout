@@ -14,7 +14,7 @@ function shiftLines(lines, shift)
         l = lines(i);
         points = get_param(l, 'Points');
         
-        for j = 1:length(points)
+        for j = 2:length(points)-1
             points(j,:) = points(j,:) + shift(1:2);
         end
         set_param(l, 'Points', points);
