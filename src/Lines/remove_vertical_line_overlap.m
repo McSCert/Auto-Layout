@@ -69,10 +69,10 @@ function remove_vertical_line_overlap_all_overlapping_together(lines, ShiftAmoun
         shiftList = zeros(1,length(vertSegs{i}));
         dontCarePairs = []; % nx2 list of indices where 1 of the 2 should be moved
         for j = 1:length(vertSegs{i}) - 1
-            if ~shiftList(j)
+            if true %~shiftList(j) % may be able to use some condition to skip this sometimes
                 for k = j+1:length(vertSegs{i})
                     % For each pair in vertSegs{i}
-                    if ~shiftList(k)
+                    if true %~shiftList(k) % may be able to use some condition to skip this sometimes
                         
                         instruction = get_vertical_line_overlap_fix_instruction( ...
                             [vertSegs{i}{j}.point1; vertSegs{i}{j}.point2], ...
