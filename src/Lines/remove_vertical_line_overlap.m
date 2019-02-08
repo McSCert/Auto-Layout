@@ -121,18 +121,20 @@ function remove_vertical_line_overlap_all_overlapping_together(lines, ShiftAmoun
             if ~success
                 % Forget this line.
                 
-                %% Search dontCarePairs to see which need to be moved (in the 
-                % second pass) since this one didn't move.
-                
-                % Assume j is in the first column of dontCarePairs:
-                jIdxs1 = find(j == dontCarePairs(:,1)); % Indexes with j in the 1st column
-                pairVals1 = dontCarePairs(jIdxs1,2); % Values of numbers paired with j (given the assumption)
-                shiftList2(pairVals1) = 1;
-                
-                % Assume j is in the second fcolumn of dontCarePairs:
-                jIdxs2 = find(j == dontCarePairs(:,2)); % Indexes with j in the 2nd column
-                pairVals2 = dontCarePairs(jIdxs2,1); % Values of numbers paired with j (given the assumption);
-                shiftList2(pairVals2) = 1;
+                if ~isempty(dontCarePairs)
+                    %% Search dontCarePairs to see which need to be moved (in the
+                    % second pass) since this one didn't move.
+                    
+                    % Assume j is in the first column of dontCarePairs:
+                    jIdxs1 = find(j == dontCarePairs(:,1)); % Indexes with j in the 1st column
+                    pairVals1 = dontCarePairs(jIdxs1,2); % Values of numbers paired with j (given the assumption)
+                    shiftList2(pairVals1) = 1;
+                    
+                    % Assume j is in the second fcolumn of dontCarePairs:
+                    jIdxs2 = find(j == dontCarePairs(:,2)); % Indexes with j in the 2nd column
+                    pairVals2 = dontCarePairs(jIdxs2,1); % Values of numbers paired with j (given the assumption);
+                    shiftList2(pairVals2) = 1;
+                end
             else
                 insertIdxs(j) = 1;
             end
