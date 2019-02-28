@@ -37,6 +37,7 @@
 	
 	LineRouting/
 		redraw_block_lines.m
+		redraw_line.m
 	
 	Maps/
 		fullname_map2handle_map.m

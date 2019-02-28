@@ -9,7 +9,8 @@ function lines = autolayout_lines(lines)
     %           with new handles).
     %
     
-    % Remove lines where a parent (or other ancestor) is already in the list.
+    % Remove lines where a line parent (or other ancestor) is already in
+    % the list.
     % Otherwise redraw_line could  error later.
     lines = remove_child_lines(lines, 'All');
     
@@ -26,20 +27,4 @@ function lines = autolayout_lines(lines)
     % Find vertical line segments, make them not overlap (unless it means
     % overlapping a block)
     remove_vertical_line_overlap(lines);
-end
-
-function newLines = redraw_line(line, autorouting)
-    % Redraw line.
-    
-    sys = get_param(line, 'Parent');
-    
-    srcport = get_param(line, 'SrcPortHandle');
-    dstports = get_param(line, 'DstPortHandle');
-    % Delete and re-add.
-    delete_line(line)
-    newLines = zeros(1,length(dstports));
-    for k = 1:length(dstports)
-        dstport = dstports(k);
-        newLines(k) = add_line(sys, srcport, dstport, 'autorouting', autorouting);
-    end
 end
