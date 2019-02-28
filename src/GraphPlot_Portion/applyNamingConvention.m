@@ -40,6 +40,10 @@ function name = applyNamingConvention(handle)
                 error('Ports other than inports and outports are not supported.');
             end
         end
+        if iscell(handle)
+            % Note handle should never be a cell array on recursive calls
+            name = {name};
+        end
     else % Vector
         name = cell(rows, cols);
         for i = 1:rows
