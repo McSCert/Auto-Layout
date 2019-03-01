@@ -17,8 +17,10 @@ function name = applyNamingConvention(handle)
 
     rows = size(handle, 1);
     cols = size(handle, 2);
-
-    if (rows == 1 && cols == 1) || ischar(handle) % Scalar or string
+    
+    if (ischar(handle) || isnumeric(handle)) && rows == 1  % Scalar or string
+        % Handle is a single block name or block handle
+        % Return name as a char
         type = get_param(handle, 'Type');
         if strcmp(type, 'block')
             % Blocks
@@ -40,16 +42,32 @@ function name = applyNamingConvention(handle)
                 error('Ports other than inports and outports are not supported.');
             end
         end
-        if iscell(handle)
-            % Note handle should never be a cell array on recursive calls
-            name = {name};
+    elseif ischar(handle) % && rows ~= 1
+        % Handle is a list of chars
+        % Return name as a cell array of chars
+        name = cell(rows, 1);
+        for i = 1:rows
+            name(i) = {applyNamingConvention(handle(i,:))}; % Recurse
         end
-    else % Vector
+    elseif isnumeric(handle) % && rows ~= 1
+        % Handle is a list of handles
+        % Return name as a cell array of chars
         name = cell(rows, cols);
         for i = 1:rows
             for j = 1:cols
                 name(i,j) = {applyNamingConvention(handle(i,j))}; % Recurse
             end
         end
+    elseif iscell(handle)
+        % Handle is a cell array
+        % Return name as a cell array with the same structure
+        name = cell(rows, cols);
+        for i = 1:rows
+            for j = 1:cols
+                name(i,j) = {applyNamingConvention(handle{i,j})}; % Recurse
+            end
+        end
+    else
+        error('Unexpected type of input.')
     end
 end
