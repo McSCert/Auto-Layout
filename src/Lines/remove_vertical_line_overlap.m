@@ -74,9 +74,20 @@ function remove_vertical_line_overlap_all_overlapping_together(lines, ShiftAmoun
                     % For each pair in vertSegs{i}
                     if true %~shiftList(k) % may be able to use some condition to skip this sometimes
                         
-                        instruction = get_vertical_line_overlap_fix_instruction( ...
-                            [vertSegs{i}{j}.point1; vertSegs{i}{j}.point2], ...
-                            [vertSegs{i}{k}.point1; vertSegs{i}{k}.point2]);
+                        srcport_j = get_param(vertSegs{i}{j}.line, 'SrcPortHandle');
+                        srcport_k = get_param(vertSegs{i}{k}.line, 'SrcPortHandle');
+                        if srcport_j == srcport_k
+                            % Both vertical segments have the same source
+                            % so it's not important to remove the overlap
+                            % (it won't remove any ambiguity).
+                            instruction = 'NoFix';
+                        else
+                            % Figure out how to best adjust vertical
+                            % segments to deal with overlap.
+                            instruction = get_vertical_line_overlap_fix_instruction( ...
+                                [vertSegs{i}{j}.point1; vertSegs{i}{j}.point2], ...
+                                [vertSegs{i}{k}.point1; vertSegs{i}{k}.point2]);
+                        end
                         
                         switch instruction
                             case '1stLineLeft'

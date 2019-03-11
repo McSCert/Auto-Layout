@@ -24,7 +24,7 @@ function lines = autolayout_lines(lines)
     % Find diagonal line segments, make them run vertical and horizontal
     % TODO
     
-    % Find vertical line segments, make them not overlap (unless it means
-    % overlapping a block)
+    % Find vertical line segments, make them not overlap
+    % TODO: Don't adjust if it would mean overlapping a block
     remove_vertical_line_overlap(lines);
 end
