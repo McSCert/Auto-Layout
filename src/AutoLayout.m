@@ -109,7 +109,7 @@ function AutoLayout(selected_objects, varargin)
     %       'PerformOperation').
     %   Parameter: 'VertSpacing' - Refers to space between blocks within a
     %       column (essentially this is used where alignment fails).
-    %   Value:  Any double. Default: 10.
+    %   Value:  Any double. Default: 20.
     %   Parameter: 'AlignmentType'
     %   Value:  'Source' - (Default) Try to align a blocks with a source.
     %           'Dest' - Try to align a blocks with a destination.
@@ -189,7 +189,7 @@ function AutoLayout(selected_objects, varargin)
     AdjustWidthParams = {};
     WidthMode = lower('AsIs');
     AdjustHeightParams = {};
-    VertSpacing = 10;
+    VertSpacing = 20;
     AlignmentType = lower('Source');
     DesiredSumShape = 'any';
     PortlessRule = getAutoLayoutConfig('portless_rule', 'top');
@@ -618,8 +618,9 @@ function AutoLayout(selected_objects, varargin)
         case lower({'GraphPlot','Graphviz'})
             %% Set blocks to desired heights
             colOrder = 1:length(layoutRepresentation);
-            pType = 'Inport';
-            notPType = 'Outport';
+            pType = 'Outport';
+            notPType = 'Inport';
+            
             set_blocks_to_desired_heights(layoutRepresentation, colOrder, AdjustHeightParams, notPType);
             
             %% Align and spread vertically
