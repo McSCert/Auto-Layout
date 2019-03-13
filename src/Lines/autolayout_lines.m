@@ -9,15 +9,18 @@ function lines = autolayout_lines(lines)
     %           with new handles).
     %
     
+    % Remove duplicate lines.
+    lines = unique(lines);
     % Remove lines where a line parent (or other ancestor) is already in
     % the list.
-    % Otherwise redraw_line could  error later.
+    % Otherwise redraw_line could error later.
     lines = remove_child_lines(lines, 'All');
     
     % Get a base line layout using MATLABs autorouting
     tmpLines = [];
     for i = 1:length(lines)
-        tmpLines = [redraw_line(lines(i), 'on'), tmpLines];
+        newLines = redraw_line(lines(i), 'on');
+        tmpLines = [newLines, tmpLines];
     end
     lines = tmpLines; % Update handles
     
