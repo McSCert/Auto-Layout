@@ -1,4 +1,7 @@
 .../tools/Simulink/Tools/Utility/
+	BackwardsCompatibility
+		add_line2.m
+	
 	Bounds/
 		annotationBounds.m
 		blockBounds.m
