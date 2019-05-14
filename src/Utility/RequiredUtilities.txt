@@ -37,6 +37,7 @@
 		getInput.m
 		inputToCell.m
 		inputToNumeric.m
+        iscellcell.m
 	
 	LineRouting/
 		redraw_block_lines.m
