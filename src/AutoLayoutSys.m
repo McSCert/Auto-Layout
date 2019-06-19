@@ -1,4 +1,4 @@
-function AutoLayoutSys(systems)
+function AutoLayoutSys(systems, varargin)
     % AUTOLAYOUTSYS Takes a set of systems and lays them out.
     %
     % Input:
@@ -14,7 +14,7 @@ function AutoLayoutSys(systems)
     for i = 1:length(systems)
         system = systems(i);
         objects = find_objects_in_system(system);
-        AutoLayout(objects);
+        AutoLayout(objects, varargin{:});
     end
 end
 function objects = find_objects_in_system(system)
