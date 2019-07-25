@@ -62,4 +62,10 @@ function h = plotSimulinkDigraph(blocks, dg)
     % Plot
     figure % New figure
     h = plot(dg, ops{:});
+    
+    % Stop underscores from resulting in subscript
+    try
+        set(h, 'Interpreter' ,'none');
+    catch
+    end
 end
