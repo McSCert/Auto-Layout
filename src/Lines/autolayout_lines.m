@@ -16,7 +16,7 @@ function lines = autolayout_lines(lines)
     % Otherwise redraw_line could error later.
     lines = remove_child_lines(lines, 'All');
     
-    % Get a base line layout using MATLABs autorouting
+    % Get a base line layout using MATLAB's autorouting
     tmpLines = [];
     for i = 1:length(lines)
         newLines = redraw_line(lines(i), 'on');
