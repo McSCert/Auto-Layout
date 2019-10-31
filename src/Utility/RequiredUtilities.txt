@@ -1,5 +1,5 @@
 .../tools/Simulink/Tools/Utility/
-	BackwardsCompatibility
+	BackwardsCompatibility/
 		add_line2.m
 	
 	Bounds/
