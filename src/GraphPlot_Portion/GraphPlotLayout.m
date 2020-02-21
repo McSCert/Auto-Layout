@@ -16,12 +16,13 @@ function GraphPlotLayout(blocks)
     dg2 = addImplicitEdgesBetweenBlocks(blocks, dg);
     
     defaultFigureVisible = get(0, 'DefaultFigureVisible');
-    set(0, 'DefaultFigureVisible', 'off');    % Don't show the figure
+    set(0, 'DefaultFigureVisible', 'off'); % Don't show the figure
     p = plotSimulinkDigraph(blocks, dg2);
     set(0,'DefaultFigureVisible', defaultFigureVisible);
     
-    assert(length(blocks) == length(p.NodeLabel))
-    blocks = p.NodeLabel'; % Update blocks to ensure the order corresponds with position data
+    assert(length(blocks) == length(dg2.Nodes.Name))
+%     assert(length(blocks) == length(p.NodeLabel))
+    blocks = dg2.Nodes.Name; % Update blocks to ensure the order corresponds with position data
     xs = p.XData;
     ys = p.YData;
     
