@@ -902,56 +902,66 @@ function annotations = find_annotations_in_system(system)
 end
 
 function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType, firstPass)
-    if firstPass
-        Method = 'Compact';
-        defaultMethod = false;
-    else
-        defaultMethod = true;
-    end
     
+    % TODO Current implementation expands blocks down regardless of
+    % input parameters - fix that - though it doesn't really matter
+    % since alignment will occur still.
+    
+    %
+    portParamsIdx = find(strcmpi('PortParams', AdjustHeightParams));
+    if isempty(portParamsIdx)
+        % Add 'PortParams' with default value
+        AdjustHeightParams{end+1} = 'PortParams';
+        AdjustHeightParams{end+1} = {};
+        portParamsIdx = find(strcmpi('PortParams', AdjustHeightParams));
+        assert(~isempty(portParamsIdx))
+    end
+    portParamsVal = AdjustHeightParams{portParamsIdx(1)+1};
+    
+    %
+    connTypeIdx = find(strcmpi('ConnectionType', portParamsVal));
+    if isempty(connTypeIdx)
+        % Add 'ConnectionType' with given value
+        portParamsVal{end+1} = 'ConnectionType';
+        portParamsVal{end+1} = connType;
+    end % else: Do nothing, if a user explicitly chose a ConnectionType.
+    
+    % Set base method (will be updated during the loop below for certain
+    % blocks).
+    methodIdx = find(strcmpi('Method', portParamsVal));
+    if firstPass
+        firstPassMethod = 'Compact';
+    end
+    subsMethod = 'SumMax';
+    if isempty(methodIdx)
+        callerMethod = 'Compact'; % Because Compact is default for the adjustHeight function.
+        
+        % Add 'Method' parameter.
+        portParamsVal{end+1} = 'Method';
+        portParamsVal{end+1} = [];
+    else % Caller set a method.
+        callerMethod = portParamsVal{methodIdx(1)+1};
+    end
+    % Update methodIdx.
+    methodIdx = find(strcmpi('Method', portParamsVal));
+    
+    %
     for i = colOrder(length(colOrder):-1:1) % Reverse column order
         for j = 1:length(layoutRepresentation{i})
             b = layoutRepresentation{i}{j}; % Get current block
             
             pos = get_param(b, 'Position');
             
-            % TODO Current implementation expands blocks down regardless of
-            % input parameters - fix that - though it doesn't really matter
-            % since alignment will occur still.
-            
-            portParamsIdx = find(strcmpi('PortParams', AdjustHeightParams));
-            if isempty(portParamsIdx)
-                % Add 'PortParams' with default value
-                AdjustHeightParams{end+1} = 'PortParams';
-                AdjustHeightParams{end+1} = {};
-                portParamsIdx = find(strcmpi('PortParams', AdjustHeightParams));
-                assert(~isempty(portParamsIdx))
-            end
-            portParamsVal = AdjustHeightParams{portParamsIdx(1)+1};
-            
-            connTypeIdx = find(strcmpi('ConnectionType', portParamsVal));
-            if isempty(connTypeIdx)
-                % Add 'ConnectionType' with given value
-                portParamsVal{end+1} = 'ConnectionType';
-                portParamsVal{end+1} = connType;
+            % Set Method parameter.
+            % (Conditions here are based on what has seemed best in testing and
+            % could probably be improved.)
+            if firstPass
+                portParamsVal{methodIdx(1)+1} = firstPassMethod;
+            elseif strcmp(get_param(b, 'BlockType'), 'SubSystem')
+                portParamsVal{methodIdx(1)+1} = subsMethod;
             else
-                % Do nothing, if a user explicitly chose a ConnectionType
+                portParamsVal{methodIdx(1)+1} = callerMethod;
             end
-            
-            if ~defaultMethod
-                % Overwrite the method that was set
-                methodIdx = find(strcmpi('Method', portParamsVal));
-                if isempty(methodIdx)
-                    % Add 'Method' with given value
-                    portParamsVal{end+1} = 'Method';
-                    portParamsVal{end+1} = Method;
-                else
-                    % When user explicitly chooses the Method, it's sometimes
-                    % still necessary to call with 'Compact' Method before the
-                    % Method selected by the user.
-                    portParamsVal{methodIdx(1)+1} = Method;
-                end
-            end % else: Skip. Default method will be used by default.
             
             AdjustHeightParams{portParamsIdx(1)+1} = portParamsVal;
             
