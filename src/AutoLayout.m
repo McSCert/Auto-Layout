@@ -107,6 +107,10 @@ function AutoLayout(selected_objects, varargin)
     %       'PerformOperation', 'off' is passed automatically. (Default)
     %       Empty cell array (pass no optional arguments except
     %       'PerformOperation').
+    %   Parameter: 'SubHeightMethod' - Refers to the "Method" used to determine
+    %       heights of SubSystem blocks (options are the same as in 
+    %       adjustHeightForConnectedBlocks).
+    %   Value:  Options are 'Sum', 'SumMax' (Default), 'MinMax', and 'Compact'.
     %   Parameter: 'VertSpacing' - Refers to space between blocks within a
     %       column (essentially this is used where alignment fails).
     %   Value:  Any double. Default: 20.
@@ -189,6 +193,7 @@ function AutoLayout(selected_objects, varargin)
     AdjustWidthParams = {};
     WidthMode = lower('AsIs');
     AdjustHeightParams = {};
+    SubHeightMethod = 'SumMax';
     VertSpacing = 20;
     AlignmentType = lower('Source');
     DesiredSumShape = 'any';
@@ -228,7 +233,7 @@ function AutoLayout(selected_objects, varargin)
                 assert(isa(value, 'containers.Map'), ...
                     ['Unexpected value for ' param ' parameter.'])
                 if strcmp(value.KeyType, 'char')
-                    Columns = fullname_map2handle_map(Columns);
+                    Columns = fullname_map2handle_map(value);
                 else
                     Columns = value;
                 end
@@ -256,6 +261,10 @@ function AutoLayout(selected_objects, varargin)
                 assert(iscell(value), ...
                     ['Unexpected value for ' param ' parameter.'])
                 AdjustHeightParams = value;
+            case lower('SubHeightMethod')
+                assert(any(strcmpi(value, {'Sum', 'SumMax', 'MinMax', 'Compact'})), ...
+                    ['Unexpected value for ' param ' parameter.'])
+                SubHeightMethod = value;
             case lower('VertSpacing')
                 assert(isnumeric(value), ...
                     ['Unexpected value for ' param ' parameter.'])
@@ -474,8 +483,8 @@ function AutoLayout(selected_objects, varargin)
                 cols = choose_impact_depths(blocks);
             else
                 % Use given map
-                % For blocks not in the given map arbitrarily use the
-                % default function to get a column for them
+                % For blocks not in the given map use the default function ...
+                % to get a column for them.
                 for i = 1:length(blocks)
                     tmp_blocks = [];
                     if ~Columns.isKey(blocks(i))
@@ -621,7 +630,7 @@ function AutoLayout(selected_objects, varargin)
             pType = 'Outport';
             notPType = 'Inport';
             
-            set_blocks_to_desired_heights(layoutRepresentation, colOrder, AdjustHeightParams, notPType);
+            set_blocks_to_desired_heights(layoutRepresentation, colOrder, SubHeightMethod, AdjustHeightParams, notPType);
             
             %% Align and spread vertically
             align_and_spread_vertically(layoutRepresentation, colOrder, pType, VertSpacing)
@@ -647,7 +656,7 @@ function AutoLayout(selected_objects, varargin)
             end
             
             %% Set blocks to desired heights
-            set_blocks_to_desired_heights(layoutRepresentation, colOrder, AdjustHeightParams, notPType);
+            set_blocks_to_desired_heights(layoutRepresentation, colOrder, SubHeightMethod, AdjustHeightParams, notPType);
             
             %% Align and spread vertically
             align_and_spread_vertically(layoutRepresentation, colOrder, pType, VertSpacing);
@@ -901,7 +910,7 @@ function annotations = find_annotations_in_system(system)
     annotations = find_system(system, 'SearchDepth', 1, 'FindAll', 'on', 'Type', 'annotation');
 end
 
-function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType, firstPass)
+function setHeights(layoutRepresentation, colOrder, subsMethod, AdjustHeightParams, connType, firstPass)
     
     % TODO Current implementation expands blocks down regardless of
     % input parameters - fix that - though it doesn't really matter
@@ -932,14 +941,14 @@ function setHeights(layoutRepresentation, colOrder, AdjustHeightParams, connType
     if firstPass
         firstPassMethod = 'Compact';
     end
-    subsMethod = 'SumMax';
+    %subsMethod = 'SumMax';
     if isempty(methodIdx)
         callerMethod = 'Compact'; % Because Compact is default for the adjustHeight function.
         
         % Add 'Method' parameter.
         portParamsVal{end+1} = 'Method';
         portParamsVal{end+1} = [];
-    else % Caller set a method.
+    else % The caller set a method.
         callerMethod = portParamsVal{methodIdx(1)+1};
     end
     % Update methodIdx.
@@ -1018,17 +1027,17 @@ function lines = get_block_lines(blocks)
     lines = unique(lines); % No repeats
 end
 
-function set_blocks_to_desired_heights(layoutRepresentation, colOrder, AdjustHeightParams, notPType)
+function set_blocks_to_desired_heights(layoutRepresentation, colOrder, SubHeightMethod, AdjustHeightParams, notPType)
     %
     
     % Actual position vertically doesn't matter yet.
     firstPass = true;
-    setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass); % First pass to set to base heights using Compact Method
+    setHeights(layoutRepresentation, colOrder, SubHeightMethod, AdjustHeightParams, notPType, firstPass); % First pass to set to base heights using Compact Method
     firstPass = false;
     % Second pass to determine new heights based on previous Compact
     % ones -- this is redundant if the method for getting heights is the
     % same as is used for the first pass
-    setHeights(layoutRepresentation, colOrder, AdjustHeightParams, notPType, firstPass);
+    setHeights(layoutRepresentation, colOrder, SubHeightMethod, AdjustHeightParams, notPType, firstPass);
 end
 
 function align_and_spread_vertically(layoutRepresentation, colOrder, pType, VertSpacing)
@@ -1075,4 +1084,9 @@ function align_and_spread_vertically(layoutRepresentation, colOrder, pType, Vert
             end
         end
     end
+end
+
+function cols = getImpactDepths(blocks)
+    % Set default depths - default is 0.
+    cols = zeros(1, length(blocks));
 end
