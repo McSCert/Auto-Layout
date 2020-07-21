@@ -14,3 +14,6 @@ The Auto Layout Tool resizes models' blocks based on number of inputs and output
 
 ## User Guide
 For installation and other information, please see the [User Guide](doc/AutoLayout_UserGuide.pdf).
+
+This tool is also available for download on the [Matlab Central File Exchange]
+(https://www.mathworks.com/matlabcentral/fileexchange/51228-auto-layout-tool).
