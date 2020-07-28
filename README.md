@@ -17,9 +17,9 @@ For installation and other information, please see the [User Guide](doc/AutoLayo
 
 ## Related Publications
 
-Vera Pantelic, Steven Postma, Mark Lawford, Alexandre Korobkine, Bennett Mackenzie, Jeff Ong, Marc Bender, ["A Toolset for Simulink: Improving Software Engineering Practices in Development with Simulink,"](https://ieeexplore.ieee.org/document/7323083/) Proceedings of 3rd International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2015), SCITEPRESS, 2015, 50-61. (Best Paper Award)
+Vera Pantelic, Steven Postma, Mark Lawford, Alexandre Korobkine, Bennett Mackenzie, Jeff Ong, Marc Bender, ["A Toolset for Simulink: Improving Software Engineering Practices in Development with Simulink,"](https://ieeexplore.ieee.org/document/7323083/) In *Proceedings of 3rd International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2015)*, SCITEPRESS, 2015, 50-61. DOI: https://doi.org/10.5220/0005236100500061 (Best Paper Award)
 
-Vera Pantelic, Steven Postma, Mark Lawford, Monika Jaskolka, Bennett Mackenzie, Alexandre Korobkine, Marc Bender, Jeff Ong, Gordon Marks, Alan Wassyng, [“Software engineering practices and Simulink: bridging the gap,”](https://link.springer.com/article/10.1007/s10009-017-0450-9) International Journal on Software Tools for Technology Transfer (STTT), 2017, 1-23.
+Vera Pantelic, Steven Postma, Mark Lawford, Monika Jaskolka, Bennett Mackenzie, Alexandre Korobkine, Marc Bender, Jeff Ong, Gordon Marks, Alan Wassyng, [“Software engineering practices and Simulink: bridging the gap,”](https://link.springer.com/article/10.1007/s10009-017-0450-9) *International Journal on Software Tools for Technology Transfer (STTT)*, 2017, 95–117. DOI: https://doi.org/10.1007/s10009-017-0450-9 
 
 ## Matlab Central
 
