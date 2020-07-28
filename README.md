@@ -10,7 +10,7 @@ The Auto Layout Tool resizes models' blocks based on number of inputs and output
 
 *Approaches 1) and 3) can be utilized on any version of Matlab/Simulink, while approach 2) only works on R2015b+.*
 
-<img src="imgs/AutoLayout_Cover.png" width="650">
+<img src="imgs/Cover.png" width="650">
 
 ## User Guide
 For installation and other information, please see the [User Guide](doc/AutoLayout_UserGuide.pdf).
