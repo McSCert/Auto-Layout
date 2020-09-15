@@ -27,7 +27,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Tool-Specific Macros
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\input{../../common/macros}
+\input{macros}
 
 \newcommand{\ToolName}{Auto Layout Tool\@\xspace}
 
@@ -66,7 +66,7 @@
 
 \begin{figure}
 	\centering
-	\includegraphics[]{../../common/McSCert_Logo.pdf} \\
+	\includegraphics[]{../figs/McSCert_Logo.pdf} \\
 	McMaster Centre for Software Certification (McSCert)
 \end{figure}
 
@@ -87,14 +87,14 @@
 % Provide any background or references.
 The \ToolName automatically formats a \Simulink model to improve its visual layout. This tool is useful for arranging \Simulink model elements, such as blocks and lines, in order to increase readability, and benefits the user by automating the tedious task of manually organizing the many elements contained in a model.
 
-\paragraph{\textit{Disclaimer}} This tool will try its best to make messy models (containing many signal crossings, not aligned blocks, unclear data flow, etc.) easier to read, but you may find that models that are already well laid out, will benefit less than a model that is auto-generated and has no layout, for example.
+\paragraph*{\textit{Disclaimer}} This tool will try its best to make messy models (containing many signal crossings, not aligned blocks, unclear data flow, etc.) easier to read, but you may find that models that are already well laid out, will benefit less than a model that is auto-generated and has no layout, for example.
 
 % Is there more information?
-\subsection*{More Information}
+\subsection{More Information}
 For more information on the tool and how it can be used in model-based development with \Simulink, please refer to the following papers:
 
 \vspace{1em}
-Vera Pantelic, Steven Postma, Mark Lawford, Monika Jaskolka, Bennett Mackenzie, Alexandre Korobkine, Marc Bender, Jeff Ong, Gordon Marks, Alan Wassyng, \href{https://link.springer.com/article/10.1007/s10009-017-0450-9}{``Software engineering practices and Simulink: bridging the gap,"} \textit{International Journal on Software Tools for Technology Transfer (STTT)}, 2017, 1-23.
+Vera Pantelic, Steven Postma, Mark Lawford, Monika Jaskolka, Bennett Mackenzie, Alexandre Korobkine, Marc Bender, Jeff Ong, Gordon Marks, Alan Wassyng, \href{https://link.springer.com/article/10.1007/s10009-017-0450-9}{``Software engineering practices and Simulink: bridging the gap,"} \textit{International Journal on Software Tools for Technology Transfer (STTT)}, 2017, 95--117.
 
 \vspace{1em}
 Vera Pantelic, Steven Postma, Mark Lawford, Alexandre Korobkine, Bennett Mackenzie, Jeff Ong, and Marc Bender, \href{http://www.cas.mcmaster.ca/~lawford/papers/MODELSWARD2015.pdf}{``A Toolset for Simulink: Improving Software Engineering Practices in Development with Simulink,"}\textit{Proceedings of 3rd International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2015)}, SCITEPRESS, 2015, 50--61.
@@ -126,6 +126,7 @@ This section describes what must be done to setup the tool, as well as how to us
 	\end{itemize}
 	\ifthenelse{\equal{\FCA}{0}}{
 		\item Install Graphviz if \hyperref[item:layout-type]{\keyword{layout\_type}} is set to Graphviz (see Section~\ref{SEC:graphingmethods}).}{}
+	\item Ensure the Simulink-Utility folder is on your \mpath. This is a dependency for the tool to work correctly.
 	\item Ensure your model is open and unlocked.
 \end{enumerate}
 		
