@@ -122,20 +122,19 @@ This section describes what must be done to setup the tool, as well as how to us
 			\item Unzip the contents into your desired location. 
 			\item Add the unzipped folder and subfolders to your \mpath. 
 			\item Download the \href{https://github.com/McSCert/Simulink-Utility}{Simulink-Utility} in the same manner. Add the folder to your \mpath also. This is a dependency for the tool to work correctly.
-			\item Run \href{https://www.mathworks.com/help/simulink/ug/registering-customizations.html}{sl\_refresh\_customizations} to refresh the Context Menu. 
 		\end{enumerate}
 		\item \textbf{Use the Git command line}
 			\begin{enumerate}
 				\item Use the command, \begin{verbatim}git clone --recursive https://github.com/McSCert/Auto-Layout\end{verbatim} This will download the tool and any necessary submodules.
 			\end{enumerate}
 	\end{enumerate}
-
+	\item Run \href{https://www.mathworks.com/help/simulink/ug/registering-customizations.html}{sl\_refresh\_customizations} to refresh the Context Menu. 
 	\ifthenelse{\equal{\FCA}{0}}{
 		\item Install Graphviz if \hyperref[item:layout-type]{\keyword{layout\_type}} is set to Graphviz (see Section~\ref{SEC:graphingmethods}).}{}
 	\item Ensure your model is open and unlocked.
 \end{enumerate}
 
-\paragraph*{Toubleshooting:} If running the command ``\cmd{which AutoLayout}'' indicates that the script is not found, then the tool needs to be added to the \mpath. 		For information on adding files to the \mpath, please see the \href{https://www.mathworks.com/help/matlab/matlab_env/add-remove-or-reorder-folders-on-the-search-path.html}{MathWorks documentation}.
+\paragraph*{Toubleshooting:} If running the command ``\cmd{which AutoLayout}'' indicates that the script is not found, then the tool needs to be added to the \mpath. For information on adding files to the \mpath, please see the \href{https://www.mathworks.com/help/matlab/matlab_env/add-remove-or-reorder-folders-on-the-search-path.html}{MathWorks documentation}.
 		
 \subsubsection{Graphing Methods}
 \label{SEC:graphingmethods}
